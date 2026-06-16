@@ -20,10 +20,8 @@ function App({name, role, imageUrl}) {
       <main className="flex-grow">
         <AppRoutes />
       </main>
-
-      {/* El Footer fijo abajo */}
-      <Footer />
-    </div>
+    
+      </div>
     </>
   )
 }
