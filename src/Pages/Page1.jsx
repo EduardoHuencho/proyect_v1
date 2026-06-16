@@ -4,7 +4,7 @@ function Page1() {
   return (
     <>
         <h1>
-            page 1
+            SOY YOOOOO
         </h1>
     </>
   )
