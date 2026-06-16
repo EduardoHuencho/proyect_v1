@@ -1,0 +1,6 @@
+[
+  { "id": 1, "label": "Manzana", "icon": "🍎", "color": "bg-red-100", "category": "Comida", "star": false },
+  { "id": 2, "label": "Leche", "icon": "🥛", "color": "bg-blue-100", "category": "Comida", "star": false },
+  { "id": 3, "label": "Feliz", "icon": "😊", "color": "bg-yellow-100", "category": "Emociones", "star": true },
+  { "id": 4, "label": "Jugar", "icon": "🎮", "color": "bg-zinc-100", "category": "Actividades", "star": true }
+]
