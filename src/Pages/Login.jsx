@@ -25,7 +25,6 @@ function Login() {
         backgroundSize: "22px 22px",
       }}
     >
-      {/* Logo */}
       <div className="flex justify-center pt-8 pb-2">
         <img src={logoImg} alt="Logo TEAYUDO" className="h-16 w-auto" />
       </div>
@@ -44,12 +43,10 @@ function Login() {
           </p>
         </div>
 
-        {/* Tarjeta de Formulario */}
         <div className="flex-1 w-full max-w-sm rounded-[30px] p-8 shadow-2xl bg-white">
           <h2 className="text-2xl font-extrabold text-[#005088] mb-1">Iniciar sesión</h2>
           <p className="text-sm text-[#4A7A96] font-medium mb-6">¿Quién eres hoy?</p>
 
-          {/* Selector de Rol */}
           <div className="flex gap-2 p-1.5 rounded-2xl mb-6 bg-[#E0F7FA]">
             {["tutor", "infant"].map((r) => (
               <button
