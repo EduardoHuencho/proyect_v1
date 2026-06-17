@@ -13,10 +13,8 @@ function App({name, role, imageUrl}) {
   return (
     <>
       <div className="min-h-screen flex flex-col justify-between bg-gray-50">
-      {/* El Navbar fijo arriba */}
       <Navbar />
       
-      {/* El contenedor donde cambian las páginas */}
       <main className="flex-grow">
         <AppRoutes />
       </main>

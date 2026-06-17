@@ -81,11 +81,8 @@ function Pictogramas() {
     <>
       <div className="p-4 md:p-6 select-none h-[calc(100vh-60px)] flex flex-col overflow-hidden">
         
-        {/* --- CONTENEDOR PRINCIPAL DE LA FRASE --- */}
-        {/* Subimos la altura a h-[125px] para dar espacio a la barra inferior sin apretar las tarjetas */}
         <div className="border border-gray-200 bg-white rounded-2xl h-[125px] mb-4 flex items-center justify-between p-3 gap-3 shadow-sm overflow-hidden shrink-0">
           
-          {/* CAMBIO 1: Cambiamos a 'scrollbar-thin' para que la barra horizontal sea visible abajo */}
           <div 
             ref={contenedorFraseRef}
             className="flex flex-nowrap items-center gap-3 flex-grow overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent h-full pb-2 pr-2"
@@ -146,8 +143,6 @@ function Pictogramas() {
           </div>
         </div>
 
-        {/* --- CONTENEDOR DE CATEGORÍAS --- */}
-        {/* CAMBIO 2: Subimos la altura a h-[75px] y agregamos 'scrollbar-thin' con un color sutil */}
         <div className="border border-gray-100 bg-gray-50/50 rounded-2xl h-[75px] mb-5 flex items-center p-2 gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent shrink-0">
           {CategoriasList.map((cat) => (
             <CategoriaCard
@@ -164,7 +159,6 @@ function Pictogramas() {
           ))}
         </div>
 
-        {/* --- GRID DE SELECCIÓN FILTRADO --- */}
         <div className="flex-grow overflow-y-auto pr-1 pb-4 scrollbar-thin">
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
             {pictogramasFiltrados.map((item) => (
