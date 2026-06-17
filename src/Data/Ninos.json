@@ -1,0 +1,6 @@
+[
+  { "id": 1, "nombre": "Sofía",     "edad": "6a", "emoji": "👧" },
+  { "id": 2, "nombre": "Mateo",     "edad": "5a", "emoji": "👦" },
+  { "id": 3, "nombre": "Valentina", "edad": "7a", "emoji": "👧" },
+  { "id": 4, "nombre": "Lucas",     "edad": "6a", "emoji": "👦" }
+]
