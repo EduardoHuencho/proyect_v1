@@ -1,0 +1,23 @@
+[
+  { "id": "todos", "label": "Todos", "icon": "⭐", "color": "bg-amber-500/10 border-amber-300 text-amber-800" },
+  { "id": "Comida", "label": "Comida", "icon": "🍎", "color": "bg-red-50 border-red-200 text-red-700" },
+  { "id": "Emociones", "label": "Emociones", "icon": "😊", "color": "bg-yellow-50 border-yellow-200 text-yellow-700" },
+  { "id": "Actividades", "label": "Actividades", "icon": "🎮", "color": "bg-zinc-100 border-zinc-300 text-zinc-700" },
+  { "id": "Lugares", "label": "Lugares", "icon": "🏠", "color": "bg-blue-50 border-blue-200 text-blue-700" },
+  { "id": "Personas", "label": "Personas", "icon": "👨‍👩‍👧", "color": "bg-purple-50 border-purple-200 text-purple-700" },
+  { "id": "Objetos", "label": "Objetos", "icon": "⚽", "color": "bg-emerald-50 border-emerald-200 text-emerald-700" },
+  { "id": "a", "label": "Todos", "icon": "⭐", "color": "bg-amber-500/10 border-amber-300 text-amber-800" },
+  { "id": "b", "label": "Comida", "icon": "🍎", "color": "bg-red-50 border-red-200 text-red-700" },
+  { "id": "c", "label": "Emociones", "icon": "😊", "color": "bg-yellow-50 border-yellow-200 text-yellow-700" },
+  { "id": "d", "label": "Actividades", "icon": "🎮", "color": "bg-zinc-100 border-zinc-300 text-zinc-700" },
+  { "id": "e", "label": "Lugares", "icon": "🏠", "color": "bg-blue-50 border-blue-200 text-blue-700" },
+  { "id": "f", "label": "Personas", "icon": "👨‍👩‍👧", "color": "bg-purple-50 border-purple-200 text-purple-700" },
+  { "id": "g", "label": "Objetos", "icon": "⚽", "color": "bg-emerald-50 border-emerald-200 text-emerald-700" },
+  { "id": "h", "label": "Todos", "icon": "⭐", "color": "bg-amber-500/10 border-amber-300 text-amber-800" },
+  { "id": "i", "label": "Comida", "icon": "🍎", "color": "bg-red-50 border-red-200 text-red-700" },
+  { "id": "j", "label": "Emociones", "icon": "😊", "color": "bg-yellow-50 border-yellow-200 text-yellow-700" },
+  { "id": "k", "label": "Actividades", "icon": "🎮", "color": "bg-zinc-100 border-zinc-300 text-zinc-700" },
+  { "id": "l", "label": "Lugares", "icon": "🏠", "color": "bg-blue-50 border-blue-200 text-blue-700" },
+  { "id": "m", "label": "Personas", "icon": "👨‍👩‍👧", "color": "bg-purple-50 border-purple-200 text-purple-700" },
+  { "id": "n", "label": "Objetos", "icon": "⚽", "color": "bg-emerald-50 border-emerald-200 text-emerald-700" }
+]
