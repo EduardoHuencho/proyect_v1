@@ -3,6 +3,8 @@ import PictogramaCard from "../Components/PictogramaCard";
 import CategoriaCard from "../Components/CategoriaCard";
 import PictogramasList from "../Data/Pictogramas.json";
 import CategoriasList from "../Data/Categorias.json";
+import NavbarDev from "../Components/NavbarDev";
+import { useNino } from "../context/NinoContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faVolumeHigh,
@@ -11,6 +13,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 function Pictogramas() {
+  const { tutorAutenticado, tutorOrigen } = useNino();
+
   const [frase, setFrase] = useState([]);
   const [vozAmigable, setVozAmigable] = useState(null);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todos");
@@ -99,6 +103,12 @@ function Pictogramas() {
 
   return (
     <>
+    <NavbarDev rol={tutorAutenticado ? 'tutor' : 'nino'}
+       esPictogramas={true}
+       rutaVolver={tutorAutenticado ? (tutorOrigen === 'global' ? '/page4' : null) : '/page2' }
+       labelVolver={tutorOrigen === 'global' ? 'Menú' : 'Volver'}
+       pinSoloDesbloquea={true}
+    />
       <div className="p-4 md:p-6 select-none h-[calc(100vh-60px)] flex flex-col overflow-hidden">
         <div className="border border-gray-200 bg-white rounded-2xl h-[125px] mb-4 flex items-center justify-between p-3 gap-3 shadow-sm overflow-hidden shrink-0">
           <div
@@ -166,6 +176,14 @@ function Pictogramas() {
           </div>
         </div>
 
+        {tutorAutenticado && (
+          <div className="mb-4 shrink-0">
+            <button className="w-full border-2 border-dashed border-[#1A7A6E] rounded-2xl py-3 text-[#1A7A6E] font-bold text-sm hover:bg-[#1A7A6E]/5 transition-all">
+              + Agregar pictograma
+            </button>
+          </div>
+        )}
+        
         <div className="border border-gray-100 bg-gray-50/50 rounded-2xl h-[75px] mb-5 flex items-center p-2 gap-2 overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent shrink-0">
           {CategoriasList.map((cat) => (
             <CategoriaCard

@@ -1,5 +1,9 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import NavbarDev from "../Components/NavbarDev";
+import { useNino } from '../context/NinoContext'
+
+
 import {
   faMagnifyingGlass,
   faBook,
@@ -8,12 +12,18 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 function MenuJuegos() {
+  const { tutorAutenticado } = useNino()
+
   const manejarClickJuego = (juego) => {
     console.log(`Se hizo click en la tarjeta del juego: ${juego}`);
   };
 
   return (
     <>
+      <NavbarDev rol={tutorAutenticado ? 'tutor' : 'nino'}
+                 rutaVolver={tutorAutenticado ? '/page4' : '/page2'}
+                 labelVolver={tutorAutenticado ? 'Menú' : 'Volver'} 
+      />
       <div className="w-full max-w-5xl mx-auto px-4 py-10 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] select-none">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 w-full max-w-3xl items-start justify-center">
           <button
