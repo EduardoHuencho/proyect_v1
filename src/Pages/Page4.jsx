@@ -1,11 +1,11 @@
-import React from 'react'
-import { useNavigate } from 'react-router'
-import NavbarDev from '../Components/NavbarDev'
-import ModuloCard from '../Components/ModuloCard'
-import calendarioImg from '../assets/calendario.png'
-import pictogramaImg from '../assets/pictograma.png'
-import juegosImg from '../assets/juegos.png'
-import analisisImg from '../assets/analisis.png'
+import React from 'react';
+import { useNavigate } from 'react-router';
+import NavbarDev from '../Components/NavbarDev';
+import ModuloCard from '../Components/ModuloCard';
+import calendarioImg from '../assets/calendario.png';
+import pictogramaImg from '../assets/pictograma.png';
+import juegosImg from '../assets/juegos.png';
+import analisisImg from '../assets/analisis.png';
 
 const modulos = [
   {
@@ -42,29 +42,27 @@ const modulos = [
     borderColor: '#C0440A',
     disponible: false,
   },
-]
+];
 
 function Page4() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleModulo = (modulo) => {
-    if (!modulo.disponible) return
-    navigate(modulo.ruta)
-  }
+    if (!modulo.disponible) return;
+    navigate(modulo.ruta);
+  };
 
   return (
     <div
       className="min-h-screen font-sans pb-10"
       style={{
         background: '#E0F7FA',
-        backgroundImage: 'radial-gradient(circle at 1.5px 1.5px, rgba(0,80,136,0.07) 1.5px, transparent 0)',
+        backgroundImage:
+          'radial-gradient(circle at 1.5px 1.5px, rgba(0,80,136,0.07) 1.5px, transparent 0)',
         backgroundSize: '22px 22px',
       }}
     >
-      <NavbarDev rol="tutor" 
-                 rutaVolver="/page3"
-                 labelVolver="Volver"
-      />
+      <NavbarDev rol="tutor" rutaVolver="/page3" labelVolver="Volver" />
 
       <div className="text-center pt-8 mb-8">
         <h1 className="text-3xl font-extrabold text-[#1B3A5C]">
@@ -94,7 +92,7 @@ function Page4() {
         TEAYUDO · Sistema educativo AAC
       </p>
     </div>
-  )
+  );
 }
 
-export default Page4
+export default Page4;

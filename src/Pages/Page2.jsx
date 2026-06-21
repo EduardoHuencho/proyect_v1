@@ -1,12 +1,11 @@
-import React from 'react'
-import { useNavigate } from 'react-router'
-import { useNino } from '../context/NinoContext'
-import NavbarDev from '../Components/NavbarDev'
-import ModuloCard from '../Components/ModuloCard'
-import calendarioImg from '../assets/calendario.png'
-import pictogramaImg from '../assets/pictograma.png'
-import juegosImg from '../assets/juegos.png'
-
+import React from 'react';
+import { useNavigate } from 'react-router';
+import { useNino } from '../context/NinoContext';
+import NavbarDev from '../Components/NavbarDev';
+import ModuloCard from '../Components/ModuloCard';
+import calendarioImg from '../assets/calendario.png';
+import pictogramaImg from '../assets/pictograma.png';
+import juegosImg from '../assets/juegos.png';
 
 const modulos = [
   {
@@ -32,22 +31,23 @@ const modulos = [
     disponible: true,
     ruta: '/menuJuegos',
   },
-]
+];
 
 function Page2() {
-  const navigate = useNavigate()
-  const { ninoActivo } = useNino()
+  const navigate = useNavigate();
+  const { ninoActivo } = useNino();
 
   const handleModulo = (modulo) => {
-    if (!modulo.disponible) return
-    navigate(modulo.ruta)
-  }
+    if (!modulo.disponible) return;
+    navigate(modulo.ruta);
+  };
 
   return (
     <div
       className="min-h-screen bg-[#E0F7FA] font-sans pb-10"
       style={{
-        backgroundImage: 'radial-gradient(circle at 1.5px 1.5px, rgba(0,80,136,0.05) 1.5px, transparent 0)',
+        backgroundImage:
+          'radial-gradient(circle at 1.5px 1.5px, rgba(0,80,136,0.05) 1.5px, transparent 0)',
         backgroundSize: '22px 22px',
       }}
     >
@@ -74,10 +74,9 @@ function Page2() {
             />
           ))}
         </div>
-
       </div>
     </div>
-  )
+  );
 }
 
-export default Page2
+export default Page2;

@@ -1,23 +1,23 @@
-import React from 'react'
+import React from 'react';
 
-function ModuloCard({ 
-  titulo, 
-  descripcion, 
-  imagen, 
-  borderColor, 
-  disponible, 
-  onClick, 
-  variante = 'nino' 
+function ModuloCard({
+  titulo,
+  descripcion,
+  imagen,
+  borderColor,
+  disponible,
+  onClick,
+  variante = 'nino',
 }) {
-  
   if (variante === 'nino') {
     return (
       <button
         onClick={onClick}
         className={`bg-white rounded-3xl p-6 flex flex-col items-center justify-center gap-4 shadow-md transition-all border-[4px] min-h-[220px] w-full
-          ${disponible 
-            ? 'hover:scale-[1.02] active:scale-[0.98] cursor-pointer hover:shadow-lg' 
-            : 'opacity-50 cursor-not-allowed'
+          ${
+            disponible
+              ? 'hover:scale-[1.02] active:scale-[0.98] cursor-pointer hover:shadow-lg'
+              : 'opacity-50 cursor-not-allowed'
           }`}
         style={{ borderColor: borderColor }}
       >
@@ -25,9 +25,13 @@ function ModuloCard({
           className="w-24 h-24 rounded-3xl flex items-center justify-center p-3"
           style={{ background: borderColor + '22' }}
         >
-          <img src={imagen} alt={titulo} className="w-full h-full object-contain" />
+          <img
+            src={imagen}
+            alt={titulo}
+            className="w-full h-full object-contain"
+          />
         </div>
-        
+
         <div className="text-center w-full">
           <p className="font-extrabold text-[#1B3A5C] text-2xl break-words uppercase tracking-wide">
             {titulo}
@@ -39,28 +43,28 @@ function ModuloCard({
           )}
         </div>
       </button>
-    )
+    );
   }
 
   return (
     <button
       onClick={onClick}
       className={`rounded-3xl p-6 flex flex-col items-center justify-center gap-4 shadow-md transition-all min-h-[180px] w-full text-white
-        ${disponible 
-          ? 'hover:scale-[1.02] hover:brightness-105 active:scale-[0.99] cursor-pointer' 
-          : 'opacity-60 cursor-not-allowed'
+        ${
+          disponible
+            ? 'hover:scale-[1.02] hover:brightness-105 active:scale-[0.99] cursor-pointer'
+            : 'opacity-60 cursor-not-allowed'
         }`}
       style={{ backgroundColor: borderColor }}
     >
-
       <div className="w-20 h-20 bg-white/95 rounded-2xl flex items-center justify-center p-3 shadow-sm flex-shrink-0">
-        <img 
-          src={imagen} 
-          alt={titulo} 
-          className="w-full h-full object-contain" 
+        <img
+          src={imagen}
+          alt={titulo}
+          className="w-full h-full object-contain"
         />
       </div>
-      
+
       <div className="text-center w-full">
         <h2 className="font-extrabold text-xl md:text-2xl tracking-wide leading-tight">
           {titulo}
@@ -77,7 +81,7 @@ function ModuloCard({
         )}
       </div>
     </button>
-  )
+  );
 }
 
-export default ModuloCard
+export default ModuloCard;

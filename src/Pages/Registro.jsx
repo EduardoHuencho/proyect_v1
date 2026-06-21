@@ -1,17 +1,17 @@
-import { useState } from "react";
-import { useNavigate } from "react-router";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash, faLock } from "@fortawesome/free-solid-svg-icons";
-import logoImg from "../assets/logo.png";
-import ninosImg from "../assets/niños1.png";
+import { useState } from 'react';
+import { useNavigate } from 'react-router';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash, faLock } from '@fortawesome/free-solid-svg-icons';
+import logoImg from '../assets/logo.png';
+import ninosImg from '../assets/niños1.png';
 
 function Registro() {
-  const [email, setEmail] = useState("");
-  const [confirmEmail, setConfirmEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [pin, setPin] = useState("");
-  const [confirmPin, setConfirmPin] = useState("");
+  const [email, setEmail] = useState('');
+  const [confirmEmail, setConfirmEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [pin, setPin] = useState('');
+  const [confirmPin, setConfirmPin] = useState('');
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -21,7 +21,7 @@ function Registro() {
   const navigate = useNavigate();
 
   const handlePinChange = (value, setFunction) => {
-    const cleaned = value.replace(/\D/g, "");
+    const cleaned = value.replace(/\D/g, '');
     if (cleaned.length <= 4) {
       setFunction(cleaned);
     }
@@ -31,19 +31,19 @@ function Registro() {
     e.preventDefault();
 
     if (email !== confirmEmail) {
-      alert("Los correos electrónicos no coinciden.");
+      alert('Los correos electrónicos no coinciden.');
       return;
     }
     if (password !== confirmPassword) {
-      alert("Las contraseñas no coinciden.");
+      alert('Las contraseñas no coinciden.');
       return;
     }
     if (pin.length < 4 || pin !== confirmPin) {
-      alert("El PIN parental debe ser de 4 dígitos y coincidir.");
+      alert('El PIN parental debe ser de 4 dígitos y coincidir.');
       return;
     }
 
-    console.log("Registrando nuevo usuario:", { email, pin });
+    console.log('Registrando nuevo usuario:', { email, pin });
   }
 
   return (
@@ -51,8 +51,8 @@ function Registro() {
       className="min-h-screen flex flex-col font-sans bg-[#E0F7FA]"
       style={{
         backgroundImage:
-          "radial-gradient(circle at 1.5px 1.5px, rgba(0,80,136,0.07) 1.5px, transparent 0)",
-        backgroundSize: "22px 22px",
+          'radial-gradient(circle at 1.5px 1.5px, rgba(0,80,136,0.07) 1.5px, transparent 0)',
+        backgroundSize: '22px 22px',
       }}
     >
       <div className="flex justify-center pt-6 pb-2">
@@ -101,7 +101,7 @@ function Registro() {
 
             <div className="relative w-full">
               <input
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -119,7 +119,7 @@ function Registro() {
 
             <div className="relative w-full">
               <input
-                type={showConfirmPassword ? "text" : "password"}
+                type={showConfirmPassword ? 'text' : 'password'}
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -150,7 +150,7 @@ function Registro() {
             <div className="grid grid-cols-2 gap-3">
               <div className="relative w-full">
                 <input
-                  type={showPin ? "text" : "password"}
+                  type={showPin ? 'text' : 'password'}
                   inputMode="numeric"
                   required
                   value={pin}
@@ -169,7 +169,7 @@ function Registro() {
 
               <div className="relative w-full">
                 <input
-                  type={showConfirmPin ? "text" : "password"}
+                  type={showConfirmPin ? 'text' : 'password'}
                   inputMode="numeric"
                   required
                   value={confirmPin}
@@ -200,7 +200,7 @@ function Registro() {
           <div className="mt-4 text-center">
             <button
               type="button"
-              onClick={() => navigate("/")}
+              onClick={() => navigate('/')}
               className="text-sm font-bold text-[#4A7A96] hover:text-[#005088] transition-colors"
             >
               ¿Ya tienes cuenta? Inicia sesión

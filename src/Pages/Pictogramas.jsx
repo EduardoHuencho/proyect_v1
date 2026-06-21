@@ -1,23 +1,23 @@
-import React, { useState, useEffect, useRef } from "react";
-import PictogramaCard from "../Components/PictogramaCard";
-import CategoriaCard from "../Components/CategoriaCard";
-import PictogramasList from "../Data/Pictogramas.json";
-import CategoriasList from "../Data/Categorias.json";
-import NavbarDev from "../Components/NavbarDev";
-import { useNino } from "../context/NinoContext";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useState, useEffect, useRef } from 'react';
+import PictogramaCard from '../Components/PictogramaCard';
+import CategoriaCard from '../Components/CategoriaCard';
+import PictogramasList from '../Data/Pictogramas.json';
+import CategoriasList from '../Data/Categorias.json';
+import NavbarDev from '../Components/NavbarDev';
+import { useNino } from '../context/NinoContext';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faVolumeHigh,
   faTrashCan,
   faDeleteLeft,
-} from "@fortawesome/free-solid-svg-icons";
+} from '@fortawesome/free-solid-svg-icons';
 
 function Pictogramas() {
   const { tutorAutenticado, tutorOrigen } = useNino();
 
   const [frase, setFrase] = useState([]);
   const [vozAmigable, setVozAmigable] = useState(null);
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todos");
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('Todos');
 
   const contenedorFraseRef = useRef(null);
 
@@ -25,16 +25,16 @@ function Pictogramas() {
     const configurarVoz = () => {
       const vocesDisponibles = window.speechSynthesis.getVoices();
       const vocesEspanol = vocesDisponibles.filter((voz) =>
-        voz.lang.startsWith("es"),
+        voz.lang.startsWith('es')
       );
 
       const mejorVoz =
         vocesEspanol.find(
           (voz) =>
-            voz.name.includes("Google") ||
-            voz.name.includes("Sabina") ||
-            voz.name.includes("Monica") ||
-            voz.name.includes("Paulina"),
+            voz.name.includes('Google') ||
+            voz.name.includes('Sabina') ||
+            voz.name.includes('Monica') ||
+            voz.name.includes('Paulina')
         ) || vocesEspanol[0];
 
       setVozAmigable(mejorVoz);
@@ -46,7 +46,7 @@ function Pictogramas() {
 
   const pictogramaHandler = (pictograma) => {
     setFrase([...frase, pictograma]);
-    console.log("Enviando ID al backend simulado:", pictograma.id);
+    console.log('Enviando ID al backend simulado:', pictograma.id);
   };
 
   const pictogramaLastDelete = () => {
@@ -60,7 +60,7 @@ function Pictogramas() {
     if (contenedorFraseRef.current) {
       contenedorFraseRef.current.scrollTo({
         left: 0,
-        behavior: "smooth",
+        behavior: 'smooth',
       });
     }
   };
@@ -68,14 +68,14 @@ function Pictogramas() {
   const reproducirFrase = () => {
     if (frase.length === 0) return;
 
-    const textoAHeber = frase.map((pic) => pic.label).join(" ");
+    const textoAHeber = frase.map((pic) => pic.label).join(' ');
     const mensaje = new SpeechSynthesisUtterance(textoAHeber);
 
     if (vozAmigable) {
       mensaje.voice = vozAmigable;
       mensaje.lang = vozAmigable.lang;
     } else {
-      mensaje.lang = "es-ES";
+      mensaje.lang = 'es-ES';
     }
 
     mensaje.rate = 0.6;
@@ -89,26 +89,33 @@ function Pictogramas() {
     if (contenedorFraseRef.current && frase.length > 0) {
       contenedorFraseRef.current.scrollTo({
         left: contenedorFraseRef.current.scrollWidth,
-        behavior: "smooth",
+        behavior: 'smooth',
       });
     }
   }, [frase]);
 
   const pictogramasFiltrados =
-    categoriaSeleccionada === "Todos"
+    categoriaSeleccionada === 'Todos'
       ? PictogramasList
       : PictogramasList.filter(
-          (item) => item.category === categoriaSeleccionada,
+          (item) => item.category === categoriaSeleccionada
         );
 
   return (
     <>
-    <NavbarDev rol={tutorAutenticado ? 'tutor' : 'nino'}
-       esPictogramas={true}
-       rutaVolver={tutorAutenticado ? (tutorOrigen === 'global' ? '/page4' : null) : '/page2' }
-       labelVolver={tutorOrigen === 'global' ? 'Menú' : 'Volver'}
-       pinSoloDesbloquea={true}
-    />
+      <NavbarDev
+        rol={tutorAutenticado ? 'tutor' : 'nino'}
+        esPictogramas={true}
+        rutaVolver={
+          tutorAutenticado
+            ? tutorOrigen === 'global'
+              ? '/page4'
+              : null
+            : '/page2'
+        }
+        labelVolver={tutorOrigen === 'global' ? 'Menú' : 'Volver'}
+        pinSoloDesbloquea={true}
+      />
       <div className="p-4 md:p-6 select-none h-[calc(100vh-60px)] flex flex-col overflow-hidden">
         <div className="border border-gray-200 bg-white rounded-2xl h-[125px] mb-4 flex items-center justify-between p-3 gap-3 shadow-sm overflow-hidden shrink-0">
           <div
@@ -140,8 +147,8 @@ function Pictogramas() {
               disabled={frase.length === 0}
               className={`h-14 w-14 sm:h-16 sm:w-16 rounded-xl flex items-center justify-center text-xl sm:text-2xl font-bold shadow-md transition-all active:scale-95 ${
                 frase.length > 0
-                  ? "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
-                  : "bg-gray-100 text-gray-300 cursor-not-allowed shadow-none border border-gray-200"
+                  ? 'bg-blue-500 hover:bg-blue-600 text-white cursor-pointer'
+                  : 'bg-gray-100 text-gray-300 cursor-not-allowed shadow-none border border-gray-200'
               }`}
               title="Escuchar frase en voz alta"
             >
@@ -153,8 +160,8 @@ function Pictogramas() {
               disabled={frase.length === 0}
               className={`h-14 w-14 sm:h-16 sm:w-16 rounded-xl flex items-center justify-center text-xl sm:text-2xl font-bold shadow-md transition-all active:scale-95 ${
                 frase.length > 0
-                  ? "bg-amber-500 hover:bg-amber-600 text-white cursor-pointer"
-                  : "bg-gray-100 text-gray-300 cursor-not-allowed shadow-none border border-gray-200"
+                  ? 'bg-amber-500 hover:bg-amber-600 text-white cursor-pointer'
+                  : 'bg-gray-100 text-gray-300 cursor-not-allowed shadow-none border border-gray-200'
               }`}
               title="Limpiar toda la frase"
             >
@@ -166,8 +173,8 @@ function Pictogramas() {
               disabled={frase.length === 0}
               className={`h-14 w-14 sm:h-16 sm:w-16 rounded-xl flex items-center justify-center text-xl sm:text-2xl font-bold shadow-md transition-all active:scale-95 ${
                 frase.length > 0
-                  ? "bg-red-500 hover:bg-red-600 text-white cursor-pointer"
-                  : "bg-gray-100 text-gray-300 cursor-not-allowed shadow-none border border-gray-200"
+                  ? 'bg-red-500 hover:bg-red-600 text-white cursor-pointer'
+                  : 'bg-gray-100 text-gray-300 cursor-not-allowed shadow-none border border-gray-200'
               }`}
               title="Borrar último pictograma"
             >
@@ -183,7 +190,7 @@ function Pictogramas() {
             </button>
           </div>
         )}
-        
+
         <div className="border border-gray-100 bg-gray-50/50 rounded-2xl h-[75px] mb-5 flex items-center p-2 gap-2 overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent shrink-0">
           {CategoriasList.map((cat) => (
             <CategoriaCard
@@ -194,7 +201,7 @@ function Pictogramas() {
               activo={categoriaSeleccionada === cat.label}
               onClick={() => {
                 setCategoriaSeleccionada(cat.label);
-                console.log("Filtrando por categoría ID:", cat.id);
+                console.log('Filtrando por categoría ID:', cat.id);
               }}
             />
           ))}

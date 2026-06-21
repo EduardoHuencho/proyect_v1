@@ -1,18 +1,17 @@
-import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import NavbarDev from "../Components/NavbarDev";
-import { useNino } from '../context/NinoContext'
-
+import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import NavbarDev from '../Components/NavbarDev';
+import { useNino } from '../context/NinoContext';
 
 import {
   faMagnifyingGlass,
   faBook,
   faArrowDown,
   faStar,
-} from "@fortawesome/free-solid-svg-icons";
+} from '@fortawesome/free-solid-svg-icons';
 
 function MenuJuegos() {
-  const { tutorAutenticado } = useNino()
+  const { tutorAutenticado } = useNino();
 
   const manejarClickJuego = (juego) => {
     console.log(`Se hizo click en la tarjeta del juego: ${juego}`);
@@ -20,14 +19,15 @@ function MenuJuegos() {
 
   return (
     <>
-      <NavbarDev rol={tutorAutenticado ? 'tutor' : 'nino'}
-                 rutaVolver={tutorAutenticado ? '/page4' : '/page2'}
-                 labelVolver={tutorAutenticado ? 'Menú' : 'Volver'} 
+      <NavbarDev
+        rol={tutorAutenticado ? 'tutor' : 'nino'}
+        rutaVolver={tutorAutenticado ? '/page4' : '/page2'}
+        labelVolver={tutorAutenticado ? 'Menú' : 'Volver'}
       />
       <div className="w-full max-w-5xl mx-auto px-4 py-10 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] select-none">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 w-full max-w-3xl items-start justify-center">
           <button
-            onClick={() => manejarClickJuego("¿Qué es?")}
+            onClick={() => manejarClickJuego('¿Qué es?')}
             className="group flex flex-col items-center bg-white p-6 rounded-[32px] border-2 border-b-8 border-gray-300 shadow-xl transition-all cursor-pointer text-left focus:outline-none active:translate-y-[4px] active:border-b-4 w-full"
           >
             <div className="p-4 bg-gray-50 border border-gray-200 rounded-2xl mb-6 w-16 h-16 flex items-center justify-center">
@@ -68,7 +68,7 @@ function MenuJuegos() {
           </button>
 
           <button
-            onClick={() => manejarClickJuego("Cuentitos")}
+            onClick={() => manejarClickJuego('Cuentitos')}
             className="group flex flex-col items-center bg-white p-6 rounded-[32px] border-2 border-b-8 border-gray-300 shadow-xl transition-all cursor-pointer text-left focus:outline-none active:translate-y-[4px] active:border-b-4 w-full"
           >
             <div className="p-4 bg-gray-50 border border-gray-200 rounded-2xl mb-6 w-16 h-16 flex items-center justify-center">
