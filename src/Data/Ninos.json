@@ -1,6 +1,50 @@
 [
-  { "id": 1, "nombre": "Sofía",     "edad": "6a", "emoji": "👧" },
-  { "id": 2, "nombre": "Mateo",     "edad": "5a", "emoji": "👦" },
-  { "id": 3, "nombre": "Valentina", "edad": "7a", "emoji": "👧" },
-  { "id": 4, "nombre": "Lucas",     "edad": "6a", "emoji": "👦" }
+  {
+    "id_infante": 1,
+    "nombre": "Sofía",
+    "fecha_nacimiento": "2018-03-15",
+    "avatar_url": "👧"
+  },
+  {
+    "id_infante": 2,
+    "nombre": "Mateo",
+    "fecha_nacimiento": "2019-07-22",
+    "avatar_url": "👦"
+  },
+  {
+    "id_infante": 3,
+    "nombre": "Valentina",
+    "fecha_nacimiento": "2017-11-30",
+    "avatar_url": "👧"
+  },
+  {
+    "id_infante": 4,
+    "nombre": "Miguel",
+    "fecha_nacimiento": "2020-01-10",
+    "avatar_url": "👦"
+  },
+  {
+    "id_infante": 5,
+    "nombre": "Diego",
+    "fecha_nacimiento": "2018-09-15",
+    "avatar_url": "👦"
+  },
+  {
+    "id_infante": 6,
+    "nombre": "Benjamín",
+    "fecha_nacimiento": "2019-04-20",
+    "avatar_url": "👦"
+  },
+  {
+    "id_infante": 7,
+    "nombre": "Cristiano",
+    "fecha_nacimiento": "2018-12-05",
+    "avatar_url": "👦"
+  },
+  {
+    "id_infante": 8,
+    "nombre": "Rafael",
+    "fecha_nacimiento": "2020-05-12",
+    "avatar_url": "👦"
+  }
 ]

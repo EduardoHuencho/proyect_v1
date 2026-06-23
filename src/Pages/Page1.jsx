@@ -1,51 +1,61 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router'
-import NinosList from '../Data/Ninos.json'
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
+import NinosList from '../Data/Ninos.json';
+import { useNino } from '../context/NinoContext';
+import NavbarDev from '../Components/NavbarDev';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGear } from '@fortawesome/free-solid-svg-icons';
 
-const modulos = [
-  {
-    id: 'calendario',
-    titulo: 'Calendario Semanal',
-    descripcion: 'Gestiona el horario de la semana',
-    emoji: '📅',
-    color: 'bg-[#1B3A5C]',
-    disponible: false,
-  },
-  {
-    id: 'pictogramas',
-    titulo: 'Pictogramas',
-    descripcion: 'Constructor de frases AAC',
-    emoji: '🖼️',
-    color: 'bg-[#1A7A6E]',
-    disponible: true,
-    ruta: '/pictogramas',
-  },
-  {
-    id: 'juegos',
-    titulo: 'Juegos',
-    descripcion: '¿Qué Es? y Cuentitos',
-    emoji: '🎲',
-    color: 'bg-[#6B3FA0]',
-    disponible: false,
-  },
-  {
-    id: 'analisis',
-    titulo: 'Análisis de Progreso',
-    descripcion: 'Estadísticas y categorías débiles',
-    emoji: '📊',
-    color: 'bg-[#C0440A]',
-    disponible: false,
-  },
-]
+const PIN_CORRECTO = '1234';
 
 function Page1() {
-  const [ninoSeleccionado, setNinoSeleccionado] = useState(NinosList[0])
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const { setNinoActivo, setTutorAutenticado, setTutorOrigen } = useNino();
 
-  const handleModulo = (modulo) => {
-    if (!modulo.disponible) return
-    navigate(modulo.ruta)
-  }
+  const [mostrarPin, setMostrarPin] = useState(false);
+  const [pin, setPin] = useState('');
+  const [errorPin, setErrorPin] = useState(false);
+
+  const calcularEdad = (fecha) => {
+    const hoy = new Date();
+    const nacimiento = new Date(fecha);
+    return hoy.getFullYear() - nacimiento.getFullYear() + ' años';
+  };
+
+  const handleSeleccionarNino = (nino) => {
+    setNinoActivo(nino);
+    navigate('/page2');
+  };
+
+  const handleNumero = (num) => {
+    if (pin.length >= 4) return;
+    const nuevoPin = pin + num;
+    setPin(nuevoPin);
+    setErrorPin(false);
+
+    if (nuevoPin.length === 4) {
+      setTimeout(() => {
+        if (nuevoPin === PIN_CORRECTO) {
+          setPin('');
+          setMostrarPin(false);
+          setTutorAutenticado(true);
+          setTutorOrigen('global');
+          navigate('/page3');
+        } else {
+          setErrorPin(true);
+          setTimeout(() => {
+            setPin('');
+            setErrorPin(false);
+          }, 800);
+        }
+      }, 200);
+    }
+  };
+
+  const handleBorrar = () => {
+    setPin(pin.slice(0, -1));
+    setErrorPin(false);
+  };
 
   return (
     <div
@@ -57,106 +67,120 @@ function Page1() {
         backgroundSize: '22px 22px',
       }}
     >
-      <nav className="bg-[#1B3A5C] px-6 py-3 flex items-center justify-between">
-        <span className="font-extrabold text-xl tracking-wide">
-          <span style={{ color: '#E53935' }}>T</span>
-          <span style={{ color: '#43A047' }}>E</span>
-          <span style={{ color: '#FDD835' }}>A</span>
-          <span style={{ color: '#1E88E5' }}>Y</span>
-          <span style={{ color: '#E53935' }}>U</span>
-          <span style={{ color: '#43A047' }}>D</span>
-          <span style={{ color: '#FDD835' }}>O</span>
-        </span>
-        <div className="flex gap-3">
-          <div className="flex items-center gap-2 bg-[#2A4F73] text-white px-4 py-2 rounded-xl text-sm font-semibold">
-            <span>👩‍🏫</span>
-            <span>Tutor</span>
-          </div>
-          <button
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2 bg-[#2A4F73] hover:bg-[#3A6F9F] text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all"
-          >
-            <span>🚪</span>
-            <span>Salir</span>
-          </button>
-        </div>
-      </nav>
+      <NavbarDev rol="selector" />
 
-      <div className="max-w-4xl mx-auto px-6 py-8">
-        <div className="bg-white rounded-2xl p-6 mb-8 shadow-sm">
-          <p className="text-xs font-bold text-gray-400 tracking-widest mb-4 uppercase">
-            Seleccionar Niño/a
-          </p>
-          <div className="flex flex-wrap gap-3">
-            {NinosList.map((nino) => (
-              <button
-                key={nino.id}
-                onClick={() => setNinoSeleccionado(nino)}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all"
-                style={{
-                  background: ninoSeleccionado.id === nino.id ? '#1B3A5C' : 'transparent',
-                  color: ninoSeleccionado.id === nino.id ? 'white' : '#1B3A5C',
-                  border: '2px solid',
-                  borderColor: ninoSeleccionado.id === nino.id ? '#1B3A5C' : '#CBD5E0',
-                }}
-              >
-                <span>{nino.emoji}</span>
-                <span>{nino.nombre}</span>
-                <span
-                  className="text-xs font-bold"
-                  style={{
-                    color: ninoSeleccionado.id === nino.id ? '#FDD835' : '#94A3B8',
-                  }}
-                >
-                  {nino.edad}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
+      <div className="max-w-3xl mx-auto px-6 py-12 flex flex-col items-center">
+        <h1 className="text-3xl md:text-4xl font-extrabold text-[#1B3A5C] mb-2 text-center">
+          ¿Quién está jugando hoy?
+        </h1>
+        <p className="text-[#4A7A96] mb-10 text-center text-base">
+          Selecciona para entrar al perfil del niño o accede como tutor
+        </p>
 
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-extrabold text-[#1B3A5C]">
-            ¡Bienvenido/a! 👋
-          </h1>
-          <p className="text-[#4A7A96] mt-1">¿Qué quieres gestionar hoy?</p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          {modulos.map((modulo) => (
+        <div className="flex gap-4 overflow-x-auto pb-4 w-full scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent px-4 py-4">
+          {NinosList.map((nino) => (
             <button
-              key={modulo.id}
-              onClick={() => handleModulo(modulo)}
-              className={`${modulo.color} rounded-2xl p-6 text-left transition-all
-                ${modulo.disponible
-                  ? 'hover:scale-105 active:scale-95 cursor-pointer opacity-100'
-                  : 'opacity-70 cursor-not-allowed'
-                }`}
+              key={nino.id_infante}
+              onClick={() => handleSeleccionarNino(nino)}
+              className="flex flex-col items-center gap-3 p-5 bg-white rounded-3xl shadow-md hover:shadow-xl hover:scale-105 active:scale-95 transition-all shrink-0 min-w-[130px]"
             >
-              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-2xl mb-4">
-                {modulo.emoji}
+              <div className="w-20 h-20 rounded-full bg-[#E0F7FA] border-4 border-[#1B3A5C] flex items-center justify-center text-5xl">
+                {nino.avatar_url}
               </div>
-              <h2 className="text-white font-extrabold text-lg">
-                {modulo.titulo}
-              </h2>
-              <p
-                className="text-sm mt-1 font-medium"
-                style={{
-                  color: modulo.disponible ? '#FDD835' : 'rgba(255,255,255,0.7)',
-                }}
-              >
-                {modulo.disponible ? modulo.descripcion : 'Próximamente'}
+              <p className="font-extrabold text-[#1B3A5C] text-lg">
+                {nino.nombre}
+              </p>
+              <p className="text-sm text-[#78909C] font-semibold">
+                {calcularEdad(nino.fecha_nacimiento)}
               </p>
             </button>
           ))}
         </div>
+
+        <button
+          onClick={() => setMostrarPin(true)}
+          className="mt-6 bg-blue-300 items-center gap-2 hover:bg-[#2A4F73]  px-6 py-3 rounded-full transition-all shadow-md"
+        >
+          <FontAwesomeIcon icon={faGear} />
+          <span>Acceso de tutor</span>
+        </button>
       </div>
 
-      <p className="text-center text-xs text-gray-400 py-6">
-        TEAYUDO · Sistema educativo AAC
-      </p>
+      {mostrarPin && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+          <div
+            className={`bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl ${errorPin ? 'animate-shake' : ''}`}
+          >
+            <div className="bg-blue-300 rounded-full px-6 py-2 w-fit mx-auto shadow-sm mb-4">
+              <h2 className="text-xl font-extrabold text-[#1B3A5C] text-center mb-1v">
+                Acceso de tutor
+              </h2>
+            </div>
+            <p className="text-sm text-[#78909C] text-center mb-6">
+              Ingresa tu PIN de 4 dígitos
+            </p>
+
+            <div className="flex justify-center gap-4 mb-6">
+              {[0, 1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="w-4 h-4 rounded-full transition-all"
+                  style={{
+                    background:
+                      i < pin.length
+                        ? errorPin
+                          ? '#E53935'
+                          : '#1B3A5C'
+                        : '#CBD5E0',
+                  }}
+                />
+              ))}
+            </div>
+
+            <div className="grid grid-cols-3 gap-3 mb-4">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+                <button
+                  key={num}
+                  onClick={() => handleNumero(String(num))}
+                  className="h-14 rounded-2xl bg-[#F0F4F8] hover:bg-[#E0F7FA] active:bg-[#B2EBF2] font-extrabold text-xl text-[#1B3A5C] transition-all active:scale-95"
+                >
+                  {num}
+                </button>
+              ))}
+              <button
+                onClick={handleBorrar}
+                className="h-14 rounded-2xl bg-[#F0F4F8] hover:bg-red-50 font-bold text-[#E53935] transition-all active:scale-95 text-sm"
+              >
+                ⌫
+              </button>
+              <button
+                onClick={() => handleNumero('0')}
+                className="h-14 rounded-2xl bg-[#F0F4F8] hover:bg-[#E0F7FA] active:bg-[#B2EBF2] font-extrabold text-xl text-[#1B3A5C] transition-all active:scale-95"
+              >
+                0
+              </button>
+              <button
+                onClick={() => {
+                  setMostrarPin(false);
+                  setPin('');
+                  setErrorPin(false);
+                }}
+                className="h-14 rounded-2xl bg-[#F0F4F8] hover:bg-red-50 font-bold text-[#78909C] transition-all active:scale-95 text-sm"
+              >
+                ✕
+              </button>
+            </div>
+
+            {errorPin && (
+              <p className="text-center text-sm text-red-500 font-semibold mt-2">
+                PIN incorrecto, intenta de nuevo
+              </p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
-  )
+  );
 }
 
-export default Page1
+export default Page1;
