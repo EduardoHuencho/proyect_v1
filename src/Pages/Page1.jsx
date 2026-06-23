@@ -70,7 +70,6 @@ function Page1() {
       <NavbarDev rol="selector" />
 
       <div className="max-w-3xl mx-auto px-6 py-12 flex flex-col items-center">
-        {/* Título HU-11 */}
         <h1 className="text-3xl md:text-4xl font-extrabold text-[#1B3A5C] mb-2 text-center">
           ¿Quién está jugando hoy?
         </h1>
