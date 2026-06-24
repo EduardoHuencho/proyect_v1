@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash, faLock } from '@fortawesome/free-solid-svg-icons';
 import logoImg from '../assets/logo.png';
-import ninosImg from '../assets/niños1.png';
+import ninioImg from '../assets/logniños.png';
 import Fondo from '../Components/Fondo';
 
 function Registro() {
@@ -111,7 +111,7 @@ function Registro() {
       <div className="flex-1 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8 px-6 pb-12 max-w-5xl mx-auto w-full">
         <div className="flex-1 flex flex-col items-center justify-center md:items-end md:pr-8 py-4">
           <img
-            src={ninosImg}
+            src={ninioImg}
             alt="Ilustración amigos"
             className="w-full max-w-xs md:max-w-sm drop-shadow-xl"
           />

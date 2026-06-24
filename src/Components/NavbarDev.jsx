@@ -92,7 +92,21 @@ function NavbarDev({
           )}
         </div>
 
-        <img src={logoImg} alt="Logo TEAYUDO" className="h-8 md:h-10 w-auto" />
+        <button
+          onClick={() => {
+            if (tutorAutenticado && tutorOrigen === 'global') {
+              navigate('/page4')
+            } else if (tutorAutenticado && tutorOrigen === 'local') {
+              navigate('/page2')
+            } else {
+              navigate('/page2') 
+            }
+          }}
+          className="hover:opacity-80 transition-all active:scale-95"
+        >
+          <img src={logoImg} alt="Logo TEAYUDO" className="h-8 md:h-10 w-auto" />
+        </button>
+
 
         <div className="flex gap-2 w-16 md:w-44 justify-end">
           {rol === 'tutor' && (

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import logoImg from '../assets/logo.png';
-import ninosImg from '../assets/niños1.png';
 import Fondo from '../Components/Fondo';
+import loginfante from '../assets/logniños.png';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -25,7 +25,7 @@ function Login() {
       <div className="flex-1 flex flex-col md:flex-row items-center justify-center gap-0 md:gap-8 px-6 pb-10 max-w-5xl mx-auto w-full">
         <div className="flex-1 flex flex-col items-center justify-center md:items-end md:pr-8 py-4">
           <img
-            src={ninosImg}
+            src={loginfante}
             alt="Ilustración amigos"
             className="w-full max-w-xs md:max-w-sm drop-shadow-xl"
           />
@@ -61,8 +61,6 @@ function Login() {
               placeholder="••••••••"
               className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[13px_18px] outline-none placeholder:text-[#003052]/50"
             />
-
-            {/* Botón Ingresar */}
             <button
               type="submit"
               className="mt-3 w-full py-4 rounded-[18px] font-extrabold text-xl bg-[#FDD835] text-[#003052] border-3 border-[#C8A800] shadow-[0_6px_0_#C8A800] transition-all hover:scale-105 active:scale-95 active:translate-y-[2px] active:shadow-[0_4px_0_#C8A800]"
