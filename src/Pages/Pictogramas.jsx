@@ -6,6 +6,7 @@ import CategoriasList from '../Data/Categorias.json';
 import NavbarDev from '../Components/NavbarDev';
 import { useNino } from '../context/NinoContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Fondo from '../Components/Fondo';
 import {
   faVolumeHigh,
   faTrashCan,
@@ -102,7 +103,7 @@ function Pictogramas() {
         );
 
   return (
-    <>
+    <Fondo>
       <NavbarDev
         rol={tutorAutenticado ? 'tutor' : 'nino'}
         esPictogramas={true}
@@ -222,7 +223,7 @@ function Pictogramas() {
           </div>
         </div>
       </div>
-    </>
+    </Fondo>
   );
 }
 

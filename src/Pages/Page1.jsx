@@ -5,6 +5,7 @@ import { useNino } from '../context/NinoContext';
 import NavbarDev from '../Components/NavbarDev';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGear } from '@fortawesome/free-solid-svg-icons';
+import Fondo from '../Components/Fondo';
 
 const PIN_CORRECTO = '1234';
 
@@ -58,15 +59,7 @@ function Page1() {
   };
 
   return (
-    <div
-      className="min-h-screen font-sans"
-      style={{
-        background: '#E0F7FA',
-        backgroundImage:
-          'radial-gradient(circle at 1.5px 1.5px, rgba(0,80,136,0.07) 1.5px, transparent 0)',
-        backgroundSize: '22px 22px',
-      }}
-    >
+    <Fondo>
       <NavbarDev rol="selector" />
 
       <div className="max-w-3xl mx-auto px-6 py-12 flex flex-col items-center">
@@ -179,7 +172,7 @@ function Page1() {
           </div>
         </div>
       )}
-    </div>
+    </Fondo>
   );
 }
 

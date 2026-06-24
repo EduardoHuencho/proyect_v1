@@ -4,21 +4,14 @@ import NavbarDev from '../Components/NavbarDev';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGrip, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { useNino } from '../context/NinoContext';
+import Fondo from '../Components/Fondo';
 
 function Page3() {
   const navigate = useNavigate();
   const { setTutorAutenticado, setTutorOrigen } = useNino();
 
   return (
-    <div
-      className="min-h-screen font-sans"
-      style={{
-        background: '#E0F7FA',
-        backgroundImage:
-          'radial-gradient(circle at 1.5px 1.5px, rgba(0,80,136,0.07) 1.5px, transparent 0)',
-        backgroundSize: '22px 22px',
-      }}
-    >
+    <Fondo>
       <NavbarDev rol="tutor" />
 
       <div className="max-w-md mx-auto px-6 py-16 flex flex-col items-center">
@@ -65,7 +58,7 @@ function Page3() {
           </button>
         </div>
       </div>
-    </div>
+    </Fondo>
   );
 }
 
