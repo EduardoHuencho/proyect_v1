@@ -1,15 +1,11 @@
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import NavbarDev from '../Components/NavbarDev';
 import { useNino } from '../context/NinoContext';
 import Fondo from '../Components/Fondo';
-
-import {
-  faMagnifyingGlass,
-  faBook,
-  faArrowDown,
-  faStar,
-} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowDown, faStar } from '@fortawesome/free-solid-svg-icons';
+import lupa from '../assets/lupa.png';
+import libro from '../assets/libro.png';
 
 function MenuJuegos() {
   const { tutorAutenticado } = useNino();
@@ -25,21 +21,28 @@ function MenuJuegos() {
         rutaVolver={tutorAutenticado ? '/page4' : '/page2'}
         labelVolver={tutorAutenticado ? 'Menú' : 'Volver'}
       />
+
       <div className="w-full max-w-5xl mx-auto px-4 py-10 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] select-none">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 w-full max-w-3xl items-start justify-center">
+        <h1 className="text-3xl font-extrabold text-[#1B3A5C] mb-8 text-center">
+          ¡A JUGAR!
+        </h1>
+
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl justify-center items-stretch">
           <button
             onClick={() => manejarClickJuego('¿Qué es?')}
-            className="group flex flex-col items-center bg-white p-6 rounded-[32px] border-2 border-b-8 border-gray-300 shadow-xl transition-all cursor-pointer text-left focus:outline-none active:translate-y-[4px] active:border-b-4 w-full"
+            className="group flex flex-col items-center bg-white p-6 rounded-[30px] border-[4px] shadow-lg transition-all transform hover:scale-102 active:scale-98 cursor-pointer text-left focus:outline-none w-full"
+            style={{ borderColor: '#1E88E5' }}
           >
-            <div className="p-4 bg-gray-50 border border-gray-200 rounded-2xl mb-6 w-16 h-16 flex items-center justify-center">
-              <FontAwesomeIcon
-                icon={faMagnifyingGlass}
-                className="text-3xl text-gray-700"
+            <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6 bg-blue-50 border-4 border-[#FDD835] shadow-md overflow-hidden">
+              <img
+                src={lupa}
+                alt="Juego ¿Qué es?"
+                className="w-full h-full object-cover p-2"
               />
             </div>
 
-            <div className="flex flex-col items-center gap-1.5 w-full">
-              <div className="w-full max-w-xs py-3 rounded-full text-center font-bold text-sm bg-gray-50 border-2 border-gray-200 text-gray-700">
+            <div className="flex flex-col items-center gap-1.5 w-full flex-1 justify-center">
+              <div className="w-full max-w-xs py-2.5 rounded-full text-center font-bold text-xs bg-gray-50 border border-gray-200 text-gray-600">
                 VER IMAGEN
               </div>
 
@@ -48,7 +51,7 @@ function MenuJuegos() {
                 className="text-gray-400 text-xs my-0.5"
               />
 
-              <div className="w-full max-w-xs py-3 rounded-full text-center font-bold text-sm bg-gray-50 border-2 border-gray-200 text-gray-700">
+              <div className="w-full max-w-xs py-2.5 rounded-full text-center font-bold text-xs bg-gray-50 border border-gray-200 text-gray-600">
                 ELEGIR RESPUESTA
               </div>
 
@@ -57,30 +60,32 @@ function MenuJuegos() {
                 className="text-gray-400 text-xs my-0.5"
               />
 
-              <div className="w-full max-w-xs py-3 rounded-full text-center font-bold text-sm bg-gray-50 border-2 border-gray-200 text-gray-700 flex items-center justify-center gap-1.5">
+              <div className="w-full max-w-xs py-2.5 rounded-full text-center font-bold text-xs bg-gray-50 border border-gray-200 text-gray-600 flex items-center justify-center gap-1.5">
                 <span>RESPONDER</span>
                 <FontAwesomeIcon icon={faStar} className="text-amber-500" />
               </div>
             </div>
 
-            <h2 className="text-2xl font-black mt-6 tracking-wide text-gray-800 w-full text-center">
+            <h2 className="text-2xl font-extrabold text-[#1B3A5C] mt-6 tracking-wide w-full text-center uppercase">
               ¿QUÉ ES?
             </h2>
           </button>
 
           <button
             onClick={() => manejarClickJuego('Cuentitos')}
-            className="group flex flex-col items-center bg-white p-6 rounded-[32px] border-2 border-b-8 border-gray-300 shadow-xl transition-all cursor-pointer text-left focus:outline-none active:translate-y-[4px] active:border-b-4 w-full"
+            className="group flex flex-col items-center bg-white p-6 rounded-[30px] border-[4px] shadow-lg transition-all transform hover:scale-102 active:scale-98 cursor-pointer text-left focus:outline-none w-full"
+            style={{ borderColor: '#E91E8C' }}
           >
-            <div className="p-4 bg-gray-50 border border-gray-200 rounded-2xl mb-6 w-16 h-16 flex items-center justify-center">
-              <FontAwesomeIcon
-                icon={faBook}
-                className="text-3xl text-gray-700"
+            <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6 bg-pink-50 border-4 border-[#FDD835] shadow-md overflow-hidden">
+              <img
+                src={libro}
+                alt="Juego Cuentitos"
+                className="w-full h-full object-cover p-2"
               />
             </div>
 
-            <div className="flex flex-col items-center gap-1.5 w-full">
-              <div className="w-full max-w-xs py-3 rounded-full text-center font-bold text-sm bg-gray-50 border-2 border-gray-200 text-gray-700">
+            <div className="flex flex-col items-center gap-1.5 w-full flex-1 justify-center">
+              <div className="w-full max-w-xs py-2.5 rounded-full text-center font-bold text-xs bg-gray-50 border border-gray-200 text-gray-600">
                 LEER CUENTO
               </div>
 
@@ -89,7 +94,7 @@ function MenuJuegos() {
                 className="text-gray-400 text-xs my-0.5"
               />
 
-              <div className="w-full max-w-xs py-3 rounded-full text-center font-bold text-sm bg-gray-50 border-2 border-gray-200 text-gray-700">
+              <div className="w-full max-w-xs py-2.5 rounded-full text-center font-bold text-xs bg-gray-50 border border-gray-200 text-gray-600">
                 VER LA ESCENA
               </div>
 
@@ -98,13 +103,13 @@ function MenuJuegos() {
                 className="text-gray-400 text-xs my-0.5"
               />
 
-              <div className="w-full max-w-xs py-3 rounded-full text-center font-bold text-sm bg-gray-50 border-2 border-gray-200 text-gray-700 flex items-center justify-center gap-1.5">
+              <div className="w-full max-w-xs py-2.5 rounded-full text-center font-bold text-xs bg-gray-50 border border-gray-200 text-gray-600 flex items-center justify-center gap-1.5">
                 <span>RESPONDER</span>
                 <FontAwesomeIcon icon={faStar} className="text-amber-500" />
               </div>
             </div>
 
-            <h2 className="text-2xl font-black mt-6 tracking-wide text-gray-800 w-full text-center">
+            <h2 className="text-2xl font-extrabold text-[#1B3A5C] mt-6 tracking-wide w-full text-center uppercase">
               CUENTITOS
             </h2>
           </button>

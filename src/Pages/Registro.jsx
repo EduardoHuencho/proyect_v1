@@ -7,6 +7,8 @@ import ninosImg from '../assets/niños1.png';
 import Fondo from '../Components/Fondo';
 
 function Registro() {
+  const [nombre, setNombre] = useState('');
+  const [apellido, setApellido] = useState('');
   const [email, setEmail] = useState('');
   const [confirmEmail, setConfirmEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,23 +30,76 @@ function Registro() {
     }
   };
 
-  function handleRegister(e) {
+  async function handleRegister(e) {
     e.preventDefault();
 
-    if (email !== confirmEmail) {
+    if (
+      !nombre.trim() ||
+      !apellido.trim() ||
+      !email.trim() ||
+      !password ||
+      !pin
+    ) {
+      alert('Por favor, rellena todos los campos obligatorios.');
+      return;
+    }
+
+    if (email.trim().toLowerCase() !== confirmEmail.trim().toLowerCase()) {
       alert('Los correos electrónicos no coinciden.');
       return;
     }
+
+    if (password.length < 6) {
+      alert('La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+
     if (password !== confirmPassword) {
       alert('Las contraseñas no coinciden.');
       return;
     }
-    if (pin.length < 4 || pin !== confirmPin) {
-      alert('El PIN parental debe ser de 4 dígitos y coincidir.');
+
+    if (pin.length !== 4 || confirmPin.length !== 4) {
+      alert('El PIN parental debe tener exactamente 4 dígitos.');
       return;
     }
 
-    console.log('Registrando nuevo usuario:', { email, pin });
+    if (pin !== confirmPin) {
+      alert('Los números de PIN ingresados no coinciden.');
+      return;
+    }
+
+    const datosUsuario = {
+      email: email.trim().toLowerCase(),
+      password: password,
+      firstName: nombre.trim(),
+      lastName: apellido.trim(),
+      administrativePin: pin,
+    };
+
+    try {
+      const respuesta = await fetch('http://localhost:3000/user/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(datosUsuario),
+      });
+
+      const resultado = await respuesta.json();
+
+      if (respuesta.ok) {
+        alert('Cuenta creada con éxito.');
+        navigate('/');
+      } else {
+        alert(
+          `Error al registrarse: ${resultado.message || 'Inténtalo de nuevo.'}`
+        );
+      }
+    } catch (error) {
+      console.error('Error de red al conectar con NestJS:', error);
+      alert('No se pudo establecer conexión con el servidor.');
+    }
   }
 
   return (
@@ -76,6 +131,25 @@ function Registro() {
           </p>
 
           <form onSubmit={handleRegister} className="flex flex-col gap-3.5">
+            <div className="grid grid-cols-2 gap-3">
+              <input
+                type="text"
+                required
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                placeholder="Nombre"
+                className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[11px_16px] outline-none placeholder:text-[#003052]/50"
+              />
+              <input
+                type="text"
+                required
+                value={apellido}
+                onChange={(e) => setApellido(e.target.value)}
+                placeholder="Apellido"
+                className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[11px_16px] outline-none placeholder:text-[#003052]/50"
+              />
+            </div>
+
             <input
               type="email"
               required
@@ -97,6 +171,7 @@ function Registro() {
               <input
                 type={showPassword ? 'text' : 'password'}
                 required
+                minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Contraseña (mínimo 6 caracteres)"
@@ -115,6 +190,7 @@ function Registro() {
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
                 required
+                minLength={6}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Repetir contraseña"
@@ -147,6 +223,7 @@ function Registro() {
                   type={showPin ? 'text' : 'password'}
                   inputMode="numeric"
                   required
+                  maxLength={4}
                   value={pin}
                   onChange={(e) => handlePinChange(e.target.value, setPin)}
                   placeholder="PIN (4 dígitos)"
@@ -166,6 +243,7 @@ function Registro() {
                   type={showConfirmPin ? 'text' : 'password'}
                   inputMode="numeric"
                   required
+                  maxLength={4}
                   value={confirmPin}
                   onChange={(e) =>
                     handlePinChange(e.target.value, setConfirmPin)
@@ -195,7 +273,7 @@ function Registro() {
             <button
               type="button"
               onClick={() => navigate('/')}
-              className="text-sm font-bold text-[#4A7A96] hover:text-[#005088] transition-colors"
+              className="text-sm font-bold text-[#4A7A96] hover:text-[#005088] transition-colors focus:outline-none"
             >
               ¿Ya tienes cuenta? Inicia sesión
             </button>

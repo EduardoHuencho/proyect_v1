@@ -1,34 +1,258 @@
 [
-  { "id": 1, "label": "Manzana", "icon": "🍎", "color": "bg-red-100", "category": "Comida", "star": false },
-  { "id": 2, "label": "Leche", "icon": "🥛", "color": "bg-blue-100", "category": "Comida", "star": false },
-  { "id": 3, "label": "Feliz", "icon": "😊", "color": "bg-yellow-100", "category": "Emociones", "star": true },
-  { "id": 4, "label": "Jugar", "icon": "🎮", "color": "bg-zinc-100", "category": "Actividades", "star": true },
-  { "id": 5, "label": "Manzana", "icon": "🍎", "color": "bg-red-100", "category": "Comida", "star": false },
-  { "id": 6, "label": "Leche", "icon": "🥛", "color": "bg-blue-100", "category": "Comida", "star": false },
-  { "id": 7, "label": "Feliz", "icon": "😊", "color": "bg-yellow-100", "category": "Emociones", "star": true },
-  { "id": 8, "label": "Jugar", "icon": "🎮", "color": "bg-zinc-100", "category": "Actividades", "star": true },
-  { "id": 9, "label": "Manzana", "icon": "🍎", "color": "bg-red-100", "category": "Comida", "star": false },
-  { "id": 10, "label": "Leche", "icon": "🥛", "color": "bg-blue-100", "category": "Comida", "star": false },
-  { "id": 11, "label": "Feliz", "icon": "😊", "color": "bg-yellow-100", "category": "Emociones", "star": true },
-  { "id": 12, "label": "Jugar", "icon": "🎮", "color": "bg-zinc-100", "category": "Actividades", "star": true },
-  { "id": 13, "label": "Manzana", "icon": "🍎", "color": "bg-red-100", "category": "Comida", "star": false },
-  { "id": 14, "label": "Leche", "icon": "🥛", "color": "bg-blue-100", "category": "Comida", "star": false },
-  { "id": 15, "label": "Feliz", "icon": "😊", "color": "bg-yellow-100", "category": "Emociones", "star": true },
-  { "id": 16, "label": "Jugar", "icon": "🎮", "color": "bg-zinc-100", "category": "Actividades", "star": true },
-  { "id": 17, "label": "Manzana", "icon": "🍎", "color": "bg-red-100", "category": "Comida", "star": false },
-  { "id": 18, "label": "Leche", "icon": "🥛", "color": "bg-blue-100", "category": "Comida", "star": false },
-  { "id": 19, "label": "Feliz", "icon": "😊", "color": "bg-yellow-100", "category": "Emociones", "star": true },
-  { "id": 20, "label": "Jugar", "icon": "🎮", "color": "bg-zinc-100", "category": "Actividades", "star": true },
-  { "id": 21, "label": "Manzana", "icon": "🍎", "color": "bg-red-100", "category": "Comida", "star": false },
-  { "id": 22, "label": "Leche", "icon": "🥛", "color": "bg-blue-100", "category": "Comida", "star": false },
-  { "id": 23, "label": "Feliz", "icon": "😊", "color": "bg-yellow-100", "category": "Emociones", "star": true },
-  { "id": 24, "label": "Jugar", "icon": "🎮", "color": "bg-zinc-100", "category": "Actividades", "star": true },
-  { "id": 25, "label": "Manzana", "icon": "🍎", "color": "bg-red-100", "category": "Comida", "star": false },
-  { "id": 26, "label": "Leche", "icon": "🥛", "color": "bg-blue-100", "category": "Comida", "star": false },
-  { "id": 27, "label": "Feliz", "icon": "😊", "color": "bg-yellow-100", "category": "Emociones", "star": true },
-  { "id": 28, "label": "Jugar", "icon": "🎮", "color": "bg-zinc-100", "category": "Actividades", "star": true },
-  { "id": 29, "label": "Manzana", "icon": "🍎", "color": "bg-red-100", "category": "Comida", "star": false },
-  { "id": 30, "label": "Leche", "icon": "🥛", "color": "bg-blue-100", "category": "Comida", "star": false },
-  { "id": 31, "label": "Feliz", "icon": "😊", "color": "bg-yellow-100", "category": "Emociones", "star": true },
-  { "id": 32, "label": "Jugar", "icon": "🎮", "color": "bg-zinc-100", "category": "Actividades", "star": true }
+  {
+    "id": 1,
+    "label": "Jugo de naranja",
+    "icon": "/src/assets/pictogramas/jugo_naranja.png",
+    "color": "bg-red-100",
+    "categoryId": "2",
+    "star": false
+  },
+  {
+    "id": 2,
+    "label": "Jamón",
+    "icon": "/src/assets/pictogramas/jamon.png",
+    "color": "bg-red-100",
+    "categoryId": "2",
+    "star": false
+  },
+  {
+    "id": 3,
+    "label": "Pan de molde",
+    "icon": "/src/assets/pictogramas/pan_molde.png",
+    "color": "bg-red-100",
+    "categoryId": "2",
+    "star": false
+  },
+  {
+    "id": 4,
+    "label": "Uvas",
+    "icon": "/src/assets/pictogramas/uvas.png",
+    "color": "bg-red-100",
+    "categoryId": "2",
+    "star": false
+  },
+  {
+    "id": 5,
+    "label": "Bañar",
+    "icon": "/src/assets/pictogramas/baniar.png",
+    "color": "bg-yellow-100",
+    "categoryId": "3",
+    "star": false
+  },
+  {
+    "id": 6,
+    "label": "Cepillar dientes",
+    "icon": "/src/assets/pictogramas/cepillar_dientes.png",
+    "color": "bg-yellow-100",
+    "categoryId": "3",
+    "star": false
+  },
+  {
+    "id": 7,
+    "label": "Cortar uñas",
+    "icon": "/src/assets/pictogramas/cortar_unias.png",
+    "color": "bg-yellow-100",
+    "categoryId": "3",
+    "star": false
+  },
+  {
+    "id": 8,
+    "label": "Sonar",
+    "icon": "/src/assets/pictogramas/sonar.png",
+    "color": "bg-yellow-100",
+    "categoryId": "3",
+    "star": false
+  },
+  {
+    "id": 9,
+    "label": "Ir",
+    "icon": "/src/assets/pictogramas/ir.png",
+    "color": "bg-zinc-100",
+    "categoryId": "4",
+    "star": false
+  },
+  {
+    "id": 10,
+    "label": "Traer",
+    "icon": "/src/assets/pictogramas/traer.png",
+    "color": "bg-zinc-100",
+    "categoryId": "4",
+    "star": false
+  },
+  {
+    "id": 11,
+    "label": "Llevar",
+    "icon": "/src/assets/pictogramas/llevar.png",
+    "color": "bg-zinc-100",
+    "categoryId": "4",
+    "star": false
+  },
+  {
+    "id": 12,
+    "label": "Buscar",
+    "icon": "/src/assets/pictogramas/buscar.png",
+    "color": "bg-zinc-100",
+    "categoryId": "4",
+    "star": false
+  },
+  {
+    "id": 13,
+    "label": "Risa",
+    "icon": "/src/assets/pictogramas/risa.png",
+    "color": "bg-blue-100",
+    "categoryId": "5",
+    "star": false
+  },
+  {
+    "id": 14,
+    "label": "Triste",
+    "icon": "/src/assets/pictogramas/triste.png",
+    "color": "bg-blue-100",
+    "categoryId": "5",
+    "star": false
+  },
+  {
+    "id": 15,
+    "label": "Enojado",
+    "icon": "/src/assets/pictogramas/enfado.png",
+    "color": "bg-blue-100",
+    "categoryId": "5",
+    "star": false
+  },
+  {
+    "id": 16,
+    "label": "Miedo",
+    "icon": "/src/assets/pictogramas/miedo.png",
+    "color": "bg-blue-100",
+    "categoryId": "5",
+    "star": false
+  },
+  {
+    "id": 17,
+    "label": "Padre",
+    "icon": "/src/assets/pictogramas/papa.png",
+    "color": "bg-purple-100",
+    "categoryId": "6",
+    "star": false
+  },
+  {
+    "id": 18,
+    "label": "Madre",
+    "icon": "/src/assets/pictogramas/mama.png",
+    "color": "bg-purple-100",
+    "categoryId": "6",
+    "star": false
+  },
+  {
+    "id": 19,
+    "label": "Niño",
+    "icon": "/src/assets/pictogramas/ninio.png",
+    "color": "bg-purple-100",
+    "categoryId": "6",
+    "star": false
+  },
+  {
+    "id": 20,
+    "label": "Niña",
+    "icon": "/src/assets/pictogramas/ninia.png",
+    "color": "bg-purple-100",
+    "categoryId": "6",
+    "star": false
+  },
+  {
+    "id": 21,
+    "label": "Casa",
+    "icon": "/src/assets/pictogramas/casa.png",
+    "color": "bg-emerald-100",
+    "categoryId": "7",
+    "star": false
+  },
+  {
+    "id": 22,
+    "label": "Escuela",
+    "icon": "/src/assets/pictogramas/escuela.png",
+    "color": "bg-emerald-100",
+    "categoryId": "7",
+    "star": false
+  },
+  {
+    "id": 23,
+    "label": "Parque",
+    "icon": "/src/assets/pictogramas/parque.png",
+    "color": "bg-emerald-100",
+    "categoryId": "7",
+    "star": false
+  },
+  {
+    "id": 24,
+    "label": "Baño",
+    "icon": "/src/assets/pictogramas/cuarto_banio.png",
+    "color": "bg-emerald-100",
+    "categoryId": "7",
+    "star": false
+  },
+  {
+    "id": 25,
+    "label": "Silla",
+    "icon": "/src/assets/pictogramas/silla.png",
+    "color": "bg-amber-100",
+    "categoryId": "8",
+    "star": false
+  },
+  {
+    "id": 26,
+    "label": "Juguete",
+    "icon": "/src/assets/pictogramas/juguete.png",
+    "color": "bg-amber-100",
+    "categoryId": "8",
+    "star": false
+  },
+  {
+    "id": 27,
+    "label": "Tele",
+    "icon": "/src/assets/pictogramas/tele.png",
+    "color": "bg-amber-100",
+    "categoryId": "8",
+    "star": false
+  },
+  {
+    "id": 28,
+    "label": "Celular",
+    "icon": "/src/assets/pictogramas/celular.png",
+    "color": "bg-amber-100",
+    "categoryId": "8",
+    "star": false
+  },
+  {
+    "id": 29,
+    "label": "Saludar",
+    "icon": "/src/assets/pictogramas/saludar.png",
+    "color": "bg-red-100",
+    "categoryId": "9",
+    "star": false
+  },
+  {
+    "id": 30,
+    "label": "Adiós",
+    "icon": "/src/assets/pictogramas/adios.png",
+    "color": "bg-red-100",
+    "categoryId": "9",
+    "star": false
+  },
+  {
+    "id": 31,
+    "label": "Gracias",
+    "icon": "/src/assets/pictogramas/gracias.png",
+    "color": "bg-red-100",
+    "categoryId": "9",
+    "star": false
+  },
+  {
+    "id": 32,
+    "label": "Buenos dias",
+    "icon": "/src/assets/pictogramas/buenos_dias.png",
+    "color": "bg-red-100",
+    "categoryId": "9",
+    "star": false
+  }
 ]

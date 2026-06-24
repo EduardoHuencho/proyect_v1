@@ -18,7 +18,8 @@ function Pictogramas() {
 
   const [frase, setFrase] = useState([]);
   const [vozAmigable, setVozAmigable] = useState(null);
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('Todos');
+
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('todos');
 
   const contenedorFraseRef = useRef(null);
 
@@ -96,10 +97,11 @@ function Pictogramas() {
   }, [frase]);
 
   const pictogramasFiltrados =
-    categoriaSeleccionada === 'Todos'
+    String(categoriaSeleccionada).toLowerCase() === 'todos' ||
+    String(categoriaSeleccionada) === '1'
       ? PictogramasList
       : PictogramasList.filter(
-          (item) => item.category === categoriaSeleccionada
+          (item) => String(item.categoryId) === String(categoriaSeleccionada)
         );
 
   return (
@@ -118,10 +120,10 @@ function Pictogramas() {
         pinSoloDesbloquea={true}
       />
       <div className="p-4 md:p-6 select-none h-[calc(100vh-60px)] flex flex-col overflow-hidden">
-        <div className="border border-gray-200 bg-white rounded-2xl h-[125px] mb-4 flex items-center justify-between p-3 gap-3 shadow-sm overflow-hidden shrink-0">
+        <div className="border border-black bg-white rounded-2xl h-[125px] mb-4 flex items-center justify-between p-3 gap-3 shadow-sm overflow-hidden shrink-0">
           <div
             ref={contenedorFraseRef}
-            className="flex flex-nowrap items-center gap-3 flex-grow overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent h-full pb-2 pr-2"
+            className="flex flex-nowrap items-center gap-3 flex-grow overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent h-full max-h-full items-center pb-1 pr-2"
           >
             {frase.length === 0 ? (
               <p className="text-gray-400 font-medium text-sm sm:text-base pl-2 whitespace-nowrap">
@@ -131,10 +133,20 @@ function Pictogramas() {
               frase.map((pic, index) => (
                 <div
                   key={index}
-                  className="p-1.5 border border-gray-200 rounded-xl bg-gray-50 text-center w-16 sm:w-20 shrink-0 animate-fade-in"
+                  className="p-1.5 border border-gray-200 rounded-xl bg-gray-50 flex flex-col items-center justify-between w-16 sm:w-20 h-[95px] shrink-0 animate-fade-in overflow-hidden"
                 >
-                  <span className="text-xl sm:text-2xl">{pic.icon}</span>
-                  <p className="text-[10px] sm:text-xs font-semibold truncate text-gray-700">
+                  <div className="h-11 w-11 flex items-center justify-center overflow-hidden mt-0.5 shrink-0">
+                    <img
+                      src={pic.icon}
+                      alt={pic.label}
+                      className="h-full w-full object-contain"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://placehold.co/100x100?text=🖼️';
+                      }}
+                    />
+                  </div>
+                  <p className="text-[10px] sm:text-xs font-semibold text-gray-700 w-full text-center leading-tight line-clamp-2 break-words hyphens-auto mb-0.5">
                     {pic.label}
                   </p>
                 </div>
@@ -193,19 +205,29 @@ function Pictogramas() {
         )}
 
         <div className="border border-gray-100 bg-gray-50/50 rounded-2xl h-[75px] mb-5 flex items-center p-2 gap-2 overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent shrink-0">
-          {CategoriasList.map((cat) => (
-            <CategoriaCard
-              key={cat.id}
-              label={cat.label}
-              icon={cat.icon}
-              color={cat.color}
-              activo={categoriaSeleccionada === cat.label}
-              onClick={() => {
-                setCategoriaSeleccionada(cat.label);
-                console.log('Filtrando por categoría ID:', cat.id);
-              }}
-            />
-          ))}
+          {CategoriasList.map((cat) => {
+            // Evaluamos la propiedad activo considerando tanto el ID '1' como la palabra 'todos'
+            const esTodosActivo =
+              String(cat.id) === '1' &&
+              String(categoriaSeleccionada).toLowerCase() === 'todos';
+            const esIdCoincidente =
+              String(categoriaSeleccionada).toLowerCase() ===
+              String(cat.id).toLowerCase();
+
+            return (
+              <CategoriaCard
+                key={cat.id}
+                label={cat.label}
+                icon={cat.icon}
+                color={cat.color}
+                activo={esTodosActivo || esIdCoincidente}
+                onClick={() => {
+                  setCategoriaSeleccionada(cat.id);
+                  console.log('Filtrando por categoría ID:', cat.id);
+                }}
+              />
+            );
+          })}
         </div>
 
         <div className="flex-grow overflow-y-auto pr-1 pb-4 scrollbar-thin">
