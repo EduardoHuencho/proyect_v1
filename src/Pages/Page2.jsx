@@ -6,6 +6,7 @@ import ModuloCard from '../Components/ModuloCard';
 import calendarioImg from '../assets/calendario.png';
 import pictogramaImg from '../assets/pictograma.png';
 import juegosImg from '../assets/juegos.png';
+import Fondo from '../Components/Fondo';
 
 const modulos = [
   {
@@ -43,14 +44,7 @@ function Page2() {
   };
 
   return (
-    <div
-      className="min-h-screen bg-[#E0F7FA] font-sans pb-10"
-      style={{
-        backgroundImage:
-          'radial-gradient(circle at 1.5px 1.5px, rgba(0,80,136,0.05) 1.5px, transparent 0)',
-        backgroundSize: '22px 22px',
-      }}
-    >
+    <Fondo>
       <NavbarDev rol="nino" />
 
       <div className="max-w-4xl mx-auto px-6 py-10 flex flex-col items-center">
@@ -75,7 +69,7 @@ function Page2() {
           ))}
         </div>
       </div>
-    </div>
+    </Fondo>
   );
 }
 

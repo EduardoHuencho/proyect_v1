@@ -2,6 +2,7 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import NavbarDev from '../Components/NavbarDev';
 import { useNino } from '../context/NinoContext';
+import Fondo from '../Components/Fondo';
 
 import {
   faMagnifyingGlass,
@@ -18,7 +19,7 @@ function MenuJuegos() {
   };
 
   return (
-    <>
+    <Fondo>
       <NavbarDev
         rol={tutorAutenticado ? 'tutor' : 'nino'}
         rutaVolver={tutorAutenticado ? '/page4' : '/page2'}
@@ -109,7 +110,7 @@ function MenuJuegos() {
           </button>
         </div>
       </div>
-    </>
+    </Fondo>
   );
 }
 

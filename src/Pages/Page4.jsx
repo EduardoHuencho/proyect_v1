@@ -6,6 +6,7 @@ import calendarioImg from '../assets/calendario.png';
 import pictogramaImg from '../assets/pictograma.png';
 import juegosImg from '../assets/juegos.png';
 import analisisImg from '../assets/analisis.png';
+import Fondo from '../Components/Fondo';
 
 const modulos = [
   {
@@ -53,15 +54,7 @@ function Page4() {
   };
 
   return (
-    <div
-      className="min-h-screen font-sans pb-10"
-      style={{
-        background: '#E0F7FA',
-        backgroundImage:
-          'radial-gradient(circle at 1.5px 1.5px, rgba(0,80,136,0.07) 1.5px, transparent 0)',
-        backgroundSize: '22px 22px',
-      }}
-    >
+    <Fondo>
       <NavbarDev rol="tutor" rutaVolver="/page3" labelVolver="Volver" />
 
       <div className="text-center pt-8 mb-8">
@@ -91,7 +84,7 @@ function Page4() {
       <p className="text-center text-xs text-gray-400 py-6">
         TEAYUDO · Sistema educativo AAC
       </p>
-    </div>
+    </Fondo>
   );
 }
 

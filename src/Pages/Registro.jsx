@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash, faLock } from '@fortawesome/free-solid-svg-icons';
 import logoImg from '../assets/logo.png';
 import ninosImg from '../assets/niños1.png';
+import Fondo from '../Components/Fondo';
 
 function Registro() {
   const [email, setEmail] = useState('');
@@ -47,14 +48,7 @@ function Registro() {
   }
 
   return (
-    <div
-      className="min-h-screen flex flex-col font-sans bg-[#E0F7FA]"
-      style={{
-        backgroundImage:
-          'radial-gradient(circle at 1.5px 1.5px, rgba(0,80,136,0.07) 1.5px, transparent 0)',
-        backgroundSize: '22px 22px',
-      }}
-    >
+    <Fondo>
       <div className="flex justify-center pt-6 pb-2">
         <img src={logoImg} alt="Logo TEAYUDO" className="h-16 w-auto" />
       </div>
@@ -208,7 +202,7 @@ function Registro() {
           </div>
         </div>
       </div>
-    </div>
+    </Fondo>
   );
 }
 
