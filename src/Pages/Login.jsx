@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import logoImg from '../assets/logo.png';
 import Fondo from '../Components/Fondo';
 import loginfante from '../assets/logniños.png';
@@ -7,13 +9,53 @@ import loginfante from '../assets/logniños.png';
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
   const navigate = useNavigate();
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    console.log('Iniciando sesión con:', { email });
-    // Aquí irá tu lógica de autenticación en el futuro
-    // navigate("/dashboard");
+    setError(null);
+    setLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:3000/user/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error('AUTH_ERROR');
+      }
+
+      const data = await response.json();
+      console.log('Login exitoso:', data);
+
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
+
+      navigate('/page1');
+    } catch (err) {
+      console.error('Error:', err);
+
+      if (err.message === 'AUTH_ERROR') {
+        setError(
+          'El correo o la contraseña son incorrectos. Por favor, inténtalo de nuevo.'
+        );
+      } else {
+        setError(
+          'No se pudo conectar con el servidor. Verifica tu conexión a internet o inténtalo más tarde.'
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -44,36 +86,58 @@ function Login() {
             Ingresa tus credenciales para continuar
           </p>
 
+          {error && (
+            <div className="mb-4 p-3 text-sm text-red-700 bg-red-100 border border-red-300 rounded-[14px] font-medium flex items-start gap-2">
+              <span>{error}</span>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <input
               type="email"
               required
+              disabled={loading}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="nombre@correo.com"
-              className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[13px_18px] outline-none placeholder:text-[#003052]/50"
+              className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[13px_18px] outline-none placeholder:text-[#003052]/50 disabled:opacity-50"
             />
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[13px_18px] outline-none placeholder:text-[#003052]/50"
-            />
+
+            <div className="relative w-full">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                required
+                disabled={loading}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[13px_48px_13px_18px] outline-none placeholder:text-[#003052]/50 disabled:opacity-50"
+              />
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4A7A96] hover:text-[#005088] focus:outline-none select-none active:scale-90 transition-all disabled:opacity-50"
+              >
+                <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+              </button>
+            </div>
+
             <button
               type="submit"
-              className="mt-3 w-full py-4 rounded-[18px] font-extrabold text-xl bg-[#FDD835] text-[#003052] border-3 border-[#C8A800] shadow-[0_6px_0_#C8A800] transition-all hover:scale-105 active:scale-95 active:translate-y-[2px] active:shadow-[0_4px_0_#C8A800]"
+              disabled={loading}
+              className="mt-3 w-full py-4 rounded-[18px] font-extrabold text-xl bg-[#FDD835] text-[#003052] border-3 border-[#C8A800] shadow-[0_6px_0_#C8A800] transition-all hover:scale-105 active:scale-95 active:translate-y-[2px] active:shadow-[0_4px_0_#C8A800] disabled:opacity-50 disabled:scale-100 disabled:active:translate-y-0"
             >
-              INGRESAR
+              {loading ? 'CONECTANDO...' : 'INGRESAR'}
             </button>
           </form>
 
           <div className="mt-5 text-center">
             <button
               type="button"
+              disabled={loading}
               onClick={() => navigate('/registro')}
-              className="text-sm font-bold text-[#4A7A96] hover:text-[#005088] transition-colors focus:outline-none"
+              className="text-sm font-bold text-[#4A7A96] hover:text-[#005088] transition-colors focus:outline-none disabled:opacity-50"
             >
               ¿No tienes cuenta? Regístrate aquí
             </button>
