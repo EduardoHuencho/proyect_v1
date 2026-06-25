@@ -97,7 +97,7 @@ function Registro() {
         );
       }
     } catch (error) {
-      console.error('Error de red al conectar con NestJS:', error);
+      console.error('Error al conectar con Nest:', error);
       alert('No se pudo establecer conexión con el servidor.');
     }
   }
