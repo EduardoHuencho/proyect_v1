@@ -17,7 +17,8 @@ import {
 
 function Pictogramas() {
   const navigate = useNavigate();
-  const { tutorAutenticado, tutorOrigen, ninoActivo, setNinoActivo } = useNino();
+  const { tutorAutenticado, tutorOrigen, ninoActivo, setNinoActivo } =
+    useNino();
   const [frase, setFrase] = useState([]);
   const [vozAmigable, setVozAmigable] = useState(null);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('todos');
@@ -96,14 +97,15 @@ function Pictogramas() {
   return (
     <Fondo>
       <div className="flex flex-col h-screen">
-
         {/* Navbar */}
         <NavbarDev
           rol={tutorAutenticado ? 'tutor' : 'nino'}
           esPictogramas={true}
           rutaVolver={
             tutorAutenticado
-              ? tutorOrigen === 'global' ? '/page4' : null
+              ? tutorOrigen === 'global'
+                ? '/page4'
+                : null
               : '/page2'
           }
           labelVolver={tutorOrigen === 'global' ? 'Menú' : 'Volver'}
@@ -119,14 +121,16 @@ function Pictogramas() {
                   onClick={() => setNinoActivo(nino)}
                   className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all shrink-0 whitespace-nowrap"
                   style={{
-                    background: ninoActivo?.id_infante === nino.id_infante
-                      ? '#FDD835'
-                      : 'transparent',
+                    background:
+                      ninoActivo?.id_infante === nino.id_infante
+                        ? '#FDD835'
+                        : 'transparent',
                     color: '#1B3A5C',
                     border: '2px solid',
-                    borderColor: ninoActivo?.id_infante === nino.id_infante
-                      ? '#FDD835'
-                      : '#CBD5E0',
+                    borderColor:
+                      ninoActivo?.id_infante === nino.id_infante
+                        ? '#FDD835'
+                        : '#CBD5E0',
                   }}
                 >
                   <span>{nino.avatar_url}</span>
@@ -213,10 +217,7 @@ function Pictogramas() {
 
           {tutorAutenticado && (
             <div className="mb-4 shrink-0">
-              <button
-                onClick={() => navigate('/AgregarPictograma')}
-                className="w-full border-2 border-dashed border-[#1A7A6E] rounded-2xl py-3 text-[#1A7A6E] font-bold text-sm hover:bg-[#1A7A6E]/5 transition-all"
-              >
+              <button className="w-full border-2 border-dashed border-[#1A7A6E] rounded-2xl py-3 text-[#1A7A6E] font-bold text-sm hover:bg-[#1A7A6E]/5 transition-all">
                 + Agregar pictograma
               </button>
             </div>
@@ -261,7 +262,6 @@ function Pictogramas() {
               ))}
             </div>
           </div>
-
         </div>
       </div>
     </Fondo>
