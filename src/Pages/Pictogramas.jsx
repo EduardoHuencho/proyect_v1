@@ -8,6 +8,7 @@ import NavbarDev from '../Components/NavbarDev';
 import { useNino } from '../context/NinoContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Fondo from '../Components/Fondo';
+import { useNavigate } from 'react-router';
 import {
   faVolumeHigh,
   faTrashCan,
@@ -15,6 +16,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 function Pictogramas() {
+  const navigate = useNavigate();
   const { tutorAutenticado, tutorOrigen, ninoActivo, setNinoActivo } = useNino();
   const [frase, setFrase] = useState([]);
   const [vozAmigable, setVozAmigable] = useState(null);
@@ -211,7 +213,10 @@ function Pictogramas() {
 
           {tutorAutenticado && (
             <div className="mb-4 shrink-0">
-              <button className="w-full border-2 border-dashed border-[#1A7A6E] rounded-2xl py-3 text-[#1A7A6E] font-bold text-sm hover:bg-[#1A7A6E]/5 transition-all">
+              <button
+                onClick={() => navigate('/AgregarPictograma')}
+                className="w-full border-2 border-dashed border-[#1A7A6E] rounded-2xl py-3 text-[#1A7A6E] font-bold text-sm hover:bg-[#1A7A6E]/5 transition-all"
+              >
                 + Agregar pictograma
               </button>
             </div>

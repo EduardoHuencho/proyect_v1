@@ -60,76 +60,72 @@ function Page1() {
 
   return (
     <Fondo>
-      <NavbarDev rol="selector" />
+      <div className="min-h-screen flex flex-col"> {/* ← DIV NUEVO */}
 
-      <div className="max-w-3xl mx-auto px-6 py-12 flex flex-col items-center">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-[#1B3A5C] mb-2 text-center">
-          ¿Quién está jugando hoy?
-        </h1>
-        <p className="text-[#4A7A96] mb-10 text-center text-base">
-          Selecciona para entrar al perfil del niño o accede como tutor
-        </p>
+        <NavbarDev rol="selector" />
+        <div className="flex-1 flex flex-col items-center justify-center max-w-3xl mx-auto px-6 py-12 w-full">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-[#1B3A5C] mb-2 text-center">
+            ¿Quién está jugando hoy?
+          </h1>
+          <p className="text-[#4A7A96] mb-10 text-center text-base">
+            Selecciona para entrar al perfil del niño o accede como tutor
+          </p>
 
-        <div className="flex gap-4 overflow-x-auto pb-4 w-full scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent px-4 py-4">
-          {NinosList.map((nino) => (
-            <button
-              key={nino.id_infante}
-              onClick={() => handleSeleccionarNino(nino)}
-              className="flex flex-col items-center gap-3 p-5 bg-white rounded-3xl shadow-md hover:shadow-xl hover:scale-105 active:scale-95 transition-all shrink-0 min-w-[130px]"
-            >
-              <div className="w-20 h-20 rounded-full bg-[#E0F7FA] border-4 border-[#1B3A5C] flex items-center justify-center text-5xl">
-                {nino.avatar_url}
-              </div>
-              <p className="font-extrabold text-[#1B3A5C] text-lg">
-                {nino.nombre}
-              </p>
-              <p className="text-sm text-[#78909C] font-semibold">
-                {calcularEdad(nino.fecha_nacimiento)}
-              </p>
-            </button>
-          ))}
+          <div className="flex gap-4 overflow-x-auto pb-4 w-full scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent px-4 py-4">
+            {NinosList.map((nino) => (
+              <button
+                key={nino.id_infante}
+                onClick={() => handleSeleccionarNino(nino)}
+                className="flex flex-col items-center gap-3 p-5 bg-white rounded-3xl shadow-md hover:shadow-xl hover:scale-105 active:scale-95 transition-all shrink-0 min-w-[130px]"
+              >
+                <div className="w-20 h-20 rounded-full bg-[#E0F7FA] border-4 border-[#1B3A5C] flex items-center justify-center text-5xl">
+                  {nino.avatar_url}
+                </div>
+                <p className="font-extrabold text-[#1B3A5C] text-lg">
+                  {nino.nombre}
+                </p>
+                <p className="text-sm text-[#78909C] font-semibold">
+                  {calcularEdad(nino.fecha_nacimiento)}
+                </p>
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => setMostrarPin(true)}
+            className="mt-6 bg-blue-300 items-center gap-2 hover:bg-[#2A4F73] px-6 py-3 rounded-full transition-all shadow-md"
+          >
+            <FontAwesomeIcon icon={faGear} />
+            <span>Acceso de tutor</span>
+          </button>
         </div>
 
-        <button
-          onClick={() => setMostrarPin(true)}
-          className="mt-6 bg-blue-300 items-center gap-2 hover:bg-[#2A4F73]  px-6 py-3 rounded-full transition-all shadow-md"
-        >
-          <FontAwesomeIcon icon={faGear} />
-          <span>Acceso de tutor</span>
-        </button>
-      </div>
+      </div> 
 
       {mostrarPin && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-          <div
-            className={`bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl ${errorPin ? 'animate-shake' : ''}`}
-          >
+          <div className={`bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl ${errorPin ? 'animate-shake' : ''}`}>
             <div className="bg-blue-300 rounded-full px-6 py-2 w-fit mx-auto shadow-sm mb-4">
-              <h2 className="text-xl font-extrabold text-[#1B3A5C] text-center mb-1v">
+              <h2 className="text-xl font-extrabold text-[#1B3A5C] text-center">
                 Acceso de tutor
               </h2>
             </div>
             <p className="text-sm text-[#78909C] text-center mb-6">
               Ingresa tu PIN de 4 dígitos
             </p>
-
             <div className="flex justify-center gap-4 mb-6">
               {[0, 1, 2, 3].map((i) => (
                 <div
                   key={i}
                   className="w-4 h-4 rounded-full transition-all"
                   style={{
-                    background:
-                      i < pin.length
-                        ? errorPin
-                          ? '#E53935'
-                          : '#1B3A5C'
-                        : '#CBD5E0',
+                    background: i < pin.length
+                      ? errorPin ? '#E53935' : '#1B3A5C'
+                      : '#CBD5E0',
                   }}
                 />
               ))}
             </div>
-
             <div className="grid grid-cols-3 gap-3 mb-4">
               {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
                 <button
@@ -153,17 +149,12 @@ function Page1() {
                 0
               </button>
               <button
-                onClick={() => {
-                  setMostrarPin(false);
-                  setPin('');
-                  setErrorPin(false);
-                }}
+                onClick={() => { setMostrarPin(false); setPin(''); setErrorPin(false); }}
                 className="h-14 rounded-2xl bg-[#F0F4F8] hover:bg-red-50 font-bold text-[#78909C] transition-all active:scale-95 text-sm"
               >
                 ✕
               </button>
             </div>
-
             {errorPin && (
               <p className="text-center text-sm text-red-500 font-semibold mt-2">
                 PIN incorrecto, intenta de nuevo
@@ -173,7 +164,7 @@ function Page1() {
         </div>
       )}
     </Fondo>
-  );
+);
 }
 
 export default Page1;
