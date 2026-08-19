@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -43,7 +43,7 @@ function NavbarDev({
             setTutorOrigen('local');
           } else {
             setTutorOrigen('global');
-            navigate('/page3');
+            navigate('/paneltutor');
           }
         } else {
           setErrorPin(true);
@@ -69,7 +69,7 @@ function NavbarDev({
   const handleSalirTutor = () => {
     setTutorAutenticado(false);
     setTutorOrigen(null);
-    navigate('/page1');
+    navigate('/accesotutor');
   };
 
   const handleGuardarYSalir = () => {
@@ -95,11 +95,11 @@ function NavbarDev({
         <button
           onClick={() => {
             if (tutorAutenticado && tutorOrigen === 'global') {
-              navigate('/page4')
+              navigate('/dashboardtutor');
             } else if (tutorAutenticado && tutorOrigen === 'local') {
-              navigate('/page2')
+              navigate('/menumodulos');
             } else {
-              navigate('/page2') 
+              navigate('/menumodulos'); 
             }
           }}
           className="hover:opacity-80 transition-all active:scale-95"

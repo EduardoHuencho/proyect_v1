@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router';
 import { useNino } from '../context/NinoContext';
 import NavbarDev from '../Components/NavbarDev';
@@ -34,14 +33,15 @@ const modulos = [
   },
 ];
 
-function Page2() {
-  const navigate = useNavigate();
-  const { ninoActivo } = useNino();
+function MenuModulos() {
 
-  const handleModulo = (modulo) => {
-    if (!modulo.disponible) return;
-    navigate(modulo.ruta);
-  };
+    const navigate = useNavigate();
+    const { ninoActivo } = useNino();
+
+    const handleModulo = (modulo) => {
+        if (!modulo.disponible) return;
+        navigate(modulo.ruta);
+    };
 
   return (
     <Fondo>
@@ -70,7 +70,7 @@ function Page2() {
         </div>
       </div>
     </Fondo>
-  );
+  )
 }
 
-export default Page2;
+export default MenuModulos

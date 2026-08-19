@@ -1,4 +1,3 @@
-import React from 'react';
 import NavbarDev from '../Components/NavbarDev';
 import { useNino } from '../context/NinoContext';
 import Fondo from '../Components/Fondo';
@@ -18,7 +17,7 @@ function MenuJuegos() {
     <Fondo>
       <NavbarDev
         rol={tutorAutenticado ? 'tutor' : 'nino'}
-        rutaVolver={tutorAutenticado ? '/page4' : '/page2'}
+        rutaVolver={tutorAutenticado ? '/dashboardtutor' : '/menumodulos'}
         labelVolver={tutorAutenticado ? 'Menú' : 'Volver'}
       />
 
@@ -30,7 +29,7 @@ function MenuJuegos() {
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl justify-center items-stretch">
           <button
             onClick={() => manejarClickJuego('¿Qué es?')}
-            className="group flex flex-col items-center bg-white p-6 rounded-[30px] border-[4px] shadow-lg transition-all transform hover:scale-102 active:scale-98 cursor-pointer text-left focus:outline-none w-full"
+            className="group flex flex-col items-center bg-white p-6 rounded-[30px] shadow-lg transition-all transform hover:scale-102 active:scale-98 cursor-pointer text-left focus:outline-none w-full"
             style={{ borderColor: '#1E88E5' }}
           >
             <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6 bg-blue-50 border-4 border-[#FDD835] shadow-md overflow-hidden">
@@ -73,7 +72,7 @@ function MenuJuegos() {
 
           <button
             onClick={() => manejarClickJuego('Cuentitos')}
-            className="group flex flex-col items-center bg-white p-6 rounded-[30px] border-[4px] shadow-lg transition-all transform hover:scale-102 active:scale-98 cursor-pointer text-left focus:outline-none w-full"
+            className="group flex flex-col items-center bg-white p-6 rounded-[30px] shadow-lg transition-all transform hover:scale-102 active:scale-98 cursor-pointer text-left focus:outline-none w-full"
             style={{ borderColor: '#E91E8C' }}
           >
             <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6 bg-pink-50 border-4 border-[#FDD835] shadow-md overflow-hidden">

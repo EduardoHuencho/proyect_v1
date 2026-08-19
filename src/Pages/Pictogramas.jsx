@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PictogramaCard from '../Components/PictogramaCard';
 import CategoriaCard from '../Components/CategoriaCard';
 import PictogramasList from '../Data/Pictogramas.json';
@@ -8,7 +8,7 @@ import NavbarDev from '../Components/NavbarDev';
 import { useNino } from '../context/NinoContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Fondo from '../Components/Fondo';
-import { useNavigate } from 'react-router';
+//import { useNavigate } from 'react-router';
 import {
   faVolumeHigh,
   faTrashCan,
@@ -16,7 +16,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 function Pictogramas() {
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const { tutorAutenticado, tutorOrigen, ninoActivo, setNinoActivo } =
     useNino();
   const [frase, setFrase] = useState([]);
@@ -104,9 +104,9 @@ function Pictogramas() {
           rutaVolver={
             tutorAutenticado
               ? tutorOrigen === 'global'
-                ? '/page4'
+                ? '/dashboardtutor'
                 : null
-              : '/page2'
+              : '/menumodulos'
           }
           labelVolver={tutorOrigen === 'global' ? 'Menú' : 'Volver'}
           pinSoloDesbloquea={true}
@@ -114,7 +114,7 @@ function Pictogramas() {
 
         <div className="p-4 md:p-6 select-none flex-1 flex flex-col overflow-hidden">
           {tutorAutenticado && (
-            <div className="border border-gray-100 bg-gray-50/50 rounded-2xl h-[75px] mb-4 flex items-center p-2 gap-2 overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent shrink-0">
+            <div className="border border-gray-100 bg-gray-50/50 rounded-2xl mb-4 flex items-center p-2 gap-2 overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent shrink-0">
               {NinosList.map((nino) => (
                 <button
                   key={nino.id_infante}
@@ -139,10 +139,10 @@ function Pictogramas() {
               ))}
             </div>
           )}
-          <div className="border border-black bg-white rounded-2xl h-[125px] mb-4 flex items-center justify-between p-3 gap-3 shadow-sm overflow-hidden shrink-0">
+          <div className="border border-black bg-white rounded-2xl mb-4 flex items-center justify-between p-3 gap-3 shadow-sm overflow-hidden shrink-0">
             <div
               ref={contenedorFraseRef}
-              className="flex flex-nowrap items-center gap-3 flex-grow overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent h-full max-h-full pb-1 pr-2"
+              className="flex flex-nowrap items-center gap-3 overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent h-full max-h-full pb-1 pr-2"
             >
               {frase.length === 0 ? (
                 <p className="text-gray-400 font-medium text-sm sm:text-base pl-2 whitespace-nowrap">
@@ -152,7 +152,7 @@ function Pictogramas() {
                 frase.map((pic, index) => (
                   <div
                     key={index}
-                    className="p-1.5 border border-gray-200 rounded-xl bg-gray-50 flex flex-col items-center justify-between w-16 sm:w-20 h-[95px] shrink-0 animate-fade-in overflow-hidden"
+                    className="p-1.5 border border-gray-200 rounded-xl bg-gray-50 flex flex-col items-center justify-between w-16 sm:w-20 shrink-0 animate-fade-in overflow-hidden"
                   >
                     <div className="h-11 w-11 flex items-center justify-center overflow-hidden mt-0.5 shrink-0">
                       <img
@@ -165,7 +165,7 @@ function Pictogramas() {
                         }}
                       />
                     </div>
-                    <p className="text-[10px] sm:text-xs font-semibold text-gray-700 w-full text-center leading-tight line-clamp-2 break-words hyphens-auto mb-0.5">
+                    <p className="text-[10px] sm:text-xs font-semibold text-gray-700 w-full text-center leading-tight line-clamp-2 hyphens-auto mb-0.5">
                       {pic.label}
                     </p>
                   </div>
@@ -223,7 +223,7 @@ function Pictogramas() {
             </div>
           )}
 
-          <div className="border border-gray-100 bg-gray-50/50 rounded-2xl h-[75px] mb-5 flex items-center p-2 gap-2 overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent shrink-0">
+          <div className="border border-gray-100 bg-gray-50/50 rounded-2xl mb-5 flex items-center p-2 gap-2 overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent shrink-0">
             {CategoriasList.map((cat) => {
               const esTodosActivo =
                 String(cat.id) === '1' &&
@@ -248,7 +248,7 @@ function Pictogramas() {
             })}
           </div>
 
-          <div className="flex-grow overflow-y-auto pr-1 pb-4 scrollbar-thin">
+          <div className="overflow-y-auto pr-1 pb-4 scrollbar-thin">
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
               {pictogramasFiltrados.map((item) => (
                 <PictogramaCard

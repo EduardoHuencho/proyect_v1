@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import NinosList from '../Data/Ninos.json';
 import { useNino } from '../context/NinoContext';
 import NavbarDev from '../Components/NavbarDev';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGear } from '@fortawesome/free-solid-svg-icons';
+import { faGear, faPlus } from '@fortawesome/free-solid-svg-icons';
 import Fondo from '../Components/Fondo';
 
 const PIN_CORRECTO = '1234';
 
-function Page1() {
+function AccesoTutor() {
   const navigate = useNavigate();
   const { setNinoActivo, setTutorAutenticado, setTutorOrigen } = useNino();
 
@@ -25,7 +25,7 @@ function Page1() {
 
   const handleSeleccionarNino = (nino) => {
     setNinoActivo(nino);
-    navigate('/page2');
+    navigate('/menumodulos');
   };
 
   const handleNumero = (num) => {
@@ -41,7 +41,7 @@ function Page1() {
           setMostrarPin(false);
           setTutorAutenticado(true);
           setTutorOrigen('global');
-          navigate('/page3');
+          navigate('/paneltutor');
         } else {
           setErrorPin(true);
           setTimeout(() => {
@@ -60,9 +60,9 @@ function Page1() {
 
   return (
     <Fondo>
-      <div className="min-h-screen flex flex-col"> {/* ← DIV NUEVO */}
-
+      <div className="min-h-screen flex flex-col">
         <NavbarDev rol="selector" />
+        
         <div className="flex-1 flex flex-col items-center justify-center max-w-3xl mx-auto px-6 py-12 w-full">
           <h1 className="text-3xl md:text-4xl font-extrabold text-[#1B3A5C] mb-2 text-center">
             ¿Quién está jugando hoy?
@@ -71,12 +71,14 @@ function Page1() {
             Selecciona para entrar al perfil del niño o accede como tutor
           </p>
 
+          {/* Carrusel horizontal de niños */}
           <div className="flex gap-4 overflow-x-auto pb-4 w-full scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent px-4 py-4">
+            {/* Tarjetas de niños existentes */}
             {NinosList.map((nino) => (
               <button
                 key={nino.id_infante}
                 onClick={() => handleSeleccionarNino(nino)}
-                className="flex flex-col items-center gap-3 p-5 bg-white rounded-3xl shadow-md hover:shadow-xl hover:scale-105 active:scale-95 transition-all shrink-0 min-w-[130px]"
+                className="flex flex-col items-center gap-3 p-5 bg-white rounded-3xl shadow-md hover:shadow-xl hover:scale-105 active:scale-95 transition-all shrink-0"
               >
                 <div className="w-20 h-20 rounded-full bg-[#E0F7FA] border-4 border-[#1B3A5C] flex items-center justify-center text-5xl">
                   {nino.avatar_url}
@@ -89,8 +91,25 @@ function Page1() {
                 </p>
               </button>
             ))}
+
+            {/* Tarjeta para Agregar Nuevo Niño */}
+            <button
+              onClick={() => navigate('/crearnino')}
+              className="flex flex-col items-center gap-3 p-5 bg-white rounded-3xl shadow-md hover:shadow-xl hover:scale-105 active:scale-95 transition-all shrink-0 border-2 border-dashed border-[#1B3A5C]/30 hover:border-[#1B3A5C]"
+            >
+              <div className="w-20 h-20 rounded-full bg-[#F0F4F8] border-4 border-dashed border-[#1B3A5C] flex items-center justify-center text-3xl text-[#1B3A5C]">
+                <FontAwesomeIcon icon={faPlus} />
+              </div>
+              <p className="font-extrabold text-[#1B3A5C] text-lg">
+                Agregar niño
+              </p>
+              <p className="text-sm text-[#78909C] font-semibold">
+                Nuevo perfil
+              </p>
+            </button>
           </div>
 
+          {/* Botón de acceso de tutor */}
           <button
             onClick={() => setMostrarPin(true)}
             className="mt-6 bg-blue-300 items-center gap-2 hover:bg-[#2A4F73] px-6 py-3 rounded-full transition-all shadow-md"
@@ -99,9 +118,9 @@ function Page1() {
             <span>Acceso de tutor</span>
           </button>
         </div>
+      </div>
 
-      </div> 
-
+      {/* Modal de PIN */}
       {mostrarPin && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
           <div className={`bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl ${errorPin ? 'animate-shake' : ''}`}>
@@ -164,7 +183,7 @@ function Page1() {
         </div>
       )}
     </Fondo>
-);
+  );
 }
 
-export default Page1;
+export default AccesoTutor;

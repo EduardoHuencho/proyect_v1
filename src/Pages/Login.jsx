@@ -17,32 +17,69 @@ function Login() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    console.log('Iniciando sesión con:', { email });
-    navigate('/page1');
+    setError(null);
+    setLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:3000/user/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error('AUTH_ERROR');
+      }
+
+      const data = await response.json();
+      console.log('Login exitoso:', data);
+
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
+
+      navigate('/accesotutor');
+    } catch (err) {
+      console.error('Error:', err);
+
+      if (err.message === 'AUTH_ERROR') {
+        setError(
+          'El correo o la contraseña son incorrectos. Por favor, inténtalo de nuevo.'
+        );
+      } else {
+        setError(
+          'No se pudo conectar con el servidor. Verifica tu conexión a internet o inténtalo más tarde.'
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <Fondo>
-      <div className="min-h-screen flex flex-col">
-        <div className="flex justify-center pt-8 pb-2">
+      <div className="min-h-screen flex flex-col justify-between w-full">
+        <div className="flex justify-center pt-8 pb-2 shrink-0">
           <img src={logoImg} alt="Logo TEAYUDO" className="h-16 w-auto" />
         </div>
 
-        <div className="flex-1 flex flex-col md:flex-row items-center justify-center gap-0 md:gap-8 px-6 pb-10 max-w-5xl mx-auto w-full">
-          <div className="flex-1 flex flex-col items-center justify-center md:items-end md:pr-8 py-4">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 px-6 py-6 max-w-5xl mx-auto w-full">
+          <div className="flex-1 flex flex-col items-center justify-center md:items-end md:pr-4 py-2">
             <img
               src={loginfante}
               alt="Ilustración amigos"
               className="w-full max-w-xs md:max-w-sm drop-shadow-xl"
             />
-            <p className="text-center md:text-right text-[#4A7A96] font-semibold mt-3 text-sm max-w-xs">
+            <p className="text-center md:text-right text-[#4A7A96] font-semibold mt-4 text-sm max-w-xs">
               ¡Bienvenido a TEAYUDO!
               <br />
               Tu herramienta de comunicación.
             </p>
           </div>
 
-          <div className="flex-1 w-full max-w-sm rounded-[30px] p-8 shadow-2xl bg-white">
+          <div className="flex-1 w-full max-w-sm rounded-[30px] p-8 shadow-2xl bg-white shrink-0">
             <h2 className="text-2xl font-extrabold text-[#005088] mb-1">
               Iniciar sesión
             </h2>
@@ -50,29 +87,38 @@ function Login() {
               Ingresa tus credenciales para continuar
             </p>
 
+            {error && (
+              <div className="mb-4 p-3 text-sm text-red-700 bg-red-100 border border-red-300 rounded-[14px] font-medium flex items-start gap-2 animate-fade-in">
+                <span>{error}</span>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <input
                 type="email"
                 required
+                disabled={loading}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="nombre@correo.com"
-                className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[13px_18px] outline-none placeholder:text-[#003052]/50"
+                className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[13px_18px] outline-none placeholder:text-[#003052]/50 disabled:opacity-50"
               />
 
               <div className="relative w-full">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
+                  disabled={loading}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[13px_45px_13px_18px] outline-none placeholder:text-[#003052]/50"
+                  className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[13px_48px_13px_18px] outline-none placeholder:text-[#003052]/50 disabled:opacity-50"
                 />
                 <button
                   type="button"
+                  disabled={loading}
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4A7A96] hover:text-[#005088] focus:outline-none select-none active:scale-90 transition-all"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4A7A96] hover:text-[#005088] focus:outline-none select-none active:scale-90 transition-all disabled:opacity-50"
                 >
                   <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                 </button>
@@ -80,23 +126,27 @@ function Login() {
 
               <button
                 type="submit"
-                className="mt-3 w-full py-4 rounded-[18px] font-extrabold text-xl bg-[#FDD835] text-[#003052] border-3 border-[#C8A800] shadow-[0_6px_0_#C8A800] transition-all hover:scale-105 active:scale-95 active:translate-y-[2px] active:shadow-[0_4px_0_#C8A800]"
+                disabled={loading}
+                className="mt-3 w-full py-4 rounded-[18px] font-extrabold text-xl bg-[#FDD835] text-[#003052] border-3 border-[#C8A800] shadow-[0_6px_0_#C8A800] transition-all hover:scale-105 active:scale-95 active:shadow-[0_4px_0_#C8A800] disabled:opacity-50 disabled:scale-100 disabled:active:translate-y-0"
               >
-                INGRESAR
+                {loading ? 'CONECTANDO...' : 'INGRESAR'}
               </button>
             </form>
 
             <div className="mt-5 text-center">
               <button
                 type="button"
+                disabled={loading}
                 onClick={() => navigate('/registro')}
-                className="text-sm font-bold text-[#4A7A96] hover:text-[#005088] transition-colors focus:outline-none"
+                className="text-sm font-bold text-[#4A7A96] hover:text-[#005088] transition-colors focus:outline-none disabled:opacity-50"
               >
                 ¿No tienes cuenta? Regístrate aquí
               </button>
             </div>
           </div>
         </div>
+
+        <div className="h-8 shrink-0 hidden md:block"></div>
       </div>
     </Fondo>
   );

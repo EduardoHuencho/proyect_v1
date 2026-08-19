@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router';
 import NavbarDev from '../Components/NavbarDev';
 import ModuloCard from '../Components/ModuloCard';
@@ -45,17 +44,19 @@ const modulos = [
   },
 ];
 
-function Page4() {
-  const navigate = useNavigate();
+function DashboardTutor() {
 
-  const handleModulo = (modulo) => {
-    if (!modulo.disponible) return;
-    navigate(modulo.ruta);
-  };
+    const navigate = useNavigate();
+
+    const handleModulo = (modulo) => {
+        if (!modulo.disponible) return;
+        navigate(modulo.ruta);
+    };
+
 
   return (
     <Fondo>
-      <NavbarDev rol="tutor" rutaVolver="/page3" labelVolver="Volver" />
+      <NavbarDev rol="tutor" rutaVolver="/paneltutor" labelVolver="Volver" />
 
       <div className="text-center pt-8 mb-8">
         <h1 className="text-3xl font-extrabold text-[#1B3A5C]">
@@ -85,7 +86,7 @@ function Page4() {
         TEAYUDO · Sistema educativo AAC
       </p>
     </Fondo>
-  );
+  )
 }
 
-export default Page4;
+export default DashboardTutor

@@ -1,4 +1,3 @@
-import React from 'react'
 import fondoImg from '../assets/diseño.jpg'
 
 function Fondo({ children }) {

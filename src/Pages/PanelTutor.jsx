@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router';
 import NavbarDev from '../Components/NavbarDev';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -6,9 +5,10 @@ import { faGrip, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { useNino } from '../context/NinoContext';
 import Fondo from '../Components/Fondo';
 
-function Page3() {
-  const navigate = useNavigate();
-  const { setTutorAutenticado, setTutorOrigen } = useNino();
+function PanelTutor() {
+
+    const navigate = useNavigate();
+    const { setTutorAutenticado, setTutorOrigen } = useNino();
 
   return (
     <Fondo>
@@ -22,7 +22,7 @@ function Page3() {
 
         <div className="w-full flex flex-col gap-4">
           <button
-            onClick={() => navigate('/page4')}
+            onClick={() => navigate('/dashboardtutor')}
             className="w-full bg-[#1A7A6E] hover:bg-[#15695F] active:scale-95 text-white rounded-2xl p-6 flex items-center gap-4 transition-all shadow-md"
           >
             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
@@ -40,7 +40,7 @@ function Page3() {
             onClick={() => {
               setTutorAutenticado(false);
               setTutorOrigen(null);
-              navigate('/page1');
+              navigate('/accesotutor');
             }}
             className="w-full bg-white hover:bg-red-50 active:scale-95 border-2 border-[#E53935] rounded-2xl p-6 flex items-center gap-4 transition-all shadow-sm"
           >
@@ -59,7 +59,7 @@ function Page3() {
         </div>
       </div>
     </Fondo>
-  );
+  )
 }
 
-export default Page3;
+export default PanelTutor

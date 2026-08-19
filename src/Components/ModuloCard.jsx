@@ -1,4 +1,3 @@
-import React from 'react';
 
 function ModuloCard({
   titulo,
@@ -13,7 +12,7 @@ function ModuloCard({
     return (
       <button
         onClick={onClick}
-        className={`bg-white rounded-3xl p-6 flex flex-col items-center justify-center gap-4 shadow-md transition-all border-[4px] min-h-[220px] w-full
+        className={`bg-white rounded-3xl p-6 flex flex-col items-center justify-center gap-4 shadow-md transition-all w-full
           ${
             disponible
               ? 'hover:scale-[1.02] active:scale-[0.98] cursor-pointer hover:shadow-lg'
@@ -33,7 +32,7 @@ function ModuloCard({
         </div>
 
         <div className="text-center w-full">
-          <p className="font-extrabold text-[#1B3A5C] text-2xl break-words uppercase tracking-wide">
+          <p className="font-extrabold text-[#1B3A5C] text-2xl uppercase tracking-wide">
             {titulo}
           </p>
           {!disponible && (
@@ -49,7 +48,7 @@ function ModuloCard({
   return (
     <button
       onClick={onClick}
-      className={`rounded-3xl p-6 flex flex-col items-center justify-center gap-4 shadow-md transition-all min-h-[180px] w-full text-white
+      className={`rounded-3xl p-6 flex flex-col items-center justify-center gap-4 shadow-md transition-all w-full text-white
         ${
           disponible
             ? 'hover:scale-[1.02] hover:brightness-105 active:scale-[0.99] cursor-pointer'
@@ -57,7 +56,7 @@ function ModuloCard({
         }`}
       style={{ backgroundColor: borderColor }}
     >
-      <div className="w-20 h-20 bg-white/95 rounded-2xl flex items-center justify-center p-3 shadow-sm flex-shrink-0">
+      <div className="w-20 h-20 bg-white/95 rounded-2xl flex items-center justify-center p-3 shadow-sm">
         <img
           src={imagen}
           alt={titulo}
@@ -70,7 +69,7 @@ function ModuloCard({
           {titulo}
         </h2>
         {descripcion && (
-          <p className="text-sm text-white/80 font-medium mt-1 px-2 leading-snug break-words">
+          <p className="text-sm text-white/80 font-medium mt-1 px-2 leading-snug">
             {descripcion}
           </p>
         )}

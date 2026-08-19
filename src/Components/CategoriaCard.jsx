@@ -1,4 +1,3 @@
-import React from 'react';
 
 function CategoriaCard({ label, icon, color, activo, onClick }) {
   return (

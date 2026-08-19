@@ -263,7 +263,7 @@ function Registro() {
 
               <button
                 type="submit"
-                className="mt-2 w-full py-3.5 rounded-[18px] font-extrabold text-xl bg-[#FDD835] text-[#003052] border-3 border-[#C8A800] shadow-[0_6px_0_#C8A800] transition-all hover:scale-105 active:scale-95 active:translate-y-[2px] active:shadow-[0_4px_0_#C8A800]"
+                className="mt-2 w-full py-3.5 rounded-[18px] font-extrabold text-xl bg-[#FDD835] text-[#003052] border-3 border-[#C8A800] shadow-[0_6px_0_#C8A800] transition-all hover:scale-105 active:scale-95 active:shadow-[0_4px_0_#C8A800]"
               >
                 REGISTRARSE
               </button>
