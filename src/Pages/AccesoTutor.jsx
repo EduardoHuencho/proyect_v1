@@ -9,6 +9,12 @@ import Fondo from '../Components/Fondo';
 
 const PIN_CORRECTO = '1234';
 
+const calcularEdad = (fecha) => {
+  const hoy = new Date();
+  const nacimiento = new Date(fecha);
+  return hoy.getFullYear() - nacimiento.getFullYear() + ' años';
+};
+
 function AccesoTutor() {
   const navigate = useNavigate();
   const { setNinoActivo, setTutorAutenticado, setTutorOrigen } = useNino();
@@ -16,12 +22,6 @@ function AccesoTutor() {
   const [mostrarPin, setMostrarPin] = useState(false);
   const [pin, setPin] = useState('');
   const [errorPin, setErrorPin] = useState(false);
-
-  const calcularEdad = (fecha) => {
-    const hoy = new Date();
-    const nacimiento = new Date(fecha);
-    return hoy.getFullYear() - nacimiento.getFullYear() + ' años';
-  };
 
   const handleSeleccionarNino = (nino) => {
     setNinoActivo(nino);
@@ -78,7 +78,7 @@ function AccesoTutor() {
               <button
                 key={nino.id_infante}
                 onClick={() => handleSeleccionarNino(nino)}
-                className="flex flex-col items-center gap-3 p-5 bg-white rounded-3xl shadow-md hover:shadow-xl hover:scale-105 active:scale-95 transition-all shrink-0"
+                className="flex flex-col items-center gap-3 p-5 bg-white rounded-3xl shadow-md hover:shadow-xl hover:scale-105 active:scale-95 transition-colors shrink-0"
               >
                 <div className="w-20 h-20 rounded-full bg-[#E0F7FA] border-4 border-[#1B3A5C] flex items-center justify-center text-5xl">
                   {nino.avatar_url}
@@ -95,7 +95,7 @@ function AccesoTutor() {
             {/* Tarjeta para Agregar Nuevo Niño */}
             <button
               onClick={() => navigate('/crearnino')}
-              className="flex flex-col items-center gap-3 p-5 bg-white rounded-3xl shadow-md hover:shadow-xl hover:scale-105 active:scale-95 transition-all shrink-0 border-2 border-dashed border-[#1B3A5C]/30 hover:border-[#1B3A5C]"
+              className="flex flex-col items-center gap-3 p-5 bg-white rounded-3xl shadow-md hover:shadow-xl hover:scale-105 active:scale-95 transition-colors shrink-0 border-2 border-dashed border-[#1B3A5C]/30 hover:border-[#1B3A5C]"
             >
               <div className="w-20 h-20 rounded-full bg-[#F0F4F8] border-4 border-dashed border-[#1B3A5C] flex items-center justify-center text-3xl text-[#1B3A5C]">
                 <FontAwesomeIcon icon={faPlus} />
@@ -112,7 +112,8 @@ function AccesoTutor() {
           {/* Botón de acceso de tutor */}
           <button
             onClick={() => setMostrarPin(true)}
-            className="mt-6 bg-blue-300 items-center gap-2 hover:bg-[#2A4F73] px-6 py-3 rounded-full transition-all shadow-md"
+            aria-label="Acceso de tutor"
+            className="mt-6 bg-blue-300 items-center gap-2 hover:bg-[#2A4F73] px-6 py-3 rounded-full transition-colors shadow-md"
           >
             <FontAwesomeIcon icon={faGear} />
             <span>Acceso de tutor</span>
@@ -136,7 +137,7 @@ function AccesoTutor() {
               {[0, 1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="w-4 h-4 rounded-full transition-all"
+                  className="w-4 h-4 rounded-full transition-colors"
                   style={{
                     background: i < pin.length
                       ? errorPin ? '#E53935' : '#1B3A5C'
@@ -150,26 +151,28 @@ function AccesoTutor() {
                 <button
                   key={num}
                   onClick={() => handleNumero(String(num))}
-                  className="h-14 rounded-2xl bg-[#F0F4F8] hover:bg-[#E0F7FA] active:bg-[#B2EBF2] font-extrabold text-xl text-[#1B3A5C] transition-all active:scale-95"
+                  className="h-14 rounded-2xl bg-[#F0F4F8] hover:bg-[#E0F7FA] active:bg-[#B2EBF2] font-extrabold text-xl text-[#1B3A5C] transition-colors active:scale-95"
                 >
                   {num}
                 </button>
               ))}
               <button
                 onClick={handleBorrar}
-                className="h-14 rounded-2xl bg-[#F0F4F8] hover:bg-red-50 font-bold text-[#E53935] transition-all active:scale-95 text-sm"
+                  aria-label="Borrar último dígito"
+                  className="h-14 rounded-2xl bg-[#F0F4F8] hover:bg-red-50 font-bold text-[#E53935] transition-colors active:scale-95 text-sm"
               >
                 ⌫
               </button>
               <button
                 onClick={() => handleNumero('0')}
-                className="h-14 rounded-2xl bg-[#F0F4F8] hover:bg-[#E0F7FA] active:bg-[#B2EBF2] font-extrabold text-xl text-[#1B3A5C] transition-all active:scale-95"
+                className="h-14 rounded-2xl bg-[#F0F4F8] hover:bg-[#E0F7FA] active:bg-[#B2EBF2] font-extrabold text-xl text-[#1B3A5C] transition-colors active:scale-95"
               >
                 0
               </button>
               <button
                 onClick={() => { setMostrarPin(false); setPin(''); setErrorPin(false); }}
-                className="h-14 rounded-2xl bg-[#F0F4F8] hover:bg-red-50 font-bold text-[#78909C] transition-all active:scale-95 text-sm"
+                aria-label="Cerrar acceso de tutor"
+                className="h-14 rounded-2xl bg-[#F0F4F8] hover:bg-red-50 font-bold text-[#78909C] transition-colors active:scale-95 text-sm"
               >
                 ✕
               </button>

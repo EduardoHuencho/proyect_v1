@@ -84,7 +84,7 @@ function NavbarDev({
           {rutaVolver && (
             <button
               onClick={() => navigate(rutaVolver)}
-              className="flex items-center gap-2 bg-[#2A4F73] hover:bg-[#3A6F9F] text-white px-3 py-2 rounded-xl text-sm font-semibold transition-all"
+              className="flex items-center gap-2 bg-[#2A4F73] hover:bg-[#3A6F9F] text-white px-3 py-2 rounded-xl text-sm font-semibold transition-colors"
             >
               <FontAwesomeIcon icon={faArrowLeft} />
               <span className="hidden md:inline">{labelVolver}</span>
@@ -102,7 +102,8 @@ function NavbarDev({
               navigate('/menumodulos'); 
             }
           }}
-          className="hover:opacity-80 transition-all active:scale-95"
+          aria-label="Ir al inicio"
+          className="hover:opacity-80 transition-opacity active:scale-95"
         >
           <img src={logoImg} alt="Logo TEAYUDO" className="h-8 md:h-10 w-auto" />
         </button>
@@ -119,7 +120,7 @@ function NavbarDev({
               {esPictogramas && tutorOrigen === 'local' && (
                 <button
                   onClick={handleGuardarYSalir}
-                  className="flex items-center gap-2 bg-[#2A4F73] hover:bg-[#3A6F9F] text-white px-3 py-2 rounded-xl text-sm font-semibold transition-all"
+                  className="flex items-center gap-2 bg-[#2A4F73] hover:bg-[#3A6F9F] text-white px-3 py-2 rounded-xl text-sm font-semibold transition-colors"
                 >
                   <FontAwesomeIcon icon={faFloppyDisk} />
                   <span className="hidden md:inline">Guardar y salir</span>
@@ -129,7 +130,7 @@ function NavbarDev({
               {!esPictogramas && (
                 <button
                   onClick={handleSalirTutor}
-                  className="flex items-center gap-2 bg-[#2A4F73] hover:bg-[#3A6F9F] text-white px-3 py-2 rounded-xl text-sm font-semibold transition-all"
+                  className="flex items-center gap-2 bg-[#2A4F73] hover:bg-[#3A6F9F] text-white px-3 py-2 rounded-xl text-sm font-semibold transition-colors"
                 >
                   <FontAwesomeIcon icon={faDoorOpen} />
                   <span className="hidden md:inline">Salir</span>
@@ -141,7 +142,7 @@ function NavbarDev({
           {rol === 'selector' && (
             <button
               onClick={() => navigate('/')}
-              className="flex items-center gap-2 bg-[#2A4F73] hover:bg-[#3A6F9F] text-white px-3 py-2 rounded-xl text-sm font-semibold transition-all"
+              className="flex items-center gap-2 bg-[#2A4F73] hover:bg-[#3A6F9F] text-white px-3 py-2 rounded-xl text-sm font-semibold transition-colors"
             >
               <FontAwesomeIcon icon={faDoorOpen} />
               <span className="hidden md:inline">Salir</span>
@@ -151,7 +152,8 @@ function NavbarDev({
           {rol === 'nino' && (
             <button
               onClick={() => setMostrarPin(true)}
-              className="flex items-center gap-2 bg-[#2A4F73] hover:bg-[#3A6F9F] text-white px-3 py-2 rounded-xl text-sm font-semibold transition-all"
+              aria-label="Abrir configuración de tutor"
+              className="flex items-center gap-2 bg-[#2A4F73] hover:bg-[#3A6F9F] text-white px-3 py-2 rounded-xl text-sm font-semibold transition-colors"
               title="Configuración Tutor"
             >
               <FontAwesomeIcon icon={faGear} />
@@ -178,7 +180,7 @@ function NavbarDev({
               {[0, 1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="w-4 h-4 rounded-full transition-all"
+                  className="w-4 h-4 rounded-full transition-colors"
                   style={{
                     background:
                       i < pin.length
@@ -196,26 +198,28 @@ function NavbarDev({
                 <button
                   key={num}
                   onClick={() => handleNumero(String(num))}
-                  className="h-14 rounded-2xl bg-[#F0F4F8] hover:bg-[#E0F7FA] active:bg-[#B2EBF2] font-extrabold text-xl text-[#1B3A5C] transition-all active:scale-95"
+                  className="h-14 rounded-2xl bg-[#F0F4F8] hover:bg-[#E0F7FA] active:bg-[#B2EBF2] font-extrabold text-xl text-[#1B3A5C] transition-colors active:scale-95"
                 >
                   {num}
                 </button>
               ))}
               <button
                 onClick={handleBorrar}
-                className="h-14 rounded-2xl bg-[#F0F4F8] hover:bg-red-50 font-bold text-[#E53935] transition-all active:scale-95 text-sm"
+                aria-label="Borrar último dígito"
+                className="h-14 rounded-2xl bg-[#F0F4F8] hover:bg-red-50 font-bold text-[#E53935] transition-colors active:scale-95 text-sm"
               >
                 ⌫
               </button>
               <button
                 onClick={() => handleNumero('0')}
-                className="h-14 rounded-2xl bg-[#F0F4F8] hover:bg-[#E0F7FA] active:bg-[#B2EBF2] font-extrabold text-xl text-[#1B3A5C] transition-all active:scale-95"
+                className="h-14 rounded-2xl bg-[#F0F4F8] hover:bg-[#E0F7FA] active:bg-[#B2EBF2] font-extrabold text-xl text-[#1B3A5C] transition-colors active:scale-95"
               >
                 0
               </button>
               <button
                 onClick={handleCerrar}
-                className="h-14 rounded-2xl bg-[#F0F4F8] hover:bg-red-50 font-bold text-[#78909C] transition-all active:scale-95 text-sm"
+                aria-label="Cerrar acceso de tutor"
+                className="h-14 rounded-2xl bg-[#F0F4F8] hover:bg-red-50 font-bold text-[#78909C] transition-colors active:scale-95 text-sm"
               >
                 ✕
               </button>

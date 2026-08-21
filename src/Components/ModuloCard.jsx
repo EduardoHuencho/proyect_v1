@@ -12,7 +12,7 @@ function ModuloCard({
     return (
       <button
         onClick={onClick}
-        className={`bg-white rounded-3xl p-6 flex flex-col items-center justify-center gap-4 shadow-md transition-all w-full
+        className={`bg-white rounded-3xl p-6 flex flex-col items-center justify-center gap-4 shadow-md transition-colors w-full
           ${
             disponible
               ? 'hover:scale-[1.02] active:scale-[0.98] cursor-pointer hover:shadow-lg'
@@ -48,7 +48,7 @@ function ModuloCard({
   return (
     <button
       onClick={onClick}
-      className={`rounded-3xl p-6 flex flex-col items-center justify-center gap-4 shadow-md transition-all w-full text-white
+      className={`rounded-3xl p-6 flex flex-col items-center justify-center gap-4 shadow-md transition-colors w-full text-white
         ${
           disponible
             ? 'hover:scale-[1.02] hover:brightness-105 active:scale-[0.99] cursor-pointer'

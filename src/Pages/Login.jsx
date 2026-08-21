@@ -21,12 +21,12 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3000/user/login', {
+      const response = await fetch('http://localhost:3000/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
       });
 
       if (!response.ok) {
@@ -35,9 +35,12 @@ function Login() {
 
       const data = await response.json();
       console.log('Login exitoso:', data);
-
-      if (data.token) {
-        localStorage.setItem('token', data.token);
+      
+      if (data.id) {
+        localStorage.setItem('userId', data.id);
+        console.log('ID en localStorage:', localStorage.getItem('userId'));
+      } else {
+        console.warn('Otra respuesta:', data);
       }
 
       navigate('/accesotutor');
@@ -94,18 +97,28 @@ function Login() {
             )}
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <input
-                type="email"
-                required
-                disabled={loading}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="nombre@correo.com"
-                className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[13px_18px] outline-none placeholder:text-[#003052]/50 disabled:opacity-50"
-              />
-
-              <div className="relative w-full">
+              <div className="flex flex-col">
+                <label htmlFor="login-email" className="sr-only">
+                  Correo electrónico
+                </label>
                 <input
+                  id="login-email"
+                  type="email"
+                  required
+                  disabled={loading}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="nombre@correo.com"
+                  className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[13px_18px] outline-none placeholder:text-[#003052]/50 disabled:opacity-50"
+                />
+              </div>
+
+              <div className="relative w-full flex flex-col">
+                <label htmlFor="login-password" className="sr-only">
+                  Contraseña
+                </label>
+                <input
+                  id="login-password"
                   type={showPassword ? 'text' : 'password'}
                   required
                   disabled={loading}
@@ -117,8 +130,9 @@ function Login() {
                 <button
                   type="button"
                   disabled={loading}
+                  aria-label={showPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4A7A96] hover:text-[#005088] focus:outline-none select-none active:scale-90 transition-all disabled:opacity-50"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4A7A96] hover:text-[#005088] focus:outline-none select-none active:scale-90 transition-transform disabled:opacity-50"
                 >
                   <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                 </button>
@@ -127,7 +141,7 @@ function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-3 w-full py-4 rounded-[18px] font-extrabold text-xl bg-[#FDD835] text-[#003052] border-3 border-[#C8A800] shadow-[0_6px_0_#C8A800] transition-all hover:scale-105 active:scale-95 active:shadow-[0_4px_0_#C8A800] disabled:opacity-50 disabled:scale-100 disabled:active:translate-y-0"
+                className="mt-3 w-full py-4 rounded-[18px] font-extrabold text-xl bg-[#FDD835] text-[#003052] border-3 border-[#C8A800] shadow-[0_6px_0_#C8A800] transition-transform hover:scale-105 active:scale-95 active:shadow-[0_4px_0_#C8A800] disabled:opacity-50 disabled:scale-100 disabled:active:translate-y-0"
               >
                 {loading ? 'CONECTANDO...' : 'INGRESAR'}
               </button>

@@ -6,6 +6,13 @@ import logoImg from '../assets/logo.png';
 import ninioImg from '../assets/logniños.png';
 import Fondo from '../Components/Fondo';
 
+const handlePinChange = (value, setFunction) => {
+  const cleaned = value.replace(/\D/g, '');
+  if (cleaned.length <= 4) {
+    setFunction(cleaned);
+  }
+};
+
 function Registro() {
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
@@ -22,13 +29,6 @@ function Registro() {
   const [showConfirmPin, setShowConfirmPin] = useState(false);
 
   const navigate = useNavigate();
-
-  const handlePinChange = (value, setFunction) => {
-    const cleaned = value.replace(/\D/g, '');
-    if (cleaned.length <= 4) {
-      setFunction(cleaned);
-    }
-  };
 
   async function handleRegister(e) {
     e.preventDefault();
@@ -132,7 +132,9 @@ function Registro() {
 
             <form onSubmit={handleRegister} className="flex flex-col gap-3.5">
               <div className="grid grid-cols-2 gap-3">
+                <label htmlFor="registro-nombre" className="sr-only">Nombre</label>
                 <input
+                  id="registro-nombre"
                   type="text"
                   required
                   value={nombre}
@@ -140,7 +142,9 @@ function Registro() {
                   placeholder="Nombre"
                   className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[11px_16px] outline-none placeholder:text-[#003052]/50"
                 />
+                <label htmlFor="registro-apellido" className="sr-only">Apellido</label>
                 <input
+                  id="registro-apellido"
                   type="text"
                   required
                   value={apellido}
@@ -150,7 +154,9 @@ function Registro() {
                 />
               </div>
 
+              <label htmlFor="registro-email" className="sr-only">Correo electrónico</label>
               <input
+                id="registro-email"
                 type="email"
                 required
                 value={email}
@@ -158,7 +164,9 @@ function Registro() {
                 placeholder="nombre@correo.com"
                 className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[11px_16px] outline-none placeholder:text-[#003052]/50"
               />
+              <label htmlFor="registro-confirm-email" className="sr-only">Repetir correo electrónico</label>
               <input
+                id="registro-confirm-email"
                 type="email"
                 required
                 value={confirmEmail}
@@ -168,7 +176,9 @@ function Registro() {
               />
 
               <div className="relative w-full">
+                <label htmlFor="registro-password" className="sr-only">Contraseña</label>
                 <input
+                  id="registro-password"
                   type={showPassword ? 'text' : 'password'}
                   required
                   minLength={6}
@@ -180,14 +190,17 @@ function Registro() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4A7A96] hover:text-[#005088] focus:outline-none select-none active:scale-90 transition-all"
+                  aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4A7A96] hover:text-[#005088] focus:outline-none select-none active:scale-90 transition-colors"
                 >
                   <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                 </button>
               </div>
 
               <div className="relative w-full">
+                <label htmlFor="registro-confirm-password" className="sr-only">Repetir contraseña</label>
                 <input
+                  id="registro-confirm-password"
                   type={showConfirmPassword ? 'text' : 'password'}
                   required
                   minLength={6}
@@ -199,7 +212,8 @@ function Registro() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4A7A96] hover:text-[#005088] focus:outline-none select-none active:scale-90 transition-all"
+                  aria-label={showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4A7A96] hover:text-[#005088] focus:outline-none select-none active:scale-90 transition-colors"
                 >
                   <FontAwesomeIcon
                     icon={showConfirmPassword ? faEyeSlash : faEye}
@@ -219,7 +233,9 @@ function Registro() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="relative w-full">
+                  <label htmlFor="registro-pin" className="sr-only">PIN parental</label>
                   <input
+                    id="registro-pin"
                     type={showPin ? 'text' : 'password'}
                     inputMode="numeric"
                     required
@@ -231,6 +247,7 @@ function Registro() {
                   />
                   <button
                     type="button"
+                    aria-label={showPin ? 'Ocultar PIN' : 'Mostrar PIN'}
                     onClick={() => setShowPin(!showPin)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#4A7A96] hover:text-[#005088] focus:outline-none select-none"
                   >
@@ -239,7 +256,9 @@ function Registro() {
                 </div>
 
                 <div className="relative w-full">
+                  <label htmlFor="registro-confirm-pin" className="sr-only">Repetir PIN parental</label>
                   <input
+                    id="registro-confirm-pin"
                     type={showConfirmPin ? 'text' : 'password'}
                     inputMode="numeric"
                     required
@@ -253,6 +272,7 @@ function Registro() {
                   />
                   <button
                     type="button"
+                    aria-label={showConfirmPin ? 'Ocultar PIN' : 'Mostrar PIN'}
                     onClick={() => setShowConfirmPin(!showConfirmPin)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#4A7A96] hover:text-[#005088] focus:outline-none select-none"
                   >
@@ -263,7 +283,7 @@ function Registro() {
 
               <button
                 type="submit"
-                className="mt-2 w-full py-3.5 rounded-[18px] font-extrabold text-xl bg-[#FDD835] text-[#003052] border-3 border-[#C8A800] shadow-[0_6px_0_#C8A800] transition-all hover:scale-105 active:scale-95 active:shadow-[0_4px_0_#C8A800]"
+                className="mt-2 w-full py-3.5 rounded-[18px] font-extrabold text-xl bg-[#FDD835] text-[#003052] border-3 border-[#C8A800] shadow-[0_6px_0_#C8A800] transition-colors hover:scale-105 active:scale-95 active:shadow-[0_4px_0_#C8A800]"
               >
                 REGISTRARSE
               </button>

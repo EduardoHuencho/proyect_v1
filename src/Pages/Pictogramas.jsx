@@ -8,7 +8,6 @@ import NavbarDev from '../Components/NavbarDev';
 import { useNino } from '../context/NinoContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Fondo from '../Components/Fondo';
-//import { useNavigate } from 'react-router';
 import {
   faVolumeHigh,
   faTrashCan,
@@ -16,11 +15,10 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 function Pictogramas() {
-  //const navigate = useNavigate();
   const { tutorAutenticado, tutorOrigen, ninoActivo, setNinoActivo } =
     useNino();
   const [frase, setFrase] = useState([]);
-  const [vozAmigable, setVozAmigable] = useState(null);
+  const vozAmigableRef = useRef(null);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('todos');
   const contenedorFraseRef = useRef(null);
 
@@ -38,20 +36,22 @@ function Pictogramas() {
             voz.name.includes('Monica') ||
             voz.name.includes('Paulina')
         ) || vocesEspanol[0];
-      setVozAmigable(mejorVoz);
+      vozAmigableRef.current = mejorVoz;
     };
     configurarVoz();
     window.speechSynthesis.onvoiceschanged = configurarVoz;
   }, []);
 
   const pictogramaHandler = (pictograma) => {
-    setFrase([...frase, pictograma]);
-    console.log('Enviando ID al backend simulado:', pictograma.id);
+    setFrase((prevFrase) => [
+      ...prevFrase,
+      { ...pictograma, phraseId: crypto.randomUUID() },
+    ]);
   };
 
   const pictogramaLastDelete = () => {
     if (frase.length === 0) return;
-    setFrase(frase.slice(0, -1));
+    setFrase((prevFrase) => prevFrase.slice(0, -1));
   };
 
   const pictogramaClearAll = () => {
@@ -65,9 +65,9 @@ function Pictogramas() {
     if (frase.length === 0) return;
     const textoAHeber = frase.map((pic) => pic.label).join(' ');
     const mensaje = new SpeechSynthesisUtterance(textoAHeber);
-    if (vozAmigable) {
-      mensaje.voice = vozAmigable;
-      mensaje.lang = vozAmigable.lang;
+    if (vozAmigableRef.current) {
+      mensaje.voice = vozAmigableRef.current;
+      mensaje.lang = vozAmigableRef.current.lang;
     } else {
       mensaje.lang = 'es-ES';
     }
@@ -97,7 +97,6 @@ function Pictogramas() {
   return (
     <Fondo>
       <div className="flex flex-col h-screen">
-        {/* Navbar */}
         <NavbarDev
           rol={tutorAutenticado ? 'tutor' : 'nino'}
           esPictogramas={true}
@@ -119,7 +118,7 @@ function Pictogramas() {
                 <button
                   key={nino.id_infante}
                   onClick={() => setNinoActivo(nino)}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all shrink-0 whitespace-nowrap"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm transition-colors shrink-0 whitespace-nowrap"
                   style={{
                     background:
                       ninoActivo?.id_infante === nino.id_infante
@@ -139,33 +138,34 @@ function Pictogramas() {
               ))}
             </div>
           )}
-          <div className="border border-black bg-white rounded-2xl mb-4 flex items-center justify-between p-3 gap-3 shadow-sm overflow-hidden shrink-0">
+
+          <div className="border border-black bg-white min-h-36.25 sm:min-h-40 rounded-2xl mb-4 flex items-center justify-between p-3 sm:p-4 gap-3 shadow-sm overflow-hidden shrink-0">
             <div
               ref={contenedorFraseRef}
-              className="flex flex-nowrap items-center gap-3 overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent h-full max-h-full pb-1 pr-2"
+              className="flex flex-nowrap items-center gap-2.5 sm:gap-3.5 overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent h-full max-h-full py-1 pr-1"
             >
               {frase.length === 0 ? (
-                <p className="text-gray-400 font-medium text-sm sm:text-base pl-2 whitespace-nowrap">
+                <p className="text-gray-400 font-medium text-xs sm:text-base pl-2 whitespace-nowrap">
                   Toca los pictogramas para crear tu frase...
                 </p>
               ) : (
-                frase.map((pic, index) => (
+                frase.map((pic) => (
                   <div
-                    key={index}
-                    className="p-1.5 border border-gray-200 rounded-xl bg-gray-50 flex flex-col items-center justify-between w-16 sm:w-20 shrink-0 animate-fade-in overflow-hidden"
+                    key={pic.phraseId}
+                    className="p-1.5 sm:p-2 border border-gray-200 rounded-xl bg-gray-50 flex flex-col items-center justify-between w-20 h-28 sm:w-24 sm:h-32 shrink-0 animate-fade-in overflow-hidden"
                   >
-                    <div className="h-11 w-11 flex items-center justify-center overflow-hidden mt-0.5 shrink-0">
+                    <div className="w-full flex-1 flex items-center justify-center overflow-hidden min-h-0">
                       <img
                         src={pic.icon}
                         alt={pic.label}
-                        className="h-full w-full object-contain"
+                        className="max-h-full max-w-full object-contain"
                         onError={(e) => {
                           e.target.onerror = null;
                           e.target.src = 'https://placehold.co/100x100?text=🖼️';
                         }}
                       />
                     </div>
-                    <p className="text-[10px] sm:text-xs font-semibold text-gray-700 w-full text-center leading-tight line-clamp-2 hyphens-auto mb-0.5">
+                    <p className="text-[11px] sm:text-xs font-semibold text-gray-700 w-full text-center leading-tight line-clamp-2 wrap-break-words hyphens-auto px-0.5 mt-1 shrink-0">
                       {pic.label}
                     </p>
                   </div>
@@ -173,11 +173,13 @@ function Pictogramas() {
               )}
             </div>
 
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-2.5 shrink-0">
               <button
+                type="button"
                 onClick={reproducirFrase}
                 disabled={frase.length === 0}
-                className={`h-14 w-14 sm:h-16 sm:w-16 rounded-xl flex items-center justify-center text-xl sm:text-2xl font-bold shadow-md transition-all active:scale-95 ${
+                aria-label="Escuchar frase en voz alta"
+                className={`h-10 w-10 sm:h-16 sm:w-16 rounded-xl flex items-center justify-center text-base sm:text-2xl font-bold shadow-sm sm:shadow-md transition-colors active:scale-95 ${
                   frase.length > 0
                     ? 'bg-blue-500 hover:bg-blue-600 text-white cursor-pointer'
                     : 'bg-gray-100 text-gray-300 cursor-not-allowed shadow-none border border-gray-200'
@@ -188,9 +190,11 @@ function Pictogramas() {
               </button>
 
               <button
+                type="button"
                 onClick={pictogramaClearAll}
                 disabled={frase.length === 0}
-                className={`h-14 w-14 sm:h-16 sm:w-16 rounded-xl flex items-center justify-center text-xl sm:text-2xl font-bold shadow-md transition-all active:scale-95 ${
+                aria-label="Limpiar toda la frase"
+                className={`h-10 w-10 sm:h-16 sm:w-16 rounded-xl flex items-center justify-center text-base sm:text-2xl font-bold shadow-sm sm:shadow-md transition-colors active:scale-95 ${
                   frase.length > 0
                     ? 'bg-amber-500 hover:bg-amber-600 text-white cursor-pointer'
                     : 'bg-gray-100 text-gray-300 cursor-not-allowed shadow-none border border-gray-200'
@@ -201,9 +205,11 @@ function Pictogramas() {
               </button>
 
               <button
+                type="button"
                 onClick={pictogramaLastDelete}
                 disabled={frase.length === 0}
-                className={`h-14 w-14 sm:h-16 sm:w-16 rounded-xl flex items-center justify-center text-xl sm:text-2xl font-bold shadow-md transition-all active:scale-95 ${
+                aria-label="Borrar último pictograma"
+                className={`h-10 w-10 sm:h-16 sm:w-16 rounded-xl flex items-center justify-center text-base sm:text-2xl font-bold shadow-sm sm:shadow-md transition-colors active:scale-95 ${
                   frase.length > 0
                     ? 'bg-red-500 hover:bg-red-600 text-white cursor-pointer'
                     : 'bg-gray-100 text-gray-300 cursor-not-allowed shadow-none border border-gray-200'
@@ -217,7 +223,7 @@ function Pictogramas() {
 
           {tutorAutenticado && (
             <div className="mb-4 shrink-0">
-              <button className="w-full border-2 border-dashed border-[#1A7A6E] rounded-2xl py-3 text-[#1A7A6E] font-bold text-sm hover:bg-[#1A7A6E]/5 transition-all">
+              <button className="w-full border-2 border-dashed border-[#1A7A6E] rounded-2xl py-3 text-[#1A7A6E] font-bold text-sm hover:bg-[#1A7A6E]/5 transition-colors">
                 + Agregar pictograma
               </button>
             </div>
@@ -241,7 +247,6 @@ function Pictogramas() {
                   activo={esTodosActivo || esIdCoincidente}
                   onClick={() => {
                     setCategoriaSeleccionada(cat.id);
-                    console.log('Filtrando por categoría ID:', cat.id);
                   }}
                 />
               );
@@ -256,7 +261,6 @@ function Pictogramas() {
                   label={item.label}
                   icon={item.icon}
                   color={item.color}
-                  star={item.star}
                   onClick={() => pictogramaHandler(item)}
                 />
               ))}

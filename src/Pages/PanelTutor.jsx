@@ -23,7 +23,7 @@ function PanelTutor() {
         <div className="w-full flex flex-col gap-4">
           <button
             onClick={() => navigate('/dashboardtutor')}
-            className="w-full bg-[#1A7A6E] hover:bg-[#15695F] active:scale-95 text-white rounded-2xl p-6 flex items-center gap-4 transition-all shadow-md"
+            className="w-full bg-[#1A7A6E] hover:bg-[#15695F] active:scale-95 text-white rounded-2xl p-6 flex items-center gap-4 transition-colors shadow-md"
           >
             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
               <FontAwesomeIcon icon={faGrip} />
@@ -42,7 +42,7 @@ function PanelTutor() {
               setTutorOrigen(null);
               navigate('/accesotutor');
             }}
-            className="w-full bg-white hover:bg-red-50 active:scale-95 border-2 border-[#E53935] rounded-2xl p-6 flex items-center gap-4 transition-all shadow-sm"
+            className="w-full bg-white hover:bg-red-50 active:scale-95 border-2 border-[#E53935] rounded-2xl p-6 flex items-center gap-4 transition-colors shadow-sm"
           >
             <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center shrink-0">
               <FontAwesomeIcon icon={faRightFromBracket} />
