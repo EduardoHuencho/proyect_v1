@@ -44,7 +44,8 @@ function AccesoTutor() {
       try {
         setLoading(true);
         console.log('Consultando infantes vinculados al tutor ID:', idPadre);
-        const response = await fetch(`http://localhost:3000/infant/user/${idPadre}`);
+        // ruta de infantes por padre actualizada
+        const response = await fetch(`http://localhost:3000/user/${idPadre}/infants`);
 
         if (!response.ok) {
           throw new Error('FETCH_ERROR');

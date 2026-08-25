@@ -13,6 +13,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
+      {/* crear ward con if */}
       <Route path="/accesotutor" element={<AccesoTutor />} />
       <Route path="/menumodulos" element={<MenuModulos />} />
       <Route path="/paneltutor" element={<PanelTutor />} />
