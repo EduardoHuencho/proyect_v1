@@ -4,7 +4,7 @@ import CategoriaCard from '../Components/CategoriaCard';
 import PictogramasList from '../Data/Pictogramas.json';
 import CategoriasList from '../Data/Categorias.json';
 import NinosList from '../Data/Ninos.json';
-import NavbarDev from '../Components/NavbarDev';
+import Navbar from '../Components/Navbar';
 import { useNino } from '../context/NinoContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Fondo from '../Components/Fondo';
@@ -63,8 +63,8 @@ function Pictogramas() {
 
   const reproducirFrase = () => {
     if (frase.length === 0) return;
-    const textoAHeber = frase.map((pic) => pic.label).join(' ');
-    const mensaje = new SpeechSynthesisUtterance(textoAHeber);
+    const textoAVoz = frase.map((pic) => pic.label).join(' ');
+    const mensaje = new SpeechSynthesisUtterance(textoAVoz);
     if (vozAmigableRef.current) {
       mensaje.voice = vozAmigableRef.current;
       mensaje.lang = vozAmigableRef.current.lang;
@@ -96,8 +96,8 @@ function Pictogramas() {
 
   return (
     <Fondo>
-      <div className="flex flex-col h-screen">
-        <NavbarDev
+      <div className="flex flex-col h-screen overflow-hidden landscape:max-md:h-auto landscape:max-md:min-h-screen landscape:max-md:overflow-y-auto">
+        <Navbar
           rol={tutorAutenticado ? 'tutor' : 'nino'}
           esPictogramas={true}
           rutaVolver={
@@ -111,31 +111,27 @@ function Pictogramas() {
           pinSoloDesbloquea={true}
         />
 
-        <div className="p-4 md:p-6 select-none flex-1 flex flex-col overflow-hidden">
+        <div className="p-4 md:p-6 select-none flex-1 flex flex-col overflow-hidden landscape:max-md:overflow-visible">
           {tutorAutenticado && (
-            <div className="border border-gray-100 bg-gray-50/50 rounded-2xl mb-4 flex items-center p-2 gap-2 overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent shrink-0">
-              {NinosList.map((nino) => (
-                <button
-                  key={nino.id_infante}
-                  onClick={() => setNinoActivo(nino)}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm transition-colors shrink-0 whitespace-nowrap"
-                  style={{
-                    background:
-                      ninoActivo?.id_infante === nino.id_infante
-                        ? '#FDD835'
-                        : 'transparent',
-                    color: '#1B3A5C',
-                    border: '2px solid',
-                    borderColor:
-                      ninoActivo?.id_infante === nino.id_infante
-                        ? '#FDD835'
-                        : '#CBD5E0',
-                  }}
-                >
-                  <span>{nino.avatar_url}</span>
-                  <span>{nino.nombre}</span>
-                </button>
-              ))}
+            <div className="barra-scroll-horizontal mb-4 shrink-0">
+              {NinosList.map((nino) => {
+                const activo = ninoActivo?.id_infante === nino.id_infante;
+                return (
+                  <button
+                    type="button"
+                    key={nino.id_infante}
+                    onClick={() => setNinoActivo(nino)}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm transition-colors shrink-0 whitespace-nowrap text-[#1B3A5C] border-2 ${
+                      activo
+                        ? 'bg-[#FDD835] border-[#FDD835]'
+                        : 'bg-transparent border-[#CBD5E0]'
+                    }`}
+                  >
+                    <span>{nino.avatar_url}</span>
+                    <span>{nino.nombre}</span>
+                  </button>
+                );
+              })}
             </div>
           )}
 
@@ -179,12 +175,12 @@ function Pictogramas() {
                 onClick={reproducirFrase}
                 disabled={frase.length === 0}
                 aria-label="Escuchar frase en voz alta"
-                className={`h-10 w-10 sm:h-16 sm:w-16 rounded-xl flex items-center justify-center text-base sm:text-2xl font-bold shadow-sm sm:shadow-md transition-colors active:scale-95 ${
+                title="Escuchar frase en voz alta"
+                className={`btn-accion-frase ${
                   frase.length > 0
                     ? 'bg-blue-500 hover:bg-blue-600 text-white cursor-pointer'
                     : 'bg-gray-100 text-gray-300 cursor-not-allowed shadow-none border border-gray-200'
                 }`}
-                title="Escuchar frase en voz alta"
               >
                 <FontAwesomeIcon icon={faVolumeHigh} />
               </button>
@@ -194,12 +190,12 @@ function Pictogramas() {
                 onClick={pictogramaClearAll}
                 disabled={frase.length === 0}
                 aria-label="Limpiar toda la frase"
-                className={`h-10 w-10 sm:h-16 sm:w-16 rounded-xl flex items-center justify-center text-base sm:text-2xl font-bold shadow-sm sm:shadow-md transition-colors active:scale-95 ${
+                title="Limpiar toda la frase"
+                className={`btn-accion-frase ${
                   frase.length > 0
                     ? 'bg-amber-500 hover:bg-amber-600 text-white cursor-pointer'
                     : 'bg-gray-100 text-gray-300 cursor-not-allowed shadow-none border border-gray-200'
                 }`}
-                title="Limpiar toda la frase"
               >
                 <FontAwesomeIcon icon={faTrashCan} />
               </button>
@@ -209,12 +205,12 @@ function Pictogramas() {
                 onClick={pictogramaLastDelete}
                 disabled={frase.length === 0}
                 aria-label="Borrar último pictograma"
-                className={`h-10 w-10 sm:h-16 sm:w-16 rounded-xl flex items-center justify-center text-base sm:text-2xl font-bold shadow-sm sm:shadow-md transition-colors active:scale-95 ${
+                title="Borrar último pictograma"
+                className={`btn-accion-frase ${
                   frase.length > 0
                     ? 'bg-red-500 hover:bg-red-600 text-white cursor-pointer'
                     : 'bg-gray-100 text-gray-300 cursor-not-allowed shadow-none border border-gray-200'
                 }`}
-                title="Borrar último pictograma"
               >
                 <FontAwesomeIcon icon={faDeleteLeft} />
               </button>
@@ -223,13 +219,16 @@ function Pictogramas() {
 
           {tutorAutenticado && (
             <div className="mb-4 shrink-0">
-              <button className="w-full border-2 border-dashed border-[#1A7A6E] rounded-2xl py-3 text-[#1A7A6E] font-bold text-sm hover:bg-[#1A7A6E]/5 transition-colors">
+              <button
+                type="button"
+                className="w-full border-2 border-dashed border-[#1A7A6E] rounded-2xl py-3 text-[#1A7A6E] font-bold text-sm hover:bg-[#1A7A6E]/5 transition-colors"
+              >
                 + Agregar pictograma
               </button>
             </div>
           )}
 
-          <div className="border border-gray-100 bg-gray-50/50 rounded-2xl mb-5 flex items-center p-2 gap-2 overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent shrink-0">
+          <div className="barra-scroll-horizontal mb-5 shrink-0">
             {CategoriasList.map((cat) => {
               const esTodosActivo =
                 String(cat.id) === '1' &&
@@ -253,7 +252,7 @@ function Pictogramas() {
             })}
           </div>
 
-          <div className="overflow-y-auto pr-1 pb-4 scrollbar-thin">
+          <div className="flex-1 min-h-0 overflow-y-auto landscape:max-md:overflow-visible landscape:max-md:flex-none pr-1 pb-4 scrollbar-thin">
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
               {pictogramasFiltrados.map((item) => (
                 <PictogramaCard

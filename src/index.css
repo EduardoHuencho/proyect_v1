@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/*.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
 @keyframes shake {
@@ -10,4 +10,73 @@
   60%       { transform: translateX(-8px); }
   80%       { transform: translateX(8px); }
 }
-.animate-shake { animation: shake 0.4s ease-in-out; }*/
+
+@utility barra-scroll-horizontal {
+  @apply border border-gray-100 bg-gray-50/50 rounded-2xl flex items-center p-2 gap-2 overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent shrink-0;
+}
+
+@utility btn-accion-frase {
+  @apply h-10 w-10 sm:h-16 sm:w-16 rounded-xl flex items-center justify-center text-base sm:text-2xl font-bold shadow-sm sm:shadow-md transition-colors active:scale-95;
+}
+
+@utility titulo-pagina {
+  @apply text-3xl font-extrabold text-[#1B3A5C];
+}
+
+@utility contenedor-pagina {
+  @apply max-w-4xl mx-auto px-6 flex flex-col items-center;
+}
+
+@utility tarjeta-juego {
+  @apply flex flex-col items-center bg-white p-4 sm:p-6 rounded-3xl sm:rounded-[30px] shadow-md sm:shadow-lg transition-transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer text-left focus:outline-none w-full;
+}
+
+@utility paso-juego {
+  @apply w-full max-w-55 sm:max-w-xs py-1.5 sm:py-2.5 rounded-full text-center font-bold text-[11px] sm:text-xs bg-gray-50 border border-gray-200 text-gray-600;
+}
+
+.animate-shake { animation: shake 0.4s ease-in-out; }
+
+@utility tarjeta-auth {
+  @apply flex-1 w-full max-w-sm rounded-[30px] p-8 shadow-2xl bg-white shrink-0;
+}
+
+@utility mensaje-error {
+  @apply mb-4 p-3 text-sm text-red-700 bg-red-100 border border-red-300 rounded-[14px] font-medium flex items-start gap-2;
+}
+
+@utility input-teayudo {
+  @apply w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-sm sm:text-base px-3.5 sm:px-4.5 py-2.5 sm:py-3.25 outline-none placeholder:text-xs sm:placeholder:text-base placeholder:text-[#003052]/50 disabled:opacity-50;
+}
+
+@utility btn-alternar-password {
+  @apply absolute right-4 top-1/2 -translate-y-1/2 text-[#4A7A96] hover:text-[#005088] focus:outline-none select-none active:scale-90 transition-transform disabled:opacity-50;
+}
+
+@utility btn-logear-teayudo {
+  @apply mt-3 w-full py-4 rounded-[18px] font-extrabold text-xl bg-[#FDD835] text-[#003052] border-3 border-[#C8A800] shadow-[0_6px_0_#C8A800] transition-transform hover:scale-105 active:scale-95 active:shadow-[0_4px_0_#C8A800] disabled:opacity-50 disabled:scale-100 disabled:active:translate-y-0;
+}
+
+@utility link-registro {
+  @apply text-sm font-bold text-[#4A7A96] hover:text-[#005088] transition-colors focus:outline-none disabled:opacity-50;
+}
+
+@utility tarjeta-perfil {
+  @apply flex flex-col items-center gap-3 p-5 bg-white rounded-3xl shadow-md hover:shadow-xl hover:scale-105 active:scale-95 transition-all shrink-0 min-w-35;
+}
+
+@utility btn-pin {
+  @apply h-14 rounded-2xl bg-[#F0F4F8] transition-all active:scale-95 flex items-center justify-center font-extrabold text-xl text-[#1B3A5C] hover:bg-[#E0F7FA] active:bg-[#B2EBF2];
+}
+
+@utility btn-nav {
+  @apply flex items-center gap-2 bg-[#2A4F73] hover:bg-[#3A6F9F] text-white px-3 py-2 rounded-xl text-sm font-semibold transition-colors;
+}
+
+@utility btn-panel-accion {
+  @apply w-full rounded-2xl p-6 flex items-center gap-4 transition-all active:scale-95 text-left;
+}
+
+@utility icono-panel-accion {
+  @apply w-12 h-12 rounded-xl flex items-center justify-center shrink-0 text-xl;
+}

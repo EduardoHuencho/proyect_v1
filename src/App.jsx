@@ -1,19 +1,21 @@
-//import { useState } from 'react';
-//import { Routes, Route, Link } from 'react-router';
-import './App.css';
-{/*import Navbar from './Components/Navbar';*/}
-import AppRoutes from './Routes/AppRoutes';
+//import React from 'react'
+import AppRoutes from './Routes/AppRoutes'
+import { AuthProvider } from './context/AuthContext';
+import { NinoProvider } from './context/NinoContext';
 
-function App({ name, role, imageUrl }) {
+function App() {
+
   return (
-    <>
-      <div className="min-h-screen flex flex-col justify-between bg-gray-50">
-        <main>
-          <AppRoutes />
-        </main>
-      </div>
-    </>
-  );
+    <AuthProvider>
+      <NinoProvider>
+        <div className="min-h-screen flex flex-col justify-between bg-gray-50">
+          <main>
+            <AppRoutes />
+          </main>
+        </div>
+      </NinoProvider>
+    </AuthProvider>
+  )
 }
 
-export default App;
+export default App

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router';
 import { useNino } from '../context/NinoContext';
-import NavbarDev from '../Components/NavbarDev';
+import Navbar from '../Components/Navbar';
 import ModuloCard from '../Components/ModuloCard';
 import calendarioImg from '../assets/calendario.png';
 import pictogramaImg from '../assets/pictograma.png';
@@ -34,24 +34,23 @@ const modulos = [
 ];
 
 function MenuModulos() {
+  const navigate = useNavigate();
+  const { ninoActivo } = useNino();
 
-    const navigate = useNavigate();
-    const { ninoActivo } = useNino();
-
-    const handleModulo = (modulo) => {
-        if (!modulo.disponible) return;
-        navigate(modulo.ruta);
-    };
+  const handleModulo = (modulo) => {
+    if (!modulo.disponible) return;
+    navigate(modulo.ruta);
+  };
 
   return (
     <Fondo>
-      <NavbarDev rol="nino" />
+      <Navbar rol="nino" />
 
-      <div className="max-w-4xl mx-auto px-6 py-10 flex flex-col items-center">
+      <div className="contenedor-pagina py-10">
         <div className="w-20 h-20 rounded-full flex items-center justify-center text-5xl mb-4 bg-[#FDD835] border-4 border-white shadow-lg">
           {ninoActivo ? ninoActivo.avatar_url : '👤'}
         </div>
-        <h1 className="text-3xl font-extrabold text-[#1B3A5C] mb-8 text-center">
+        <h1 className="titulo-pagina mb-8 text-center">
           {ninoActivo ? `¡Hola, ${ninoActivo.nombre}!` : '¡Hola!'}
         </h1>
 
@@ -70,7 +69,7 @@ function MenuModulos() {
         </div>
       </div>
     </Fondo>
-  )
+  );
 }
 
-export default MenuModulos
+export default MenuModulos;

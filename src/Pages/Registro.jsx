@@ -104,12 +104,13 @@ function Registro() {
 
   return (
     <Fondo>
-      <div className="flex justify-center pt-6 pb-2">
-        <img src={logoImg} alt="Logo TEAYUDO" className="h-16 w-auto" />
-      </div>
-      <div className="flex-1 flex flex-col md:flex-row items-center justify-center gap-0 md:gap-8 px-6 pb-10 max-w-5xl mx-auto w-full">
-        <div className="flex-1 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8 px-6 pb-12 max-w-5xl mx-auto w-full">
-          <div className="flex-1 flex flex-col items-center justify-center md:items-end md:pr-8 py-4">
+      <div className="min-h-screen flex flex-col justify-between w-full py-4 sm:py-8 landscape:py-4">
+        <div className="flex justify-center pt-2 pb-2 shrink-0">
+          <img src={logoImg} alt="Logo TEAYUDO" className="h-12 sm:h-16 w-auto" />
+        </div>
+
+        <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10 px-4 sm:px-6 py-2 max-w-5xl mx-auto w-full">
+          <div className="flex-1 flex flex-col items-center justify-center md:items-end md:pr-6 py-2">
             <img
               src={ninioImg}
               alt="Ilustración amigos"
@@ -122,11 +123,11 @@ function Registro() {
             </p>
           </div>
 
-          <div className="flex-1 w-full max-w-md rounded-[30px] p-6 md:p-8 shadow-2xl bg-white max-h-[85vh] overflow-y-auto scrollbar-thin">
-            <h2 className="text-2xl font-extrabold text-[#005088] mb-1">
+          <div className="tarjeta-auth max-w-md p-6 sm:p-8">
+            <h2 className="text-2xl font-extrabold text-[#005088] mb-1 text-center md:text-left">
               Crear cuenta
             </h2>
-            <p className="text-sm text-[#4A7A96] font-medium mb-5">
+            <p className="text-sm text-[#4A7A96] font-medium mb-5 text-center md:text-left">
               Regístrate como tutor para gestionar la app
             </p>
 
@@ -140,7 +141,7 @@ function Registro() {
                   value={nombre}
                   onChange={(e) => setNombre(e.target.value)}
                   placeholder="Nombre"
-                  className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[11px_16px] outline-none placeholder:text-[#003052]/50"
+                  className="input-teayudo"
                 />
                 <label htmlFor="registro-apellido" className="sr-only">Apellido</label>
                 <input
@@ -150,7 +151,7 @@ function Registro() {
                   value={apellido}
                   onChange={(e) => setApellido(e.target.value)}
                   placeholder="Apellido"
-                  className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[11px_16px] outline-none placeholder:text-[#003052]/50"
+                  className="input-teayudo"
                 />
               </div>
 
@@ -162,8 +163,9 @@ function Registro() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="nombre@correo.com"
-                className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[11px_16px] outline-none placeholder:text-[#003052]/50"
+                className="input-teayudo"
               />
+
               <label htmlFor="registro-confirm-email" className="sr-only">Repetir correo electrónico</label>
               <input
                 id="registro-confirm-email"
@@ -172,7 +174,7 @@ function Registro() {
                 value={confirmEmail}
                 onChange={(e) => setConfirmEmail(e.target.value)}
                 placeholder="Repetir correo electrónico"
-                className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[11px_16px] outline-none placeholder:text-[#003052]/50"
+                className="input-teayudo"
               />
 
               <div className="relative w-full">
@@ -185,13 +187,13 @@ function Registro() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Contraseña (mínimo 6 caracteres)"
-                  className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[11px_45px_11px_16px] outline-none placeholder:text-[#003052]/50"
+                  className="input-teayudo pr-11"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4A7A96] hover:text-[#005088] focus:outline-none select-none active:scale-90 transition-colors"
+                  className="btn-alternar-password"
                 >
                   <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                 </button>
@@ -207,17 +209,15 @@ function Registro() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Repetir contraseña"
-                  className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[11px_45px_11px_16px] outline-none placeholder:text-[#003052]/50"
+                  className="input-teayudo pr-11"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   aria-label={showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4A7A96] hover:text-[#005088] focus:outline-none select-none active:scale-90 transition-colors"
+                  className="btn-alternar-password"
                 >
-                  <FontAwesomeIcon
-                    icon={showConfirmPassword ? faEyeSlash : faEye}
-                  />
+                  <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} />
                 </button>
               </div>
 
@@ -243,13 +243,13 @@ function Registro() {
                     value={pin}
                     onChange={(e) => handlePinChange(e.target.value, setPin)}
                     placeholder="PIN (4 dígitos)"
-                    className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[11px_40px_11px_12px] outline-none text-center placeholder:text-[#003052]/50"
+                    className="input-teayudo text-center pr-10"
                   />
                   <button
                     type="button"
                     aria-label={showPin ? 'Ocultar PIN' : 'Mostrar PIN'}
                     onClick={() => setShowPin(!showPin)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#4A7A96] hover:text-[#005088] focus:outline-none select-none"
+                    className="btn-alternar-password right-3 text-sm"
                   >
                     <FontAwesomeIcon icon={showPin ? faEyeSlash : faEye} />
                   </button>
@@ -264,17 +264,15 @@ function Registro() {
                     required
                     maxLength={4}
                     value={confirmPin}
-                    onChange={(e) =>
-                      handlePinChange(e.target.value, setConfirmPin)
-                    }
+                    onChange={(e) => handlePinChange(e.target.value, setConfirmPin)}
                     placeholder="Repetir PIN"
-                    className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[11px_40px_11px_12px] outline-none text-center placeholder:text-[#003052]/50"
+                    className="input-teayudo text-center pr-10"
                   />
                   <button
                     type="button"
                     aria-label={showConfirmPin ? 'Ocultar PIN' : 'Mostrar PIN'}
                     onClick={() => setShowConfirmPin(!showConfirmPin)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#4A7A96] hover:text-[#005088] focus:outline-none select-none"
+                    className="btn-alternar-password right-3 text-sm"
                   >
                     <FontAwesomeIcon icon={showConfirmPin ? faEyeSlash : faEye} />
                   </button>
@@ -283,7 +281,7 @@ function Registro() {
 
               <button
                 type="submit"
-                className="mt-2 w-full py-3.5 rounded-[18px] font-extrabold text-xl bg-[#FDD835] text-[#003052] border-3 border-[#C8A800] shadow-[0_6px_0_#C8A800] transition-colors hover:scale-105 active:scale-95 active:shadow-[0_4px_0_#C8A800]"
+                className="btn-logear-teayudo mt-2 py-3.5"
               >
                 REGISTRARSE
               </button>
@@ -293,13 +291,15 @@ function Registro() {
               <button
                 type="button"
                 onClick={() => navigate('/')}
-                className="text-sm font-bold text-[#4A7A96] hover:text-[#005088] transition-colors focus:outline-none"
+                className="link-registro"
               >
                 ¿Ya tienes cuenta? Inicia sesión
               </button>
             </div>
           </div>
         </div>
+
+        <div className="h-4 shrink-0 hidden md:block"></div>
       </div>
     </Fondo>
   );

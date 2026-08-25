@@ -5,6 +5,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import logoImg from '../assets/logo.png';
 import Fondo from '../Components/Fondo';
 import loginfante from '../assets/logniños.png';
+import { useAuth } from '../context/AuthContext';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -13,6 +14,7 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   async function handleSubmit(e) {
@@ -21,31 +23,11 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3000/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
-      });
-
-      if (!response.ok) {
-        throw new Error('AUTH_ERROR');
-      }
-
-      const data = await response.json();
-      console.log('Login exitoso:', data);
-      
-      if (data.id) {
-        localStorage.setItem('userId', data.id);
-        console.log('ID en localStorage:', localStorage.getItem('userId'));
-      } else {
-        console.warn('Otra respuesta:', data);
-      }
-
+      const data = await login(email, password);
+      console.log('Sesión iniciada con usuario ID:', data.id);
       navigate('/accesotutor');
     } catch (err) {
-      console.error('Error:', err);
+      console.error('Error en login:', err);
 
       if (err.message === 'AUTH_ERROR') {
         setError(
@@ -82,7 +64,7 @@ function Login() {
             </p>
           </div>
 
-          <div className="flex-1 w-full max-w-sm rounded-[30px] p-8 shadow-2xl bg-white shrink-0">
+          <div className="tarjeta-auth">
             <h2 className="text-2xl font-extrabold text-[#005088] mb-1">
               Iniciar sesión
             </h2>
@@ -91,7 +73,7 @@ function Login() {
             </p>
 
             {error && (
-              <div className="mb-4 p-3 text-sm text-red-700 bg-red-100 border border-red-300 rounded-[14px] font-medium flex items-start gap-2 animate-fade-in">
+              <div className="mensaje-error">
                 <span>{error}</span>
               </div>
             )}
@@ -109,7 +91,7 @@ function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="nombre@correo.com"
-                  className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[13px_18px] outline-none placeholder:text-[#003052]/50 disabled:opacity-50"
+                  className="input-teayudo"
                 />
               </div>
 
@@ -125,14 +107,14 @@ function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full font-medium bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] text-[#003052] text-base p-[13px_48px_13px_18px] outline-none placeholder:text-[#003052]/50 disabled:opacity-50"
+                  className="input-teayudo pr-12"
                 />
                 <button
                   type="button"
                   disabled={loading}
                   aria-label={showPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4A7A96] hover:text-[#005088] focus:outline-none select-none active:scale-90 transition-transform disabled:opacity-50"
+                  className="btn-alternar-password"
                 >
                   <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                 </button>
@@ -141,7 +123,7 @@ function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-3 w-full py-4 rounded-[18px] font-extrabold text-xl bg-[#FDD835] text-[#003052] border-3 border-[#C8A800] shadow-[0_6px_0_#C8A800] transition-transform hover:scale-105 active:scale-95 active:shadow-[0_4px_0_#C8A800] disabled:opacity-50 disabled:scale-100 disabled:active:translate-y-0"
+                className="btn-logear-teayudo"
               >
                 {loading ? 'CONECTANDO...' : 'INGRESAR'}
               </button>
@@ -152,7 +134,7 @@ function Login() {
                 type="button"
                 disabled={loading}
                 onClick={() => navigate('/registro')}
-                className="text-sm font-bold text-[#4A7A96] hover:text-[#005088] transition-colors focus:outline-none disabled:opacity-50"
+                className="link-registro"
               >
                 ¿No tienes cuenta? Regístrate aquí
               </button>

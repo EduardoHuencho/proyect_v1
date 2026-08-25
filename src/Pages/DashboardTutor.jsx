@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router';
-import NavbarDev from '../Components/NavbarDev';
+import Navbar from '../Components/Navbar';
 import ModuloCard from '../Components/ModuloCard';
 import calendarioImg from '../assets/calendario.png';
 import pictogramaImg from '../assets/pictograma.png';
@@ -45,23 +45,19 @@ const modulos = [
 ];
 
 function DashboardTutor() {
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
-
-    const handleModulo = (modulo) => {
-        if (!modulo.disponible) return;
-        navigate(modulo.ruta);
-    };
-
+  const handleModulo = (modulo) => {
+    if (!modulo.disponible) return;
+    navigate(modulo.ruta);
+  };
 
   return (
     <Fondo>
-      <NavbarDev rol="tutor" rutaVolver="/paneltutor" labelVolver="Volver" />
+      <Navbar rol="tutor" rutaVolver="/paneltutor" labelVolver="Volver" />
 
       <div className="text-center pt-8 mb-8">
-        <h1 className="text-3xl font-extrabold text-[#1B3A5C]">
-          Dashboard Tutor
-        </h1>
+        <h1 className="titulo-pagina">Dashboard Tutor</h1>
         <p className="text-[#4A7A96] mt-1">¿Qué quieres gestionar hoy?</p>
       </div>
 
@@ -86,7 +82,7 @@ function DashboardTutor() {
         TEAYUDO · Sistema educativo AAC
       </p>
     </Fondo>
-  )
+  );
 }
 
-export default DashboardTutor
+export default DashboardTutor;
