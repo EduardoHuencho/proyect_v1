@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useNino } from '../context/NinoContext';
 import Navbar from '../Components/Navbar';
@@ -5,6 +6,7 @@ import ModuloCard from '../Components/ModuloCard';
 import calendarioImg from '../assets/calendario.png';
 import pictogramaImg from '../assets/pictograma.png';
 import juegosImg from '../assets/juegos.png';
+import Avatar from '../assets/panda.png';
 import Fondo from '../Components/Fondo';
 
 const modulos = [
@@ -33,9 +35,24 @@ const modulos = [
   },
 ];
 
+const obtenerImagenAvatar = (avatarUrl) => {
+  if (avatarUrl && avatarUrl.startsWith('http')) {
+    return avatarUrl;
+  }
+  return Avatar;
+};
+
 function MenuModulos() {
   const navigate = useNavigate();
   const { ninoActivo } = useNino();
+
+  useEffect(() => {
+    if (!ninoActivo) {
+      navigate('/accesotutor');
+    }
+  }, [ninoActivo, navigate]);
+
+  if (!ninoActivo) return null;
 
   const handleModulo = (modulo) => {
     if (!modulo.disponible) return;
@@ -47,11 +64,20 @@ function MenuModulos() {
       <Navbar rol="nino" />
 
       <div className="contenedor-pagina py-10">
-        <div className="w-20 h-20 rounded-full flex items-center justify-center text-5xl mb-4 bg-[#FDD835] border-4 border-white shadow-lg">
-          {ninoActivo ? ninoActivo.avatar_url : '👤'}
+        <div className="w-20 h-20 rounded-full flex items-center justify-center mb-4 bg-[#FDD835] border-4 border-white shadow-lg overflow-hidden shrink-0">
+          <img
+            src={obtenerImagenAvatar(ninoActivo.avatarUrl)}
+            alt={ninoActivo.firstName}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = Avatar;
+            }}
+            className="w-full h-full object-cover"
+          />
         </div>
+
         <h1 className="titulo-pagina mb-8 text-center">
-          {ninoActivo ? `¡Hola, ${ninoActivo.nombre}!` : '¡Hola!'}
+          ¡Hola, {ninoActivo.firstName}!
         </h1>
 
         <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6">

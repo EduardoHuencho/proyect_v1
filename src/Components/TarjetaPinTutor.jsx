@@ -1,42 +1,61 @@
 import { useState } from 'react';
-
-const PIN_CORRECTO = '1234';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDeleteLeft, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from '../context/AuthContext';
 
 function TarjetaPinTutor({ isOpen, onClose, onSuccess }) {
+  const { validatePin } = useAuth();
   const [pin, setPin] = useState('');
   const [errorPin, setErrorPin] = useState(false);
+  const [cargando, setCargando] = useState(false);
 
   if (!isOpen) return null;
 
   const handleNumero = (num) => {
-    if (pin.length >= 4) return;
+    if (pin.length >= 4 || cargando) return;
     const nuevoPin = pin + num;
     setPin(nuevoPin);
     setErrorPin(false);
 
     if (nuevoPin.length === 4) {
-      setTimeout(() => {
-        if (nuevoPin === PIN_CORRECTO) {
-          setPin('');
-          setErrorPin(false);
-          onSuccess();
-        } else {
-          setErrorPin(true);
-          setTimeout(() => {
+      setCargando(true);
+      setTimeout(async () => {
+        try {
+          const esValido = await validatePin(nuevoPin);
+
+          if (esValido) {
             setPin('');
             setErrorPin(false);
-          }, 800);
+            onSuccess();
+          } else {
+            manejarErrorPin();
+          }
+        } catch (error) {
+          console.error('Error al validar el PIN:', error);
+          manejarErrorPin();
+        } finally {
+          setCargando(false);
         }
       }, 200);
     }
   };
 
+  const manejarErrorPin = () => {
+    setErrorPin(true);
+    setTimeout(() => {
+      setPin('');
+      setErrorPin(false);
+    }, 800);
+  };
+
   const handleBorrar = () => {
+    if (cargando) return;
     setPin((prev) => prev.slice(0, -1));
     setErrorPin(false);
   };
 
   const handleCerrar = () => {
+    if (cargando) return;
     setPin('');
     setErrorPin(false);
     onClose();
@@ -56,7 +75,7 @@ function TarjetaPinTutor({ isOpen, onClose, onSuccess }) {
         </div>
 
         <p className="text-sm text-[#78909C] text-center mb-4 sm:mb-6 landscape:mb-1.5 md:landscape:mb-6 landscape:text-[11px] md:landscape:text-sm">
-          Ingresa tu PIN de 4 dígitos
+          {cargando ? 'Validando PIN...' : 'Ingresa tu PIN de 4 dígitos'}
         </p>
 
         <div className="flex justify-center gap-4 mb-4 sm:mb-6 landscape:gap-2.5 landscape:mb-2 md:landscape:gap-4 md:landscape:mb-6">
@@ -81,34 +100,38 @@ function TarjetaPinTutor({ isOpen, onClose, onSuccess }) {
             <button
               key={num}
               type="button"
+              disabled={cargando}
               onClick={() => handleNumero(String(num))}
-              className="btn-pin h-11 sm:h-14 landscape:h-7.5 landscape:text-base landscape:rounded-xl md:landscape:h-14 md:landscape:text-xl md:landscape:rounded-2xl"
+              className="btn-pin h-11 sm:h-14 landscape:h-7.5 landscape:text-base landscape:rounded-xl md:landscape:h-14 md:landscape:text-xl md:landscape:rounded-2xl disabled:opacity-50"
             >
               {num}
             </button>
           ))}
           <button
             type="button"
+            disabled={cargando}
             onClick={handleBorrar}
             aria-label="Borrar último dígito"
-            className="btn-pin h-11 sm:h-14 landscape:h-7.5 hover:bg-red-50 text-[#E53935] text-sm landscape:text-xs landscape:rounded-xl md:landscape:h-14 md:landscape:text-sm md:landscape:rounded-2xl"
+            className="btn-pin h-11 sm:h-14 landscape:h-7.5 hover:bg-red-50 text-[#E53935] text-sm landscape:text-xs landscape:rounded-xl md:landscape:h-14 md:landscape:text-sm md:landscape:rounded-2xl disabled:opacity-50"
           >
-            ⌫
+            <FontAwesomeIcon icon={faDeleteLeft} />
           </button>
           <button
             type="button"
+            disabled={cargando}
             onClick={() => handleNumero('0')}
-            className="btn-pin h-11 sm:h-14 landscape:h-7.5 landscape:text-base landscape:rounded-xl md:landscape:h-14 md:landscape:text-xl md:landscape:rounded-2xl"
+            className="btn-pin h-11 sm:h-14 landscape:h-7.5 landscape:text-base landscape:rounded-xl md:landscape:h-14 md:landscape:text-xl md:landscape:rounded-2xl disabled:opacity-50"
           >
             0
           </button>
           <button
             type="button"
+            disabled={cargando}
             onClick={handleCerrar}
             aria-label="Cerrar acceso de tutor"
-            className="btn-pin h-11 sm:h-14 landscape:h-7.5 hover:bg-red-50 text-[#78909C] text-sm landscape:text-xs landscape:rounded-xl md:landscape:h-14 md:landscape:text-sm md:landscape:rounded-2xl"
+            className="btn-pin h-11 sm:h-14 landscape:h-7.5 hover:bg-red-50 text-[#78909C] text-sm landscape:text-xs landscape:rounded-xl md:landscape:h-14 md:landscape:text-sm md:landscape:rounded-2xl disabled:opacity-50"
           >
-            ✕
+            <FontAwesomeIcon icon={faXmark} />
           </button>
         </div>
 

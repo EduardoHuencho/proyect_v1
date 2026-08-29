@@ -3,24 +3,51 @@ import PictogramaCard from '../Components/PictogramaCard';
 import CategoriaCard from '../Components/CategoriaCard';
 import PictogramasList from '../Data/Pictogramas.json';
 import CategoriasList from '../Data/Categorias.json';
-import NinosList from '../Data/Ninos.json';
 import Navbar from '../Components/Navbar';
 import { useNino } from '../context/NinoContext';
+import { useAuth } from '../context/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Fondo from '../Components/Fondo';
+import Avatar from '../assets/panda.png';
 import {
   faVolumeHigh,
   faTrashCan,
   faDeleteLeft,
 } from '@fortawesome/free-solid-svg-icons';
 
+const obtenerImagenAvatar = (avatarUrl) => {
+  if (avatarUrl && avatarUrl.startsWith('http')) {
+    return avatarUrl;
+  }
+  return Avatar;
+};
+
 function Pictogramas() {
-  const { tutorAutenticado, tutorOrigen, ninoActivo, setNinoActivo } =
-    useNino();
+  const { userId } = useAuth();
+  const {
+    tutorAutenticado,
+    tutorOrigen,
+    ninoActivo,
+    setNinoActivo,
+    ninos,
+    loadingNinos,
+    cargarNinos,
+  } = useNino();
+
   const [frase, setFrase] = useState([]);
   const vozAmigableRef = useRef(null);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('todos');
   const contenedorFraseRef = useRef(null);
+
+  // Cargar lista de niños si el tutor está autenticado y aún no hay niños en memoria
+  useEffect(() => {
+    if (tutorAutenticado && ninos.length === 0) {
+      const idPadre = localStorage.getItem('userId') || userId;
+      if (idPadre) {
+        cargarNinos(idPadre);
+      }
+    }
+  }, [tutorAutenticado, ninos.length, userId, cargarNinos]);
 
   useEffect(() => {
     const configurarVoz = () => {
@@ -114,24 +141,42 @@ function Pictogramas() {
         <div className="p-4 md:p-6 select-none flex-1 flex flex-col overflow-hidden landscape:max-md:overflow-visible">
           {tutorAutenticado && (
             <div className="barra-scroll-horizontal mb-4 shrink-0">
-              {NinosList.map((nino) => {
-                const activo = ninoActivo?.id_infante === nino.id_infante;
-                return (
-                  <button
-                    type="button"
-                    key={nino.id_infante}
-                    onClick={() => setNinoActivo(nino)}
-                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm transition-colors shrink-0 whitespace-nowrap text-[#1B3A5C] border-2 ${
-                      activo
-                        ? 'bg-[#FDD835] border-[#FDD835]'
-                        : 'bg-transparent border-[#CBD5E0]'
-                    }`}
-                  >
-                    <span>{nino.avatar_url}</span>
-                    <span>{nino.nombre}</span>
-                  </button>
-                );
-              })}
+              {loadingNinos ? (
+                <span className="text-xs font-bold text-[#1B3A5C] px-3">
+                  Cargando niños...
+                </span>
+              ) : (
+                ninos.map((nino) => {
+                  const activo = ninoActivo?.id === nino.id;
+                  return (
+                    <button
+                      type="button"
+                      key={nino.id}
+                      onClick={() => setNinoActivo(nino)}
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-xl font-semibold text-sm transition-colors shrink-0 whitespace-nowrap text-[#1B3A5C] border-2 ${
+                        activo
+                          ? 'bg-[#FDD835] border-[#FDD835]'
+                          : 'bg-transparent border-[#CBD5E0]'
+                      }`}
+                    >
+                      <div className="w-6 h-6 rounded-full overflow-hidden bg-white border border-[#1B3A5C]/30 shrink-0">
+                        <img
+                          src={obtenerImagenAvatar(nino.avatarUrl)}
+                          alt={nino.firstName}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = Avatar;
+                          }}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <span>
+                        {nino.firstName} {nino.lastName || ''}
+                      </span>
+                    </button>
+                  );
+                })
+              )}
             </div>
           )}
 

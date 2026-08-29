@@ -38,6 +38,30 @@ export function AuthProvider({ children }) {
     setToken(null);
   }, []);
 
+  const validatePin = useCallback(async (pin) => {
+    const currentUserId = userId || localStorage.getItem('userId');
+    const currentToken = token || localStorage.getItem('token');
+
+    if (!currentUserId || !currentToken) {
+      throw new Error('USER_NOT_AUTHENTICATED');
+    }
+
+    const response = await fetch(`http://localhost:3000/user/${currentUserId}/validate-pin`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${currentToken}`,
+      },
+      body: JSON.stringify({ pin }),
+    });
+
+    if (!response.ok) {
+      throw new Error('PIN_VALIDATION_FAILED');
+    }
+
+    return await response.json(); 
+  }, [userId, token]);
+
   const value = useMemo(
     () => ({
       userId,
@@ -45,8 +69,9 @@ export function AuthProvider({ children }) {
       estaAutenticado: Boolean(userId),
       login,
       logout,
+      validatePin,
     }),
-    [userId, token, login, logout]
+    [userId, token, login, logout, validatePin]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
