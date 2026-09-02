@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router';
 import PictogramaCard from '../Components/PictogramaCard';
 import CategoriaCard from '../Components/CategoriaCard';
-import PictogramasList from '../Data/Pictogramas.json';
-import CategoriasList from '../Data/Categorias.json';
 import Navbar from '../Components/Navbar';
 import { useNino } from '../context/NinoContext';
 import { useAuth } from '../context/AuthContext';
+import { usePictogramas } from '../context/PictogramasContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Fondo from '../Components/Fondo';
 import Avatar from '../assets/panda.png';
@@ -13,7 +13,10 @@ import {
   faVolumeHigh,
   faTrashCan,
   faDeleteLeft,
+  faGear,
 } from '@fortawesome/free-solid-svg-icons';
+
+const COLOR_CATEGORIA_FIJO = '#E0F7FA';
 
 const obtenerImagenAvatar = (avatarUrl) => {
   if (avatarUrl && avatarUrl.startsWith('http')) {
@@ -23,7 +26,8 @@ const obtenerImagenAvatar = (avatarUrl) => {
 };
 
 function Pictogramas() {
-  const { userId } = useAuth();
+  const navigate = useNavigate();
+  const { userId, token } = useAuth();
   const {
     tutorAutenticado,
     tutorOrigen,
@@ -34,12 +38,17 @@ function Pictogramas() {
     cargarNinos,
   } = useNino();
 
+  const { pictogramas, loadingPictogramas, cargarPictogramas } = usePictogramas();
+
+  const [categorias, setCategorias] = useState([]);
+  const [loadingCategorias, setLoadingCategorias] = useState(true);
+
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);
+
   const [frase, setFrase] = useState([]);
   const vozAmigableRef = useRef(null);
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('todos');
   const contenedorFraseRef = useRef(null);
 
-  // Cargar lista de niños si el tutor está autenticado y aún no hay niños en memoria
   useEffect(() => {
     if (tutorAutenticado && ninos.length === 0) {
       const idPadre = localStorage.getItem('userId') || userId;
@@ -48,6 +57,41 @@ function Pictogramas() {
       }
     }
   }, [tutorAutenticado, ninos.length, userId, cargarNinos]);
+
+  useEffect(() => {
+    const idPadre = localStorage.getItem('userId') || userId;
+    if (idPadre) {
+      cargarPictogramas(idPadre);
+    }
+  }, [userId, cargarPictogramas]);
+
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        setLoadingCategorias(true);
+        const response = await fetch('http://localhost:3000/category', {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        if (!response.ok) throw new Error('Error al cargar las categorías');
+        const data = await response.json();
+
+        let lista = [];
+        if (Array.isArray(data)) {
+          lista = data;
+        } else if (Array.isArray(data.data)) {
+          lista = data.data;
+        }
+
+        setCategorias(lista);
+      } catch (error) {
+        console.error('Error fetching categorias:', error);
+      } finally {
+        setLoadingCategorias(false);
+      }
+    };
+
+    fetchCategorias();
+  }, [token]);
 
   useEffect(() => {
     const configurarVoz = () => {
@@ -113,13 +157,11 @@ function Pictogramas() {
     }
   }, [frase]);
 
-  const pictogramasFiltrados =
-    String(categoriaSeleccionada).toLowerCase() === 'todos' ||
-    String(categoriaSeleccionada) === '1'
-      ? PictogramasList
-      : PictogramasList.filter(
-          (item) => String(item.categoryId) === String(categoriaSeleccionada)
-        );
+  const pictogramasFiltrados = categoriaSeleccionada
+    ? pictogramas.filter(
+        (item) => String(item.categoryId).trim() === String(categoriaSeleccionada).trim()
+      )
+    : pictogramas;
 
   return (
     <Fondo>
@@ -139,6 +181,7 @@ function Pictogramas() {
         />
 
         <div className="p-4 md:p-6 select-none flex-1 flex flex-col overflow-hidden landscape:max-md:overflow-visible">
+          {/* Selector de niños */}
           {tutorAutenticado && (
             <div className="barra-scroll-horizontal mb-4 shrink-0">
               {loadingNinos ? (
@@ -266,7 +309,8 @@ function Pictogramas() {
             <div className="mb-4 shrink-0">
               <button
                 type="button"
-                className="w-full border-2 border-dashed border-[#1A7A6E] rounded-2xl py-3 text-[#1A7A6E] font-bold text-sm hover:bg-[#1A7A6E]/5 transition-colors"
+                onClick={() => navigate('/crearpictograma')}
+                className="w-full border-2 border-dashed border-[#1A7A6E] rounded-2xl py-3 text-[#1A7A6E] font-bold text-sm hover:bg-[#1A7A6E]/5 transition-colors cursor-pointer"
               >
                 + Agregar pictograma
               </button>
@@ -274,41 +318,90 @@ function Pictogramas() {
           )}
 
           <div className="barra-scroll-horizontal mb-5 shrink-0">
-            {CategoriasList.map((cat) => {
-              const esTodosActivo =
-                String(cat.id) === '1' &&
-                String(categoriaSeleccionada).toLowerCase() === 'todos';
-              const esIdCoincidente =
-                String(categoriaSeleccionada).toLowerCase() ===
-                String(cat.id).toLowerCase();
+            {loadingCategorias ? (
+              <span className="text-xs font-bold text-[#1B3A5C] px-3">
+                Cargando categorías...
+              </span>
+            ) : (
+              <>
+                {categorias.map((cat) => {
+                  const activo = String(categoriaSeleccionada) === String(cat.id);
 
-              return (
+                  return (
+                    <CategoriaCard
+                      key={cat.id}
+                      label={cat.categoryName}
+                      color={COLOR_CATEGORIA_FIJO}
+                      activo={activo}
+                      onClick={() => {
+                        setCategoriaSeleccionada((prev) =>
+                          prev === String(cat.id) ? null : String(cat.id)
+                        );
+                      }}
+                    />
+                  );
+                })}
+
                 <CategoriaCard
-                  key={cat.id}
-                  label={cat.label}
-                  icon={cat.icon}
-                  color={cat.color}
-                  activo={esTodosActivo || esIdCoincidente}
-                  onClick={() => {
-                    setCategoriaSeleccionada(cat.id);
-                  }}
+                  key="cat-todos"
+                  label="Todos"
+                  color={COLOR_CATEGORIA_FIJO}
+                  activo={categoriaSeleccionada === null}
+                  onClick={() => setCategoriaSeleccionada(null)}
                 />
-              );
-            })}
+              </>
+            )}
           </div>
 
           <div className="flex-1 min-h-0 overflow-y-auto landscape:max-md:overflow-visible landscape:max-md:flex-none pr-1 pb-4 scrollbar-thin">
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
-              {pictogramasFiltrados.map((item) => (
-                <PictogramaCard
-                  key={item.id}
-                  label={item.label}
-                  icon={item.icon}
-                  color={item.color}
-                  onClick={() => pictogramaHandler(item)}
-                />
-              ))}
-            </div>
+            {loadingPictogramas ? (
+              <div className="flex items-center justify-center h-32">
+                <span className="text-sm font-bold text-[#1B3A5C]">
+                  Cargando pictogramas...
+                </span>
+              </div>
+            ) : pictogramasFiltrados.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-48 text-center px-4">
+                <p className="text-sm font-semibold text-gray-500 mb-2">
+                  No hay pictogramas en esta categoría.
+                </p>
+                {tutorAutenticado && (
+                  <button
+                    type="button"
+                    onClick={() => navigate('/crearpictograma')}
+                    className="text-xs font-bold text-[#1A7A6E] hover:underline cursor-pointer"
+                  >
+                    Crear el primero ahora
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+                {pictogramasFiltrados.map((item) => (
+                  <div key={item.id} className="relative group">
+                    <PictogramaCard
+                      label={item.label}
+                      icon={item.icon}
+                      onClick={() => pictogramaHandler(item)}
+                    />
+
+                    {tutorAutenticado && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/editarpictograma/${item.id}`);
+                        }}
+                        aria-label={`Editar pictograma ${item.label}`}
+                        className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-white/95 text-[#1B3A5C] border border-[#CBD5E0] shadow-md flex items-center justify-center text-xs hover:bg-[#1B3A5C] hover:text-white transition-colors z-10 cursor-pointer"
+                      >
+                        <FontAwesomeIcon icon={faGear} />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -80,3 +80,7 @@
 @utility icono-panel-accion {
   @apply w-12 h-12 rounded-xl flex items-center justify-center shrink-0 text-xl;
 }
+
+@utility btn-eliminar-teayudo {
+  @apply w-full py-3.5 rounded-[18px] font-extrabold text-lg bg-[#EF4444] text-white border-3 border-[#B91C1C] shadow-[0_6px_0_#B91C1C] transition-transform flex items-center justify-center gap-2 hover:scale-105 active:scale-95 active:shadow-[0_4px_0_#B91C1C] disabled:opacity-50 disabled:scale-100 disabled:active:translate-y-0 cursor-pointer disabled:cursor-not-allowed;
+}

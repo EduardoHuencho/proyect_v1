@@ -1,11 +1,12 @@
-function PictogramaCard({ label, icon, color, onClick }) {
+import AvatarDefault from '../assets/panda.png';
+
+function PictogramaCard({ label = 'Sin nombre', icon = AvatarDefault, onClick }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`flex flex-col items-center justify-between p-2 md:p-3 rounded-2xl md:rounded-3xl border border-neutral-200/80 shadow-sm ${color} hover:shadow-md hover:border-neutral-300 w-full h-28 sm:h-32 md:h-40 transition-transform active:scale-95 overflow-hidden`}
+      className="flex flex-col items-center justify-between p-2 md:p-3 rounded-2xl md:rounded-3xl border border-neutral-200 shadow-sm bg-amber-100 hover:bg-amber-150 hover:border-neutral-300 hover:shadow-md w-full h-28 sm:h-32 md:h-40 transition-all active:scale-95 overflow-hidden cursor-pointer"
     >
-      
       <div className="w-full h-16 sm:h-20 md:h-24 flex items-center justify-center overflow-hidden shrink-0 pt-1">
         <img
           src={icon}

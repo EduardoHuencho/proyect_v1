@@ -8,6 +8,7 @@ import Pictogramas from '../Pages/Pictogramas';
 import MenuJuegos from '../Pages/MenuJuegos';
 import Registro from '../Pages/Registro';
 import CrearNino from '../Pages/CrearNino';
+import CrearPictograma from '../Pages/CrearPictograma';
 
 function AppRoutes() {
   return (
@@ -21,7 +22,12 @@ function AppRoutes() {
       <Route path="/pictogramas" element={<Pictogramas />} />
       <Route path="/menujuegos" element={<MenuJuegos />} />
       <Route path="/registro" element={<Registro />} />
+      {/*
       <Route path="/crearnino" element={<CrearNino />} />
+      */}
+      <Route path="/crearnino" element={<CrearNino key="crear" />} />
+      <Route path="/editarnino/:id" element={<CrearNino key="editar" />} />
+      <Route path="/crearpictograma" element={<CrearPictograma />} />
     </Routes>
   );
 }

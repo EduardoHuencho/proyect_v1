@@ -5,7 +5,14 @@ import { useAuth } from '../context/AuthContext';
 import Navbar from '../Components/Navbar';
 import TarjetaPinTutor from '../Components/TarjetaPinTutor';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGear, faPlus } from '@fortawesome/free-solid-svg-icons';
+import {
+  faGear,
+  faPlus,
+  faUserGroup,
+  faPen,
+  faTrashCan,
+  faArrowLeft,
+} from '@fortawesome/free-solid-svg-icons';
 import Fondo from '../Components/Fondo';
 import Avatar from '../assets/panda.png';
 
@@ -34,6 +41,8 @@ function AccesoTutor() {
   } = useNino();
 
   const [mostrarPin, setMostrarPin] = useState(false);
+  const [modoGestion, setModoGestion] = useState(false);
+  const [accionPendientePin, setAccionPendientePin] = useState(null);
 
   useEffect(() => {
     const idPadre = localStorage.getItem('userId') || userId;
@@ -48,18 +57,39 @@ function AccesoTutor() {
   }, [userId, cargarNinos, navigate]);
 
   const handleSeleccionarNino = (nino) => {
+    if (modoGestion) return;
     setNinoActivo(nino);
     navigate('/menumodulos');
   };
 
-  const handlePinValido = () => {
-    setMostrarPin(false);
-    setTutorAutenticado(true);
-    setTutorOrigen('global');
-    navigate('/paneltutor');
+  const solicitarPin = (accion) => {
+    setAccionPendientePin(accion);
+    setMostrarPin(true);
   };
 
-  // Determina si usar la URL remota o el avatar local (panda.png)
+  const handlePinValido = () => {
+    setMostrarPin(false);
+    if (accionPendientePin === 'gestion') {
+      setModoGestion(true);
+    } else {
+      setTutorAutenticado(true);
+      setTutorOrigen('global');
+      navigate('/paneltutor');
+    }
+    setAccionPendientePin(null);
+  };
+
+  const handleEditarNino = (e, nino) => {
+    e.stopPropagation();
+    setNinoActivo(nino);
+    navigate(`/editarnino/${nino.id}`);
+  };
+
+  const handleEliminarNino = (e, nino) => {
+    e.stopPropagation();
+    console.log('Eliminar niño con ID:', nino.id);
+  };
+
   const obtenerImagenAvatar = (avatarUrl) => {
     if (avatarUrl && avatarUrl.startsWith('http')) {
       return avatarUrl;
@@ -74,10 +104,12 @@ function AccesoTutor() {
 
         <div className="flex-1 flex flex-col items-center justify-center max-w-3xl mx-auto px-6 py-12 w-full">
           <h1 className="titulo-pagina md:text-4xl mb-2 text-center">
-            ¿Quién está jugando hoy?
+            {modoGestion ? 'Gestión de Perfiles' : '¿Quién está jugando hoy?'}
           </h1>
           <p className="text-[#4A7A96] mb-10 text-center text-base">
-            Selecciona para entrar al perfil del niño o accede como tutor
+            {modoGestion
+              ? 'Edita o elimina los perfiles asociados a tu cuenta'
+              : 'Selecciona para entrar al perfil del niño o accede como tutor'}
           </p>
 
           <div className="w-full overflow-x-auto py-6 px-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
@@ -89,11 +121,12 @@ function AccesoTutor() {
               ) : (
                 <>
                   {ninos.map((nino) => (
-                    <button
-                      type="button"
+                    <div
                       key={nino.id}
                       onClick={() => handleSeleccionarNino(nino)}
-                      className="tarjeta-perfil"
+                      className={`tarjeta-perfil ${
+                        modoGestion ? 'cursor-default hover:scale-100' : 'cursor-pointer'
+                      }`}
                     >
                       <div className="w-20 h-20 rounded-full bg-[#E0F7FA] border-4 border-[#1B3A5C] flex items-center justify-center overflow-hidden shrink-0">
                         <img
@@ -106,18 +139,42 @@ function AccesoTutor() {
                           className="w-full h-full object-cover"
                         />
                       </div>
+
                       <div className="flex flex-col">
-                        <span className="font-extrabold text-[#1B3A5C] text-md truncate max-w-32.5">
+                        <span className="font-extrabold text-[#1B3A5C] text-md truncate max-w-32.5 text-center">
                           {nino.firstName}
                         </span>
-                        <span className="font-extrabold text-[#1B3A5C] text-md truncate max-w-32.5">
+                        <span className="font-extrabold text-[#1B3A5C] text-md truncate max-w-32.5 text-center">
                           {nino.lastName}
                         </span>
                       </div>
-                      <p className="text-sm text-[#78909C] font-semibold">
-                        {calcularEdad(nino.birthDate)}
-                      </p>
-                    </button>
+
+                      {modoGestion ? (
+                        <div className="flex items-center gap-2 mt-1">
+                          <button
+                            type="button"
+                            onClick={(e) => handleEditarNino(e, nino)}
+                            aria-label={`Editar ${nino.firstName}`}
+                            className="w-9 h-9 rounded-xl bg-[#E0F7FA] text-[#1B3A5C] hover:bg-[#1B3A5C] hover:text-white transition-colors flex items-center justify-center text-sm shadow-sm active:scale-95"
+                          >
+                            <FontAwesomeIcon icon={faPen} />
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={(e) => handleEliminarNino(e, nino)}
+                            aria-label={`Eliminar ${nino.firstName}`}
+                            className="w-9 h-9 rounded-xl bg-red-100 text-red-600 hover:bg-red-600 hover:text-white transition-colors flex items-center justify-center text-sm shadow-sm active:scale-95"
+                          >
+                            <FontAwesomeIcon icon={faTrashCan} />
+                          </button>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-[#78909C] font-semibold">
+                          {calcularEdad(nino.birthDate)}
+                        </p>
+                      )}
+                    </div>
                   ))}
 
                   <button
@@ -145,21 +202,50 @@ function AccesoTutor() {
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setMostrarPin(true)}
-            aria-label="Acceso de tutor"
-            className="mt-6 bg-blue-300 flex items-center gap-2 hover:bg-[#2A4F73] hover:text-white px-6 py-3 rounded-full transition-colors shadow-md text-[#1B3A5C] font-bold"
-          >
-            <FontAwesomeIcon icon={faGear} />
-            <span>Acceso de tutor</span>
-          </button>
+          <div className="flex flex-wrap items-center justify-center gap-4 mt-6">
+            {!modoGestion ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => solicitarPin('panel')}
+                  aria-label="Acceso de tutor"
+                  className="bg-blue-300 flex items-center gap-2 hover:bg-[#2A4F73] hover:text-white px-6 py-3 rounded-full transition-colors shadow-md text-[#1B3A5C] font-bold"
+                >
+                  <FontAwesomeIcon icon={faGear} />
+                  <span>Acceso de tutor</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => solicitarPin('gestion')}
+                  aria-label="Editar perfiles"
+                  className="bg-blue-300 flex items-center gap-2 hover:bg-[#2A4F73] hover:text-white px-6 py-3 rounded-full transition-colors shadow-md text-[#1B3A5C] font-bold"
+                >
+                  <FontAwesomeIcon icon={faUserGroup} />
+                  <span>Gestionar perfiles</span>
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setModoGestion(false)}
+                aria-label="Volver a la selección normal"
+                className="bg-[#1B3A5C] text-white flex items-center gap-2 hover:bg-[#2A4F73] px-6 py-3 rounded-full transition-colors shadow-md font-bold"
+              >
+                <FontAwesomeIcon icon={faArrowLeft} />
+                <span>Listo</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
       <TarjetaPinTutor
         isOpen={mostrarPin}
-        onClose={() => setMostrarPin(false)}
+        onClose={() => {
+          setMostrarPin(false);
+          setAccionPendientePin(null);
+        }}
         onSuccess={handlePinValido}
       />
     </Fondo>
