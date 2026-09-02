@@ -5,9 +5,8 @@ import Navbar from '../Components/Navbar';
 import { usePictogramas } from '../context/PictogramasContext';
 import { useNino } from '../context/NinoContext';
 import { useAuth } from '../context/AuthContext';
-import AvatarDefault from '../assets/panda.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCloudArrowUp, faChild } from '@fortawesome/free-solid-svg-icons';
+import { faCloudArrowUp, faChild, faImage } from '@fortawesome/free-solid-svg-icons';
 
 function CrearPictograma() {
   const navigate = useNavigate();
@@ -19,7 +18,8 @@ function CrearPictograma() {
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [archivo, setArchivo] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(AvatarDefault);
+  
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   const [categorias, setCategorias] = useState([]);
   const [categoryId, setCategoryId] = useState('');
@@ -62,7 +62,7 @@ function CrearPictograma() {
   const handleFileChange = (e) => {
     const fileSelected = e.target.files?.[0];
     if (fileSelected) {
-      if (previewUrl && previewUrl !== AvatarDefault) {
+      if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
       }
       setArchivo(fileSelected);
@@ -104,27 +104,25 @@ function CrearPictograma() {
       return;
     }
 
+    if (!archivo) {
+      setFeedback({
+        type: 'error',
+        message: 'Debes seleccionar una imagen para el pictograma.',
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
-      let archivoAEnviar = archivo;
-
-      if (!archivoAEnviar) {
-        const resImagen = await fetch(AvatarDefault);
-        const blobImagen = await resImagen.blob();
-        archivoAEnviar = new File([blobImagen], 'default-pictogram.png', {
-          type: blobImagen.type || 'image/png',
-        });
-      }
-
       await crearPictograma({
         pictogramName: nombre.trim(),
         description: descripcion.trim(),
         categoryId: categoryId,
-        file: archivoAEnviar,
+        file: archivo,
       });
 
-      if (previewUrl && previewUrl !== AvatarDefault) {
+      if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
       }
 
@@ -157,7 +155,7 @@ function CrearPictograma() {
               Nuevo Pictograma
             </h2>
             <p className="text-sm text-[#4A7A96] font-medium mb-4 text-center">
-              Subida a S3 y persistencia en base de datos
+              Creación de nuevo pictograma.
             </p>
 
             {ninoActivo && (
@@ -182,7 +180,7 @@ function CrearPictograma() {
             )}
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              {/* Imagen / Preview */}
+              {/* Área de selección y preview condicional */}
               <div className="flex flex-col items-center gap-2">
                 <input
                   ref={fileInputRef}
@@ -195,14 +193,24 @@ function CrearPictograma() {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-32 h-32 rounded-2xl border-2 border-dashed border-[#1A7A6E] bg-[#E0F7FA]/30 flex flex-col items-center justify-center text-[#1A7A6E] hover:bg-[#E0F7FA]/60 transition-colors overflow-hidden group cursor-pointer"
+                  className="w-32 h-32 rounded-2xl border-2 border-dashed border-[#1A7A6E] bg-[#E0F7FA]/30 hover:bg-[#E0F7FA]/60 flex flex-col items-center justify-center text-[#1A7A6E] transition-colors overflow-hidden cursor-pointer"
                 >
-                  <img
-                    src={previewUrl}
-                    alt="Previsualización"
-                    className="w-full h-full object-contain p-2"
-                  />
+                  {previewUrl ? (
+                    <img
+                      src={previewUrl}
+                      alt="Previsualización"
+                      className="w-full h-full object-contain p-2"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center gap-1.5 p-2 text-center">
+                      <FontAwesomeIcon icon={faImage} className="text-3xl opacity-70" />
+                      <span className="text-[11px] font-bold leading-tight">
+                        Subir imagen
+                      </span>
+                    </div>
+                  )}
                 </button>
+
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
