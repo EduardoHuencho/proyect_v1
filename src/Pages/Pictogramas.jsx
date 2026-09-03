@@ -13,7 +13,7 @@ import {
   faVolumeHigh,
   faTrashCan,
   faDeleteLeft,
-  faGear,
+  //faGear,
 } from '@fortawesome/free-solid-svg-icons';
 
 const COLOR_CATEGORIA_FIJO = '#E0F7FA';
@@ -181,7 +181,6 @@ function Pictogramas() {
         />
 
         <div className="p-4 md:p-6 select-none flex-1 flex flex-col overflow-hidden landscape:max-md:overflow-visible">
-          {/* Selector de niños */}
           {tutorAutenticado && (
             <div className="barra-scroll-horizontal mb-4 shrink-0">
               {loadingNinos ? (
@@ -385,19 +384,21 @@ function Pictogramas() {
                       onClick={() => pictogramaHandler(item)}
                     />
 
+                    {/*
                     {tutorAutenticado && (
                       <button
                         type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/editarpictograma/${item.id}`);
-                        }}
+                        //onClick={(e) => {
+                        //  e.stopPropagation();
+                        //  navigate(`/editarpictograma/${item.id}`);
+                        //}}
                         aria-label={`Editar pictograma ${item.label}`}
                         className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-white/95 text-[#1B3A5C] border border-[#CBD5E0] shadow-md flex items-center justify-center text-xs hover:bg-[#1B3A5C] hover:text-white transition-colors z-10 cursor-pointer"
                       >
                         <FontAwesomeIcon icon={faGear} />
                       </button>
                     )}
+                    */}
                   </div>
                 ))}
               </div>

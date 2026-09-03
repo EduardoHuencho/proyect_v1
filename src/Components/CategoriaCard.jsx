@@ -1,5 +1,10 @@
 
-function CategoriaCard({ label, icon, color, activo, onClick }) {
+function CategoriaCard({ 
+  label, 
+  //icon, 
+  color, 
+  activo, 
+  onClick }) {
   return (
     <button
       onClick={onClick}
@@ -9,10 +14,11 @@ function CategoriaCard({ label, icon, color, activo, onClick }) {
           : `${color || 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'}`
       }`}
     >
-      <span className="text-xl">{icon}</span>
+      {/* <span className="text-xl">{icon}</span> */}
       <span className="truncate">{label}</span>
     </button>
   );
 }
 
 export default CategoriaCard;
+
