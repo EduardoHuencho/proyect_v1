@@ -3,7 +3,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDeleteLeft, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../context/AuthContext';
 
-function TarjetaPinTutor({ isOpen, onClose, onSuccess }) {
+interface TarjetaPinTutorProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+}
+
+function TarjetaPinTutor({ isOpen, onClose, onSuccess }: TarjetaPinTutorProps) {
   const { validatePin } = useAuth();
   const [pin, setPin] = useState('');
   const [errorPin, setErrorPin] = useState(false);
@@ -11,7 +17,7 @@ function TarjetaPinTutor({ isOpen, onClose, onSuccess }) {
 
   if (!isOpen) return null;
 
-  const handleNumero = (num) => {
+  const handleNumero = (num: string) => {
     if (pin.length >= 4 || cargando) return;
     const nuevoPin = pin + num;
     setPin(nuevoPin);

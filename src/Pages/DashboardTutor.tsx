@@ -7,7 +7,17 @@ import juegosImg from '../assets/juegos.png';
 import analisisImg from '../assets/analisis.png';
 import Fondo from '../Components/Fondo';
 
-const modulos = [
+interface Modulo {
+  id: string;
+  titulo: string;
+  descripcion: string;
+  imagen: string;
+  borderColor: string;
+  disponible: boolean;
+  ruta?: string;
+}
+
+const modulos: Modulo[] = [
   {
     id: 'calendario',
     titulo: 'Calendario Semanal',
@@ -47,8 +57,8 @@ const modulos = [
 function DashboardTutor() {
   const navigate = useNavigate();
 
-  const handleModulo = (modulo) => {
-    if (!modulo.disponible) return;
+  const handleModulo = (modulo: Modulo) => {
+    if (!modulo.disponible || !modulo.ruta) return;
     navigate(modulo.ruta);
   };
 

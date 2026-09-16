@@ -9,16 +9,18 @@ import { usePictogramas } from '../context/PictogramasContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Fondo from '../Components/Fondo';
 import Avatar from '../assets/panda.png';
+import { getCategories } from '../services/pictogramsService';
+import type { Categoria, Pictograma, PictogramaEnFrase } from '../types/pictograma';
+import type { Infante } from '../types/perfil';
 import {
   faVolumeHigh,
   faTrashCan,
   faDeleteLeft,
-  //faGear,
 } from '@fortawesome/free-solid-svg-icons';
 
 const COLOR_CATEGORIA_FIJO = '#E0F7FA';
 
-const obtenerImagenAvatar = (avatarUrl) => {
+const obtenerImagenAvatar = (avatarUrl: Infante['avatarUrl']) => {
   if (avatarUrl && avatarUrl.startsWith('http')) {
     return avatarUrl;
   }
@@ -40,14 +42,14 @@ function Pictogramas() {
 
   const { pictogramas, loadingPictogramas, cargarPictogramas } = usePictogramas();
 
-  const [categorias, setCategorias] = useState([]);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [loadingCategorias, setLoadingCategorias] = useState(true);
 
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string | null>(null);
 
-  const [frase, setFrase] = useState([]);
-  const vozAmigableRef = useRef(null);
-  const contenedorFraseRef = useRef(null);
+  const [frase, setFrase] = useState<PictogramaEnFrase[]>([]);
+  const vozAmigableRef = useRef<SpeechSynthesisVoice | null>(null);
+  const contenedorFraseRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (tutorAutenticado && ninos.length === 0) {
@@ -61,7 +63,7 @@ function Pictogramas() {
   useEffect(() => {
     const idPadre = localStorage.getItem('userId') || userId;
     if (idPadre) {
-      cargarPictogramas(idPadre);
+      void cargarPictogramas();
     }
   }, [userId, cargarPictogramas]);
 
@@ -69,20 +71,7 @@ function Pictogramas() {
     const fetchCategorias = async () => {
       try {
         setLoadingCategorias(true);
-        const response = await fetch('http://localhost:3000/category', {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-        if (!response.ok) throw new Error('Error al cargar las categorías');
-        const data = await response.json();
-
-        let lista = [];
-        if (Array.isArray(data)) {
-          lista = data;
-        } else if (Array.isArray(data.data)) {
-          lista = data.data;
-        }
-
-        setCategorias(lista);
+        setCategorias(await getCategories(token));
       } catch (error) {
         console.error('Error fetching categorias:', error);
       } finally {
@@ -113,7 +102,7 @@ function Pictogramas() {
     window.speechSynthesis.onvoiceschanged = configurarVoz;
   }, []);
 
-  const pictogramaHandler = (pictograma) => {
+  const pictogramaHandler = (pictograma: Pictograma) => {
     setFrase((prevFrase) => [
       ...prevFrase,
       { ...pictograma, phraseId: crypto.randomUUID() },
@@ -134,7 +123,7 @@ function Pictogramas() {
 
   const reproducirFrase = () => {
     if (frase.length === 0) return;
-    const textoAVoz = frase.map((pic) => pic.label).join(' ');
+    const textoAVoz = frase.map((pic) => pic.pictogramName).join(' ');
     const mensaje = new SpeechSynthesisUtterance(textoAVoz);
     if (vozAmigableRef.current) {
       mensaje.voice = vozAmigableRef.current;
@@ -158,9 +147,7 @@ function Pictogramas() {
   }, [frase]);
 
   const pictogramasFiltrados = categoriaSeleccionada
-    ? pictogramas.filter(
-        (item) => String(item.categoryId).trim() === String(categoriaSeleccionada).trim()
-      )
+    ? pictogramas.filter((item) => item.category.id === categoriaSeleccionada)
     : pictogramas;
 
   return (
@@ -239,17 +226,17 @@ function Pictogramas() {
                   >
                     <div className="w-full flex-1 flex items-center justify-center overflow-hidden min-h-0">
                       <img
-                        src={pic.icon}
-                        alt={pic.label}
+                        src={pic.pictoImageUrl}
+                        alt={pic.pictogramName}
                         className="max-h-full max-w-full object-contain"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = 'https://placehold.co/100x100?text=🖼️';
+                          onError={(event) => {
+                            event.currentTarget.onerror = null;
+                            event.currentTarget.src = 'https://placehold.co/100x100?text=imagen';
                         }}
                       />
                     </div>
                     <p className="text-[11px] sm:text-xs font-semibold text-gray-700 w-full text-center leading-tight line-clamp-2 wrap-break-words hyphens-auto px-0.5 mt-1 shrink-0">
-                      {pic.label}
+                      {pic.pictogramName}
                     </p>
                   </div>
                 ))
@@ -324,7 +311,7 @@ function Pictogramas() {
             ) : (
               <>
                 {categorias.map((cat) => {
-                  const activo = String(categoriaSeleccionada) === String(cat.id);
+                  const activo = categoriaSeleccionada === cat.id;
 
                   return (
                     <CategoriaCard
@@ -334,7 +321,7 @@ function Pictogramas() {
                       activo={activo}
                       onClick={() => {
                         setCategoriaSeleccionada((prev) =>
-                          prev === String(cat.id) ? null : String(cat.id)
+                          prev === cat.id ? null : cat.id
                         );
                       }}
                     />
@@ -379,8 +366,8 @@ function Pictogramas() {
                 {pictogramasFiltrados.map((item) => (
                   <div key={item.id} className="relative group">
                     <PictogramaCard
-                      label={item.label}
-                      icon={item.icon}
+                      pictogramName={item.pictogramName}
+                      pictoImageUrl={item.pictoImageUrl}
                       onClick={() => pictogramaHandler(item)}
                     />
 
@@ -392,7 +379,7 @@ function Pictogramas() {
                         //  e.stopPropagation();
                         //  navigate(`/editarpictograma/${item.id}`);
                         //}}
-                        aria-label={`Editar pictograma ${item.label}`}
+                        aria-label={`Editar pictograma ${item.pictogramName}`}
                         className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-white/95 text-[#1B3A5C] border border-[#CBD5E0] shadow-md flex items-center justify-center text-xs hover:bg-[#1B3A5C] hover:text-white transition-colors z-10 cursor-pointer"
                       >
                         <FontAwesomeIcon icon={faGear} />

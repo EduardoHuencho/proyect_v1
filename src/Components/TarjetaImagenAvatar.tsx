@@ -1,17 +1,24 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
+import type { ChangeEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCamera, faFolderOpen, faCheck, faTimes, faArrowRotateLeft } from '@fortawesome/free-solid-svg-icons';
-import MarcoAvatarPreview from '../Components/ImagenPreview'
+import MarcoAvatarPreview, { type ImagenPreviewHandle } from '../Components/ImagenPreview'
 
-function TarjetaImagenAvatar({ isOpen, onClose, onSeleccionar }) {
-  const fileInputRef = useRef(null);
-  const cameraInputRef = useRef(null);
-  const videoRef = useRef(null);
-  const marcoRef = useRef(null);
+interface TarjetaImagenAvatarProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSeleccionar: (url: string) => void;
+}
+
+function TarjetaImagenAvatar({ isOpen, onClose, onSeleccionar }: TarjetaImagenAvatarProps) {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const cameraInputRef = useRef<HTMLInputElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const marcoRef = useRef<ImagenPreviewHandle | null>(null);
 
   const [modoWebcamPC, setModoWebcamPC] = useState(false);
-  const [imagenTemporal, setImagenTemporal] = useState(null);
-  const [streamActivo, setStreamActivo] = useState(null);
+  const [imagenTemporal, setImagenTemporal] = useState<string | null>(null);
+  const [streamActivo, setStreamActivo] = useState<MediaStream | null>(null);
 
   const cerrarWebcamPC = useCallback(() => {
     if (streamActivo) {
@@ -38,11 +45,10 @@ function TarjetaImagenAvatar({ isOpen, onClose, onSeleccionar }) {
   if (!isOpen) return null;
 
   // archivo desde el movil o explorador
-  const handleSubirArchivo = (e) => {
+  const handleSubirArchivo = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const urlTemporal = URL.createObjectURL(file);
-      // Pasa al modo ajuste
       setImagenTemporal(urlTemporal);
     }
     e.target.value = '';
@@ -83,6 +89,7 @@ function TarjetaImagenAvatar({ isOpen, onClose, onSeleccionar }) {
     canvas.height = video.videoHeight;
     const ctx = canvas.getContext('2d');
 
+    if (!ctx) return;
     ctx.translate(canvas.width, 0);
     ctx.scale(-1, 1);
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);

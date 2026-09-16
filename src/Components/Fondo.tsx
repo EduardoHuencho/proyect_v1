@@ -1,6 +1,6 @@
 import fondoImg from '../assets/diseño.jpg'
 
-function Fondo({ children }) {
+function Fondo({ children }: { children: React.ReactNode }) {
   return (
     <div
       className="min-h-screen font-sans"

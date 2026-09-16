@@ -6,7 +6,7 @@ import { faArrowDown, faStar } from '@fortawesome/free-solid-svg-icons';
 import lupa from '../assets/lupa.png';
 import libro from '../assets/libro.png';
 
-const manejarClickJuego = (juego) => {
+const manejarClickJuego = (juego: string) => {
   console.log(`Se hizo click en la tarjeta del juego: ${juego}`);
 };
 

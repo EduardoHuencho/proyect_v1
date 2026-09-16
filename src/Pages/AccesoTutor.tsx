@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import type { MouseEvent } from 'react';
 import { useNavigate } from 'react-router';
 import { useNino } from '../context/NinoContext';
 import { useAuth } from '../context/AuthContext';
@@ -15,8 +16,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import Fondo from '../Components/Fondo';
 import Avatar from '../assets/panda.png';
+import type { Infante } from '../types/perfil';
 
-const calcularEdad = (fecha) => {
+const calcularEdad = (fecha: string) => {
   if (!fecha) return '';
   const hoy = new Date();
   const nacimiento = new Date(fecha);
@@ -30,7 +32,8 @@ const calcularEdad = (fecha) => {
 
 function AccesoTutor() {
   const navigate = useNavigate();
-  const { userId } = useAuth();
+  
+  const { userId, token } = useAuth();
   const {
     ninos,
     loadingNinos,
@@ -42,27 +45,25 @@ function AccesoTutor() {
 
   const [mostrarPin, setMostrarPin] = useState(false);
   const [modoGestion, setModoGestion] = useState(false);
-  const [accionPendientePin, setAccionPendientePin] = useState(null);
+  const [accionPendientePin, setAccionPendientePin] = useState<'gestion' | 'panel' | null>(null);
 
   useEffect(() => {
-    const idPadre = localStorage.getItem('userId') || userId;
-
-    if (!idPadre) {
-      console.warn('No hay sesión de tutor activa. Redirigiendo a login...');
-      navigate('/');
+    if (!userId || !token) {
+      console.warn('No hay sesión activa. Redirigiendo a login...');
+      navigate('/', { replace: true });
       return;
     }
 
-    cargarNinos(idPadre);
-  }, [userId, cargarNinos, navigate]);
+    void cargarNinos(userId);
+  }, [userId, token, cargarNinos, navigate]);
 
-  const handleSeleccionarNino = (nino) => {
+  const handleSeleccionarNino = (nino: Infante) => {
     if (modoGestion) return;
     setNinoActivo(nino);
     navigate('/menumodulos');
   };
 
-  const solicitarPin = (accion) => {
+  const solicitarPin = (accion: 'gestion' | 'panel') => {
     setAccionPendientePin(accion);
     setMostrarPin(true);
   };
@@ -79,18 +80,25 @@ function AccesoTutor() {
     setAccionPendientePin(null);
   };
 
-  const handleEditarNino = (e, nino) => {
+  const handleEditarNino = (e: MouseEvent<HTMLButtonElement>, nino: Infante) => {
     e.stopPropagation();
     setNinoActivo(nino);
     navigate(`/editarnino/${nino.id}`);
   };
 
-  const handleEliminarNino = (e, nino) => {
+  const handleEliminarNino = async (e: MouseEvent<HTMLButtonElement>, nino: Infante) => {
     e.stopPropagation();
-    console.log('Eliminar niño con ID:', nino.id);
+    if (window.confirm(`¿Estás seguro de eliminar el perfil de ${nino.firstName}?`)) {
+      try {
+        console.log('Eliminando niño ID:', nino.id);
+        if (userId) await cargarNinos(userId);
+      } catch (err) {
+        console.error('Error al eliminar perfil:', err);
+      }
+    }
   };
 
-  const obtenerImagenAvatar = (avatarUrl) => {
+  const obtenerImagenAvatar = (avatarUrl: Infante['avatarUrl']) => {
     if (avatarUrl && avatarUrl.startsWith('http')) {
       return avatarUrl;
     }
@@ -162,7 +170,7 @@ function AccesoTutor() {
 
                           <button
                             type="button"
-                            onClick={(e) => handleEliminarNino(e, nino)}
+                            onClick={(e) => void handleEliminarNino(e, nino)}
                             aria-label={`Eliminar ${nino.firstName}`}
                             className="w-9 h-9 rounded-xl bg-red-100 text-red-600 hover:bg-red-600 hover:text-white transition-colors flex items-center justify-center text-sm shadow-sm active:scale-95"
                           >

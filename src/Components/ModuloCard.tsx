@@ -1,4 +1,14 @@
 
+interface ModuloCardProps {
+  titulo: string;
+  descripcion?: string;
+  imagen: string;
+  borderColor: string;
+  disponible: boolean;
+  onClick: () => void;
+  variante?: 'nino' | 'tutor';
+}
+
 function ModuloCard({
   titulo,
   descripcion,
@@ -7,7 +17,7 @@ function ModuloCard({
   disponible,
   onClick,
   variante = 'nino',
-}) {
+}: ModuloCardProps) {
   if (variante === 'nino') {
     return (
       <button

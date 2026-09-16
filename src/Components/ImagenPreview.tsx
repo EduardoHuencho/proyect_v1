@@ -1,9 +1,26 @@
 import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import type { RefObject } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faMagnifyingGlassPlus, faMagnifyingGlassMinus } from '@fortawesome/free-solid-svg-icons';
 import AvatarFallback from '../assets/panda.png';
 
-const ImagenPreview = forwardRef(function MarcoAvatarPreview(
+type TamanoPreview = 'sm' | 'md' | 'lg' | 'xl';
+
+interface ImagenPreviewProps {
+  src?: string | null;
+  videoRef?: RefObject<HTMLVideoElement | null>;
+  esVideo?: boolean;
+  editable?: boolean;
+  tamano?: TamanoPreview;
+  bordeDashed?: boolean;
+  className?: string;
+}
+
+export interface ImagenPreviewHandle {
+  obtenerImagenRecortada: () => Promise<string | null>;
+}
+
+const ImagenPreview = forwardRef<ImagenPreviewHandle, ImagenPreviewProps>(function MarcoAvatarPreview(
   {
     src = null,
     videoRef = null,
@@ -19,8 +36,8 @@ const ImagenPreview = forwardRef(function MarcoAvatarPreview(
   const [zoom, setZoom] = useState(1);
   const [arrastrando, setArrastrando] = useState(false);
   const inicioArrastre = useRef({ x: 0, y: 0 });
-  const imgRef = useRef(null);
-  const contenedorRef = useRef(null);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+  const contenedorRef = useRef<HTMLDivElement | null>(null);
 
   // reinicia la posicion y zoom cuando se cambia la imagen
   useEffect(() => {
@@ -41,6 +58,7 @@ const ImagenPreview = forwardRef(function MarcoAvatarPreview(
         canvas.width = diametro;
         canvas.height = diametro;
         const ctx = canvas.getContext('2d');
+        if (!ctx) return resolve(null);
 
         // crea marco circular para el recorte
         ctx.beginPath();
@@ -48,7 +66,6 @@ const ImagenPreview = forwardRef(function MarcoAvatarPreview(
         ctx.closePath();
         ctx.clip();
 
-        // calcular proporciones y posicion relativas
         const rectContenedor = contenedor.getBoundingClientRect();
         const escalaCanvas = diametro / rectContenedor.width;
 
@@ -82,7 +99,7 @@ const ImagenPreview = forwardRef(function MarcoAvatarPreview(
   }));
 
   // manejo de mouse para arrastrar la imagen
-  const iniciarArrastre = (clienteX, clienteY) => {
+  const iniciarArrastre = (clienteX: number, clienteY: number) => {
     if (!editable || esVideo || !src) return;
     setArrastrando(true);
     inicioArrastre.current = {
@@ -91,7 +108,7 @@ const ImagenPreview = forwardRef(function MarcoAvatarPreview(
     };
   };
 
-  const mover = (clienteX, clienteY) => {
+  const mover = (clienteX: number, clienteY: number) => {
     if (!arrastrando) return;
     setPosicion({
       x: clienteX - inicioArrastre.current.x,
@@ -115,7 +132,6 @@ const ImagenPreview = forwardRef(function MarcoAvatarPreview(
 
   return (
     <div className="flex flex-col items-center gap-3">
-      {/* marco circular */}
       <div
         ref={contenedorRef}
         onMouseDown={(e) => iniciarArrastre(e.clientX, e.clientY)}

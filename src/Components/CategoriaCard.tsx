@@ -1,10 +1,16 @@
+interface CategoriaCardProps {
+  label: string;
+  color?: string;
+  activo: boolean;
+  onClick: () => void;
+}
 
-function CategoriaCard({ 
-  label, 
-  //icon, 
-  color, 
-  activo, 
-  onClick }) {
+function CategoriaCard({
+  label,
+  color,
+  activo,
+  onClick,
+}: CategoriaCardProps) {
   return (
     <button
       onClick={onClick}
@@ -14,11 +20,9 @@ function CategoriaCard({
           : `${color || 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'}`
       }`}
     >
-      {/* <span className="text-xl">{icon}</span> */}
       <span className="truncate">{label}</span>
     </button>
   );
 }
 
 export default CategoriaCard;
-

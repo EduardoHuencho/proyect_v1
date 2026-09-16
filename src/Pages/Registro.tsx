@@ -1,12 +1,15 @@
 import { useState } from 'react';
+import type { Dispatch, FormEvent, SetStateAction } from 'react';
 import { useNavigate } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash, faLock } from '@fortawesome/free-solid-svg-icons';
 import logoImg from '../assets/logo.png';
 import ninioImg from '../assets/logniños.png';
 import Fondo from '../Components/Fondo';
+import { registerTutor } from '../services/authService';
+import type { RegisterTutorInput } from '../types/auth';
 
-const handlePinChange = (value, setFunction) => {
+const handlePinChange = (value: string, setFunction: Dispatch<SetStateAction<string>>) => {
   const cleaned = value.replace(/\D/g, '');
   if (cleaned.length <= 4) {
     setFunction(cleaned);
@@ -30,7 +33,7 @@ function Registro() {
 
   const navigate = useNavigate();
 
-  async function handleRegister(e) {
+  async function handleRegister(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     if (
@@ -69,7 +72,7 @@ function Registro() {
       return;
     }
 
-    const datosUsuario = {
+    const datosUsuario: RegisterTutorInput = {
       email: email.trim().toLowerCase(),
       password: password,
       firstName: nombre.trim(),
@@ -78,27 +81,18 @@ function Registro() {
     };
 
     try {
-      const respuesta = await fetch('http://localhost:3000/user/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(datosUsuario),
-      });
+      await registerTutor(datosUsuario);
 
-      const resultado = await respuesta.json();
-
-      if (respuesta.ok) {
-        alert('Cuenta creada con éxito.');
-        navigate('/');
+      alert('Cuenta creada con éxito.');
+      navigate('/');
+    } catch (error: unknown) {
+      console.error('Error al registrar usuario:', error);
+      
+      if (error instanceof Error) {
+        alert(`Error al registrarse: ${error.message}`);
       } else {
-        alert(
-          `Error al registrarse: ${resultado.message || 'Inténtalo de nuevo.'}`
-        );
+        alert('No se pudo establecer conexión con el servidor.');
       }
-    } catch (error) {
-      console.error('Error al conectar con Nest:', error);
-      alert('No se pudo establecer conexión con el servidor.');
     }
   }
 

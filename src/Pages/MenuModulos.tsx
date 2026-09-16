@@ -8,8 +8,18 @@ import pictogramaImg from '../assets/pictograma.png';
 import juegosImg from '../assets/juegos.png';
 import Avatar from '../assets/panda.png';
 import Fondo from '../Components/Fondo';
+import type { Infante } from '../types/perfil';
 
-const modulos = [
+interface Modulo {
+  id: string;
+  titulo: string;
+  imagen: string;
+  borderColor: string;
+  disponible: boolean;
+  ruta?: string;
+}
+
+const modulos: Modulo[] = [
   {
     id: 'horario',
     titulo: 'HORARIO',
@@ -35,7 +45,7 @@ const modulos = [
   },
 ];
 
-const obtenerImagenAvatar = (avatarUrl) => {
+const obtenerImagenAvatar = (avatarUrl: Infante['avatarUrl']) => {
   if (avatarUrl && avatarUrl.startsWith('http')) {
     return avatarUrl;
   }
@@ -54,8 +64,8 @@ function MenuModulos() {
 
   if (!ninoActivo) return null;
 
-  const handleModulo = (modulo) => {
-    if (!modulo.disponible) return;
+  const handleModulo = (modulo: Modulo) => {
+    if (!modulo.disponible || !modulo.ruta) return;
     navigate(modulo.ruta);
   };
 

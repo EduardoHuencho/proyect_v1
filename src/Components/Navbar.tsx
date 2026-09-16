@@ -9,8 +9,17 @@ import {
   faFloppyDisk,
 } from '@fortawesome/free-solid-svg-icons';
 import { useNino } from '../context/NinoContext';
+import { useAuth } from '../context/AuthContext';
 import logoImg from '../assets/logo.png';
 import TarjetaPinTutor from './TarjetaPinTutor';
+
+interface NavbarProps {
+  rol: 'selector' | 'nino' | 'tutor';
+  rutaVolver?: string | null;
+  labelVolver?: string;
+  pinSoloDesbloquea?: boolean;
+  esPictogramas?: boolean;
+}
 
 function Navbar({
   rol,
@@ -18,10 +27,11 @@ function Navbar({
   labelVolver = 'Volver',
   pinSoloDesbloquea = false,
   esPictogramas = false,
-}) {
+}: NavbarProps) {
   const navigate = useNavigate();
   const { tutorAutenticado, setTutorAutenticado, tutorOrigen, setTutorOrigen } =
     useNino();
+  const { logout } = useAuth();
   const [mostrarPin, setMostrarPin] = useState(false);
 
   const handlePinValido = () => {
@@ -38,7 +48,13 @@ function Navbar({
   const handleSalirTutor = () => {
     setTutorAutenticado(false);
     setTutorOrigen(null);
+    logout();
     navigate('/accesotutor');
+  };
+
+  const handleCerrarSesion = () => {
+    logout();
+    navigate('/');
   };
 
   const handleGuardarYSalir = () => {
@@ -109,7 +125,7 @@ function Navbar({
 
           {rol === 'selector' && (
             <button
-              onClick={() => navigate('/')}
+              onClick={handleCerrarSesion}
               className="btn-nav"
             >
               <FontAwesomeIcon icon={faDoorOpen} />

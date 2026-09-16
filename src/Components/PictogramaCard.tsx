@@ -1,6 +1,16 @@
 import AvatarDefault from '../assets/panda.png';
 
-function PictogramaCard({ label = 'Sin nombre', icon = AvatarDefault, onClick }) {
+interface PictogramaCardProps {
+  pictogramName: string;
+  pictoImageUrl: string;
+  onClick: () => void;
+}
+
+function PictogramaCard({
+  pictogramName,
+  pictoImageUrl,
+  onClick,
+}: PictogramaCardProps) {
   return (
     <button
       type="button"
@@ -9,18 +19,18 @@ function PictogramaCard({ label = 'Sin nombre', icon = AvatarDefault, onClick })
     >
       <div className="w-full h-16 sm:h-20 md:h-24 flex items-center justify-center overflow-hidden shrink-0 pt-1">
         <img
-          src={icon}
-          alt={label}
+          src={pictoImageUrl || AvatarDefault}
+          alt={pictogramName}
           className="h-full w-full object-contain p-0.5 md:p-1"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = 'https://placehold.co/150x150?text=🖼️';
+          onError={(event) => {
+            event.currentTarget.onerror = null;
+            event.currentTarget.src = 'https://placehold.co/150x150?text=imagen';
           }}
         />
       </div>
 
       <span className="text-[11px] sm:text-xs md:text-sm font-semibold text-neutral-800 leading-tight wrap-break-words hyphens-auto w-full text-center shrink-0 px-1 mb-1 line-clamp-2">
-        {label}
+        {pictogramName}
       </span>
     </button>
   );

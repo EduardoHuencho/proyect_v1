@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import Fondo from '../Components/Fondo';
 import Navbar from '../Components/Navbar';
@@ -8,6 +9,8 @@ import { useAuth } from '../context/AuthContext';
 import Avatar from '../assets/panda.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCamera } from '@fortawesome/free-solid-svg-icons';
+import { createInfant } from '../services/infantsService';
+import type { CrearInfanteInput } from '../types/perfil';
 
 function CrearNino() {
   const { id } = useParams();
@@ -18,17 +21,16 @@ function CrearNino() {
   const navigate = useNavigate();
 
   const ninoAEditar = esEdicion
-    ? (ninoActivo && String(ninoActivo.id) === String(id))
+    ? (ninoActivo && ninoActivo.id === id)
       ? ninoActivo
-      : ninos.find((n) => String(n.id) === String(id))
+      : ninos.find((n) => n.id === id)
     : null;
 
   const [nombre, setNombre] = useState(() => ninoAEditar?.firstName || '');
   const [apellido, setApellido] = useState(() => ninoAEditar?.lastName || '');
   const [fechaNacimiento, setFechaNacimiento] = useState(() => ninoAEditar?.birthDate || '');
   
-  // previsualizacion local de la foto cargada
-  const [avatar, setAvatar] = useState(() => {
+  const [avatar, setAvatar] = useState<string | null>(() => {
     const url = ninoAEditar?.avatarUrl;
     if (url && url.startsWith('blob:')) return null;
     return url || null;
@@ -36,56 +38,40 @@ function CrearNino() {
 
   const [mostrarTarjetaAvatar, setMostrarTarjetaAvatar] = useState(false);
   const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
 
-    const idPadre = localStorage.getItem('userId') || userId;
-    if (!idPadre) {
-      navigate('/');
-      return;
-    }
-
-    if (esEdicion) {
-      console.log('Edicion simulada del infante:', id);
-      navigate('/accesotutor');
+    if (!userId || !token) {
+      navigate('/', { replace: true });
       return;
     }
 
     setLoading(true);
 
     try {
-      const cuerpo = {
+      const cuerpo: CrearInfanteInput = {
         firstName: nombre.trim(),
         lastName: apellido.trim(),
         birthDate: fechaNacimiento,
-        userId: idPadre,
-        // asset local a la bd
-        avatarUrl: Avatar,
+        userId: userId,
+        avatarUrl: avatar || Avatar,
       };
 
-      const response = await fetch('http://localhost:3000/infant/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(cuerpo),
-      });
+      //if (esEdicion && id) {
+      //} else {
+      //  await createInfant(cuerpo, token);
+      //}
 
-      if (!response.ok) {
-        throw new Error('CREATION_ERROR');
-      }
-
-      await cargarNinos(idPadre);
+      await cargarNinos(userId);
       navigate('/accesotutor');
     } catch (err) {
       console.error(err);
-      if (err.message === 'CREATION_ERROR') {
-        setError('No se pudo crear el perfil.');
+      if (err instanceof Error && err.message === 'CREATION_ERROR') {
+        setError('No se pudo guardar el perfil.');
       } else {
         setError('Error de conexión con el servidor.');
       }
@@ -94,10 +80,20 @@ function CrearNino() {
     }
   }
 
-  function handleEliminar() {
-    console.log('Eliminacion simulada del infante:', id);
-    setMostrarModalEliminar(false);
-    navigate('/accesotutor');
+  async function handleEliminar() {
+    if (!id || !userId || !token) return;
+
+    setLoading(true);
+    try {
+      await cargarNinos(userId);
+      setMostrarModalEliminar(false);
+      navigate('/accesotutor');
+    } catch (err) {
+      console.error('Error al eliminar infante:', err);
+      setError('No se pudo eliminar el perfil.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -247,7 +243,7 @@ function CrearNino() {
       <TarjetaImagenAvatar
         isOpen={mostrarTarjetaAvatar}
         onClose={() => setMostrarTarjetaAvatar(false)}
-        onSeleccionar={(urlImagen) => setAvatar(urlImagen)}
+        onSeleccionar={(urlImagen: string) => setAvatar(urlImagen)}
       />
 
       {mostrarModalEliminar && (
@@ -260,15 +256,17 @@ function CrearNino() {
             <div className="flex gap-3">
               <button
                 type="button"
-                onClick={handleEliminar}
-                className="flex-1 py-2.5 rounded-xl font-bold bg-red-500 text-white hover:bg-red-600 transition-colors"
+                disabled={loading}
+                onClick={() => void handleEliminar()}
+                className="flex-1 py-2.5 rounded-xl font-bold bg-red-500 text-white hover:bg-red-600 transition-colors disabled:opacity-50"
               >
-                Sí, eliminar
+                {loading ? 'Eliminando...' : 'Sí, eliminar'}
               </button>
               <button
                 type="button"
+                disabled={loading}
                 onClick={() => setMostrarModalEliminar(false)}
-                className="flex-1 py-2.5 rounded-xl font-bold bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors"
+                className="flex-1 py-2.5 rounded-xl font-bold bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors disabled:opacity-50"
               >
                 Cancelar
               </button>
