@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate } from 'react-router';
 import Fondo from '../Components/Fondo';
 import Navbar from '../Components/Navbar';
 import TarjetaImagenAvatar from '../Components/TarjetaImagenAvatar';
@@ -13,31 +13,16 @@ import { createInfant } from '../services/infantsService';
 import type { CrearInfanteInput } from '../types/perfil';
 
 function CrearNino() {
-  const { id } = useParams();
-  const esEdicion = Boolean(id);
-
-  const { tutorAutenticado, tutorOrigen, ninos, cargarNinos, ninoActivo } = useNino();
+  const { tutorAutenticado, tutorOrigen, cargarNinos } = useNino();
   const { userId, token } = useAuth();
   const navigate = useNavigate();
 
-  const ninoAEditar = esEdicion
-    ? (ninoActivo && ninoActivo.id === id)
-      ? ninoActivo
-      : ninos.find((n) => n.id === id)
-    : null;
-
-  const [nombre, setNombre] = useState(() => ninoAEditar?.firstName || '');
-  const [apellido, setApellido] = useState(() => ninoAEditar?.lastName || '');
-  const [fechaNacimiento, setFechaNacimiento] = useState(() => ninoAEditar?.birthDate || '');
-  
-  const [avatar, setAvatar] = useState<string | null>(() => {
-    const url = ninoAEditar?.avatarUrl;
-    if (url && url.startsWith('blob:')) return null;
-    return url || null;
-  });
+  const [nombre, setNombre] = useState('');
+  const [apellido, setApellido] = useState('');
+  const [fechaNacimiento, setFechaNacimiento] = useState('');
+  const [avatar, setAvatar] = useState<string | null>(null);
 
   const [mostrarTarjetaAvatar, setMostrarTarjetaAvatar] = useState(false);
-  const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -61,10 +46,7 @@ function CrearNino() {
         avatarUrl: avatar || Avatar,
       };
 
-      //if (esEdicion && id) {
-      //} else {
-      //  await createInfant(cuerpo, token);
-      //}
+      await createInfant(cuerpo, token);
 
       await cargarNinos(userId);
       navigate('/accesotutor');
@@ -75,22 +57,6 @@ function CrearNino() {
       } else {
         setError('Error de conexión con el servidor.');
       }
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function handleEliminar() {
-    if (!id || !userId || !token) return;
-
-    setLoading(true);
-    try {
-      await cargarNinos(userId);
-      setMostrarModalEliminar(false);
-      navigate('/accesotutor');
-    } catch (err) {
-      console.error('Error al eliminar infante:', err);
-      setError('No se pudo eliminar el perfil.');
     } finally {
       setLoading(false);
     }
@@ -116,12 +82,10 @@ function CrearNino() {
         <div className="flex-1 flex items-center justify-center px-6 py-8 w-full">
           <div className="tarjeta-auth max-w-md p-6 md:p-8">
             <h2 className="text-2xl font-extrabold text-[#005088] mb-1 text-center">
-              {esEdicion ? 'Editar Perfil de Infante' : 'Nuevo Perfil de Infante'}
+              Nuevo Perfil de Infante
             </h2>
             <p className="text-sm text-[#4A7A96] font-medium mb-6 text-center">
-              {esEdicion
-                ? 'Modifica los datos del niño'
-                : 'Ingresa los datos del niño para crear su perfil'}
+              Ingresa los datos del niño para crear su perfil
             </p>
 
             {error && (
@@ -207,23 +171,8 @@ function CrearNino() {
                 disabled={loading}
                 className="btn-logear-teayudo mt-2 py-3.5"
               >
-                {loading
-                  ? 'GUARDANDO...'
-                  : esEdicion
-                  ? 'ACTUALIZAR PERFIL'
-                  : 'CREAR PERFIL'}
+                {loading ? 'GUARDANDO...' : 'CREAR PERFIL'}
               </button>
-
-              {esEdicion && (
-                <button
-                  type="button"
-                  disabled={loading}
-                  onClick={() => setMostrarModalEliminar(true)}
-                  className="btn-eliminar-teayudo"
-                >
-                  <span>Eliminar perfil</span>
-                </button>
-              )}
             </form>
 
             <div className="mt-5 text-center">
@@ -245,35 +194,6 @@ function CrearNino() {
         onClose={() => setMostrarTarjetaAvatar(false)}
         onSeleccionar={(urlImagen: string) => setAvatar(urlImagen)}
       />
-
-      {mostrarModalEliminar && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="tarjeta-auth max-w-sm w-full p-6 text-center">
-            <h3 className="text-xl font-bold text-[#1B3A5C] mb-2">¿Eliminar perfil?</h3>
-            <p className="text-sm text-[#78909C] mb-6">
-              Esta acción no se puede deshacer. Se borrarán los datos de {nombre}.
-            </p>
-            <div className="flex gap-3">
-              <button
-                type="button"
-                disabled={loading}
-                onClick={() => void handleEliminar()}
-                className="flex-1 py-2.5 rounded-xl font-bold bg-red-500 text-white hover:bg-red-600 transition-colors disabled:opacity-50"
-              >
-                {loading ? 'Eliminando...' : 'Sí, eliminar'}
-              </button>
-              <button
-                type="button"
-                disabled={loading}
-                onClick={() => setMostrarModalEliminar(false)}
-                className="flex-1 py-2.5 rounded-xl font-bold bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors disabled:opacity-50"
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </Fondo>
   );
 }
