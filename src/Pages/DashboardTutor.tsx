@@ -24,7 +24,8 @@ const modulos: Modulo[] = [
     descripcion: 'Gestiona el horario de la semana',
     imagen: calendarioImg,
     borderColor: '#1B3A5C',
-    disponible: false,
+    disponible: true,
+    ruta: '/horariotutor',
   },
   {
     id: 'pictogramas',

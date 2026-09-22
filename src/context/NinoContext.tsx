@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { getInfants } from '../services/infantsService';
 import type { Infante } from '../types/perfil';
 import { useAuth } from './AuthContext';
@@ -17,6 +17,7 @@ interface NinoContextValue {
 
 const NinoContext = createContext<NinoContextValue | null>(null);
 
+/*
 function obtenerNinoGuardado(): Infante | null {
   try {
     const item = localStorage.getItem('ninoActivo');
@@ -26,30 +27,56 @@ function obtenerNinoGuardado(): Infante | null {
     return null;
   }
 }
+*/
+function obtenerNinoGuardado(): Infante | null {
+  try {
+    const item = localStorage.getItem('ninoActivo');
+    if (!item) return null;
+    
+    const parsed = JSON.parse(item);
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) && parsed.id) {
+      return parsed as Infante;
+    }
+    
+    localStorage.removeItem('ninoActivo');
+    return null;
+  } catch {
+    localStorage.removeItem('ninoActivo');
+    return null;
+  }
+}
 
 export function NinoProvider({ children }: { children: React.ReactNode }) {
   const { userId, token } = useAuth();
+  
+  const hayCredenciales = Boolean(userId && token);
+
   const [ninos, setNinos] = useState<Infante[]>([]);
   const [loadingNinos, setLoadingNinos] = useState(false);
-  const [ninoActivo, setNinoActivoState] = useState<Infante | null>(obtenerNinoGuardado);
+  const [ninoActivoState, setNinoActivoState] = useState<Infante | null>(obtenerNinoGuardado);
   const [tutorAutenticado, setTutorAutenticado] = useState(false);
   const [tutorOrigen, setTutorOrigen] = useState<'global' | 'local' | null>(null);
 
+  const ninoActivo = hayCredenciales ? ninoActivoState : null;
+  const activoTutor = hayCredenciales ? tutorAutenticado : false;
+  const origenTutor = hayCredenciales ? tutorOrigen : null;
+
+  /*
   const setNinoActivo = useCallback((nino: Infante | null) => {
     if (nino) localStorage.setItem('ninoActivo', JSON.stringify(nino));
     else localStorage.removeItem('ninoActivo');
     setNinoActivoState(nino);
   }, []);
+  */
 
-  useEffect(() => {
-    if (!userId || !token) {
-      setNinos([]);
-      setNinoActivoState(null);
-      setTutorAutenticado(false);
-      setTutorOrigen(null);
+  const setNinoActivo = useCallback((nino: Infante | null) => {
+    if (nino && nino.id) {
+      localStorage.setItem('ninoActivo', JSON.stringify(nino));
+    } else {
       localStorage.removeItem('ninoActivo');
     }
-  }, [userId, token]);
+    setNinoActivoState(nino);
+  }, []);
 
   const cargarNinos = useCallback(async (idPadre?: string) => {
     const id = idPadre ?? userId;
@@ -71,16 +98,16 @@ export function NinoProvider({ children }: { children: React.ReactNode }) {
   }, [userId, token]);
 
   const value = useMemo<NinoContextValue>(() => ({
-    ninos,
+    ninos: hayCredenciales ? ninos : [],
     loadingNinos,
     cargarNinos,
     ninoActivo,
     setNinoActivo,
-    tutorAutenticado,
+    tutorAutenticado: activoTutor,
     setTutorAutenticado,
-    tutorOrigen,
+    tutorOrigen: origenTutor,
     setTutorOrigen,
-  }), [ninos, loadingNinos, cargarNinos, ninoActivo, setNinoActivo, tutorAutenticado, tutorOrigen]);
+  }), [hayCredenciales, ninos, loadingNinos, cargarNinos, ninoActivo, setNinoActivo, activoTutor, origenTutor]);
 
   return <NinoContext.Provider value={value}>{children}</NinoContext.Provider>;
 }

@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { createPictogram, getPictograms } from '../services/pictogramsService';
 import type { CrearPictogramaInput, Pictograma } from '../types/pictograma';
 import { useAuth } from './AuthContext';
@@ -17,17 +17,16 @@ const PictogramaContext = createContext<PictogramasContextValue | null>(null);
 export function PictogramaProvider({ children }: { children: React.ReactNode }) {
   const { userId, token } = useAuth();
   const { ninoActivo } = useNino();
+  
+  // Verificamos si hay una sesión activa de forma derivada
+  const hayCredenciales = Boolean(userId && token);
+
   const [pictogramas, setPictogramas] = useState<Pictograma[]>([]);
   const [loadingPictogramas, setLoadingPictogramas] = useState(false);
   const [errorPictogramas, setErrorPictogramas] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!userId || !token) {
-      setPictogramas([]);
-      setErrorPictogramas(null);
-      setLoadingPictogramas(false);
-    }
-  }, [userId, token]);
+  const pictogramasFinales = hayCredenciales ? pictogramas : [];
+  const errorFinal = hayCredenciales ? errorPictogramas : null;
 
   const cargarPictogramas = useCallback(async () => {
     if (!userId || !token) return;
@@ -47,6 +46,7 @@ export function PictogramaProvider({ children }: { children: React.ReactNode }) 
     }
   }, [userId, token]);
 
+  /*
   const crearPictograma = useCallback(async (input: CrearPictogramaInput) => {
     if (!userId || !token) throw new Error('NO_TUTOR_SESSION');
 
@@ -72,14 +72,47 @@ export function PictogramaProvider({ children }: { children: React.ReactNode }) 
       setLoadingPictogramas(false);
     }
   }, [userId, token, ninoActivo?.id, cargarPictogramas]);
+  */
+
+  // PictogramaContext.tsx
+
+const crearPictograma = useCallback(async (input: CrearPictogramaInput) => {
+  if (!userId || !token) throw new Error('NO_TUTOR_SESSION');
+
+  // Extraemos únicamente el ID en texto plano (string)
+  const infantId = input.infantId || ninoActivo?.id;
+
+  if (!infantId) {
+    throw new Error('NO_INFANT_SELECTED');
+  }
+
+  setLoadingPictogramas(true);
+  setErrorPictogramas(null);
+
+  try {
+    await createPictogram({
+      ...input,
+      userId: input.userId || userId,
+      infantId: infantId,
+    }, token);
+
+    await cargarPictogramas();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Error al registrar pictograma';
+    setErrorPictogramas(message);
+    throw error;
+  } finally {
+    setLoadingPictogramas(false);
+  }
+}, [userId, token, ninoActivo?.id, cargarPictogramas]);
 
   const value = useMemo<PictogramasContextValue>(() => ({
-    pictogramas,
+    pictogramas: pictogramasFinales,
     loadingPictogramas,
-    errorPictogramas,
+    errorPictogramas: errorFinal,
     cargarPictogramas,
     crearPictograma,
-  }), [pictogramas, loadingPictogramas, errorPictogramas, cargarPictogramas, crearPictograma]);
+  }), [pictogramasFinales, loadingPictogramas, errorFinal, cargarPictogramas, crearPictograma]);
 
   return <PictogramaContext.Provider value={value}>{children}</PictogramaContext.Provider>;
 }

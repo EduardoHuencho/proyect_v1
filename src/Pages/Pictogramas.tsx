@@ -14,6 +14,7 @@ import type { Categoria, Pictograma, PictogramaEnFrase } from '../types/pictogra
 import type { Infante } from '../types/perfil';
 import {
   faVolumeHigh,
+  faGear,
   faTrashCan,
   faDeleteLeft,
 } from '@fortawesome/free-solid-svg-icons';
