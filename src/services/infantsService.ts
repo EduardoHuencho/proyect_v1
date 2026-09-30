@@ -29,7 +29,7 @@ export async function getInfants(userId: string, token: string | null): Promise<
         !infante.avatarUrl.startsWith('/assets')
       ) {
         try {
-          const res = await fetch(`${API_URL}storage/${encodeURIComponent(infante.avatarUrl)}/url`, {
+          const res = await fetch(`${API_URL}/storage/url?key=${encodeURIComponent(infante.avatarUrl)}`, {
             headers: authHeaders(token),
           });
           if (res.ok) {
