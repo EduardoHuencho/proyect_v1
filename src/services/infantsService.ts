@@ -29,7 +29,7 @@ export async function getInfants(userId: string, token: string | null): Promise<
         !infante.avatarUrl.startsWith('/assets')
       ) {
         try {
-          const res = await fetch(`${API_URL}storage/${encodeURIComponent(infante.avatarUrl)}/url`, {
+          const res = await fetch(`${API_URL}/storage/${encodeURIComponent(infante.avatarUrl)}/url`, {
             headers: authHeaders(token),
           });
           if (res.ok) {
@@ -42,7 +42,8 @@ export async function getInfants(userId: string, token: string | null): Promise<
           console.error(`Error al resolver URL de avatar para ${infante.id}:`, e);
         }
       }
-      console.log('url apii:', API_URL, infante.avatarUrl);
+      console.log('url apii:', API_URL);
+      console.log('info:', data);
       return infante;
     })
   );
