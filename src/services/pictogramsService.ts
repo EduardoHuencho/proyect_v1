@@ -10,32 +10,6 @@ export async function getPictograms(token: string | null): Promise<Pictograma[]>
   return Array.isArray(data) ? data : data.data || data.pictograms || [];
 }
 
-/*
-export async function createPictogram(
-  input: CrearPictogramaInput,
-  token: string | null
-): Promise<void> {
-  const formData = new FormData();
-  formData.append('pictogramName', input.pictogramName.trim());
-  formData.append('description', input.description?.trim() || '');
-  formData.append('categoryId', input.categoryId);
-  if (input.userId) formData.append('userId', input.userId);
-  if (input.infantId) formData.append('infantId', input.infantId);
-  formData.append('file', input.file);
-
-  const response = await fetch(`${API_URL}/pictogram`, {
-    method: 'POST',
-    headers: authHeaders(token),
-    body: formData,
-  });
-
-  if (!response.ok) {
-    const data = await parseJson<{ message?: string }>(response);
-    throw new Error(data.message || 'CREATION_ERROR');
-  }
-}
-*/
-
 export async function createPictogram(
   input: CrearPictogramaInput,
   token: string | null
