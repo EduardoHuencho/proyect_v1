@@ -18,7 +18,6 @@ export function PictogramaProvider({ children }: { children: React.ReactNode }) 
   const { userId, token } = useAuth();
   const { ninoActivo } = useNino();
   
-  // Verificamos si hay una sesión activa de forma derivada
   const hayCredenciales = Boolean(userId && token);
 
   const [pictogramas, setPictogramas] = useState<Pictograma[]>([]);
@@ -79,7 +78,6 @@ export function PictogramaProvider({ children }: { children: React.ReactNode }) 
 const crearPictograma = useCallback(async (input: CrearPictogramaInput) => {
   if (!userId || !token) throw new Error('NO_TUTOR_SESSION');
 
-  // Extraemos únicamente el ID en texto plano (string)
   const infantId = input.infantId || ninoActivo?.id;
 
   if (!infantId) {

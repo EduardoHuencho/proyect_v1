@@ -10,6 +10,7 @@ import Registro from '../Pages/Registro';
 import CrearNino from '../Pages/CrearNino';
 import CrearPictograma from '../Pages/CrearPictograma';
 import HorarioTutor from '../Pages/HorarioTutor';
+import HorarioNino from '../Pages/HorarioNino';
 
 function AppRoutes() {
   return (
@@ -30,6 +31,7 @@ function AppRoutes() {
       <Route path="/editarnino/:id" element={<CrearNino key="editar" />} />
       <Route path="/crearpictograma" element={<CrearPictograma />} />
       <Route path="/horariotutor" element={<HorarioTutor />} />
+      <Route path="/horarionino" element={<HorarioNino />} />
     </Routes>
   );
 }

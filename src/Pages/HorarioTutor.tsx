@@ -1,21 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Fondo from '../Components/Fondo';
 import Navbar from '../Components/Navbar';
+import { PlantillaHorario } from '../Components/PlantillaHorario';
+import { FormularioActividad } from '../Components/FormularioActividad';
+import { TarjetaActividadHorario } from '../Components/TarjetaActividadHorario';
 import { useNino } from '../context/NinoContext';
+import { useAuth } from '../context/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlus,
   faPrint,
-  faEllipsisVertical,
   faArrowUp,
   faArrowDown,
   faPen,
   faTrashCan,
-  faTimes,
+  faXmark,
   faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import { Sun, Sunset, Moon } from 'lucide-react';
 import type { ActividadHorarioBD } from '../types/horario';
+import type { Pictograma } from '../types/pictograma';
 
 const DIAS = [
   { clave: 'LUNES', abrev: 'Lun' },
@@ -174,34 +178,59 @@ const DATOS_INICIALES: ActividadHorarioBD[] = [
 ];
 
 function HorarioTutor() {
-  const { ninoActivo, setNinoActivo, ninos } = useNino();
-  const [actividades, setActividades] = useState<ActividadHorarioBD[]>(DATOS_INICIALES);
+  const { ninoActivo, setNinoActivo, ninos, cargarNinos } = useNino();
+  const { userId, token } = useAuth();
 
+  useEffect(() => {
+    if (userId) {
+      cargarNinos(userId);
+    }
+  }, [userId, cargarNinos]);
+
+  const [actividades, setActividades] = useState<ActividadHorarioBD[]>(DATOS_INICIALES);
   const [actividadSeleccionada, setActividadSeleccionada] = useState<ActividadHorarioBD | null>(null);
 
-  const handleAnadirRapido = (dia: string, bloque: string) => {
-    const horaDefault = bloque === 'MAÑANA' ? '08:00' : bloque === 'TARDE' ? '14:00' : '20:00';
-    const titulo = prompt(`Nueva actividad para ${dia} (${bloque}):`);
-    if (!titulo || !titulo.trim()) return;
+  const [modalFormularioAbierto, setModalFormularioAbierto] = useState(false);
 
-    const nueva: ActividadHorarioBD = {
-      id: crypto.randomUUID(),
-      hour: horaDefault,
-      dayOfWeek: dia,
-      infantId: ninoActivo?.id || 'infant-local',
-      pictogramId: 'picto-nuevo',
-      pictogram: {
-        id: 'picto-nuevo',
-        pictogramName: titulo.trim(),
+  const handleAbrirFormulario = () => {
+    setModalFormularioAbierto(true);
+  };
+
+  const handleGuardarActividad = (datos: {
+    pictogramId?: string;
+    pictograma?: Pictograma | null;
+    titulo: string;
+    jornada: 'MAÑANA' | 'TARDE' | 'NOCHE';
+    dias: string[];
+  }) => {
+    const horaDefault =
+      datos.jornada === 'MAÑANA' ? '08:00' : datos.jornada === 'TARDE' ? '14:00' : '20:00';
+
+    const nuevasActividades: ActividadHorarioBD[] = datos.dias.map((dia) => {
+      const pictogramaBase = datos.pictograma || {
+        id: datos.pictogramId || 'picto-nuevo',
+        pictogramName: datos.titulo, // <-- Aquí aseguramos que use el título del formulario
         personal: true,
         description: 'General',
         pictoImageUrl: 'https://placehold.co/120x120?text=📌',
         category: { id: 'cat-general', categoryName: 'General' },
         pictoImageKey: 'key-new',
-      },
-    };
+      };
 
-    setActividades((prev) => [...prev, nueva]);
+      return {
+        id: crypto.randomUUID(),
+        hour: horaDefault,
+        dayOfWeek: dia,
+        infantId: ninoActivo?.id || 'infant-local',
+        pictogramId: pictogramaBase.id,
+        pictogram: {
+          ...pictogramaBase,
+          pictogramName: datos.titulo, // Forzamos el nombre de la tarjeta al título ingresado
+        },
+      };
+    });
+
+    setActividades((prev) => [...prev, ...nuevasActividades]);
   };
 
   const handleMoverActividad = (direccion: 'SUBIR' | 'BAJAR') => {
@@ -259,17 +288,27 @@ function HorarioTutor() {
     setActividadSeleccionada(null);
   };
 
+  const handleImprimir = () => {
+    window.print();
+  };
+
+  const nombreInfanteFormat = ninoActivo
+    ? `${ninoActivo.firstName} ${ninoActivo.lastName || ''}`.trim()
+    : 'General';
+
   return (
     <Fondo>
       <div className="flex flex-col min-h-screen">
-        <Navbar
-          rol="tutor"
-          rutaVolver="/dashboardtutor"
-          labelVolver="Menú"
-          pinSoloDesbloquea={true}
-        />
+        <div className="print:hidden">
+          <Navbar
+            rol="tutor"
+            rutaVolver="/dashboardtutor"
+            labelVolver="Menú"
+            pinSoloDesbloquea={true}
+          />
+        </div>
 
-        <div className="flex-1 max-w-[1600px] w-full mx-auto p-4 sm:p-6 flex flex-col gap-6 select-none">
+        <div className="flex-1 max-w-[1600px] w-full mx-auto p-4 sm:p-6 flex flex-col gap-6 select-none print:hidden">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1B3A5C]">
@@ -305,7 +344,7 @@ function HorarioTutor() {
 
               <button
                 type="button"
-                onClick={() => handleAnadirRapido('LUNES', 'MAÑANA')}
+                onClick={handleAbrirFormulario}
                 className="flex-1 sm:flex-none px-5 py-2.5 rounded-full bg-[#1B3A5C] text-white font-bold text-sm hover:bg-[#2A4F73] transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-95"
               >
                 <FontAwesomeIcon icon={faPlus} />
@@ -314,8 +353,8 @@ function HorarioTutor() {
 
               <button
                 type="button"
-                onClick={() => window.print()}
-                className="px-4 py-2.5 rounded-full border-2 border-[#1B3A5C] text-[#1B3A5C] font-bold text-sm hover:bg-[#1B3A5C] hover:text-white transition-colors flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                onClick={handleImprimir}
+                className="px-4 py-2.5 rounded-full border-2 border-[#1B3A5C] text-[#1B3A5C] font-bold text-sm hover:bg-[#1B3A5C] hover:text-white transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-95"
               >
                 <FontAwesomeIcon icon={faPrint} />
                 <span className="hidden sm:inline">Imprimir</span>
@@ -365,42 +404,16 @@ function HorarioTutor() {
                           className="p-3 border-r border-gray-200/50 last:border-none flex flex-col gap-2.5 items-center justify-start min-h-50"
                         >
                           {actividadesCelda.map((act) => (
-                            <div
+                            <TarjetaActividadHorario
                               key={act.id}
-                              className="w-full bg-white rounded-2xl border-2 border-gray-200/80 p-2.5 flex items-center justify-between gap-2 shadow-sm hover:shadow-md transition-all group relative"
-                            >
-                              <div className="flex items-center gap-2.5 overflow-hidden">
-                                <div className="w-10 h-10 rounded-xl bg-amber-50/60 border border-amber-200/60 flex items-center justify-center shrink-0 overflow-hidden">
-                                  <img
-                                    src={act.pictogram?.pictoImageUrl}
-                                    alt={act.pictogram?.pictogramName}
-                                    className="w-full h-full object-contain p-0.5"
-                                  />
-                                </div>
-                                <div className="overflow-hidden leading-tight">
-                                  <span className="font-extrabold text-xs sm:text-sm text-[#1B3A5C] truncate block">
-                                    {act.pictogram?.pictogramName}
-                                  </span>
-                                  <span className="text-[10px] text-gray-400 block font-semibold">
-                                    {act.pictogram?.category.categoryName}
-                                  </span>
-                                </div>
-                              </div>
-
-                              <button
-                                type="button"
-                                onClick={() => setActividadSeleccionada(act)}
-                                className="text-gray-400 hover:text-[#1B3A5C] p-1.5 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
-                                title="Opciones de actividad"
-                              >
-                                <FontAwesomeIcon icon={faEllipsisVertical} className="text-sm" />
-                              </button>
-                            </div>
+                              actividad={act}
+                              onOpcionesClick={(a) => setActividadSeleccionada(a)}
+                            />
                           ))}
 
                           <button
                             type="button"
-                            onClick={() => handleAnadirRapido(dia.clave, bloque.clave)}
+                            onClick={handleAbrirFormulario}
                             className="w-full py-2 px-3 rounded-2xl border-2 border-dashed border-[#78909C]/40 hover:border-[#1B3A5C] text-[#78909C] hover:text-[#1B3A5C] font-bold text-xs flex items-center justify-center gap-1.5 transition-all mt-auto bg-white/50 hover:bg-white cursor-pointer"
                           >
                             <FontAwesomeIcon icon={faPlus} className="text-xs" />
@@ -415,17 +428,31 @@ function HorarioTutor() {
             </div>
           </div>
         </div>
+
+        <div id="zona-impresion" className="hidden print:block p-4">
+          <PlantillaHorario
+            nombreInfante={nombreInfanteFormat}
+            actividades={actividades}
+          />
+        </div>
       </div>
 
+      <FormularioActividad
+        isOpen={modalFormularioAbierto}
+        onClose={() => setModalFormularioAbierto(false)}
+        onGuardar={handleGuardarActividad}
+        token={token}
+      />
+
       {actividadSeleccionada && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fadeIn">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fadeIn print:hidden">
           <div className="tarjeta-auth max-w-xs w-full p-6 flex flex-col gap-4 shadow-2xl relative">
             <button
               type="button"
               onClick={() => setActividadSeleccionada(null)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
             >
-              <FontAwesomeIcon icon={faTimes} className="text-base" />
+              <FontAwesomeIcon icon={faXmark} className="text-base" />
             </button>
 
             <div className="text-center border-b border-gray-100 pb-3">

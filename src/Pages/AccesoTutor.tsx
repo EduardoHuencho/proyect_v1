@@ -99,7 +99,7 @@ function AccesoTutor() {
   };
 
   const obtenerImagenAvatar = (avatarUrl: Infante['avatarUrl']) => {
-    if (avatarUrl && avatarUrl.startsWith('http')) {
+    if (avatarUrl && (avatarUrl.startsWith('http') || avatarUrl.startsWith('blob:'))) {
       return avatarUrl;
     }
     return Avatar;

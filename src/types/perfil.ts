@@ -11,5 +11,13 @@ export interface CrearInfanteInput {
   lastName: string;
   birthDate: string;
   userId: string;
-  avatarUrl: string;
+  avatarUrl?: string;
+  file?: File | null;
+}
+
+export interface ActualizarInfanteInput {
+  firstName?: string;
+  lastName?: string;
+  birthDate?: string;
+  file?: File | null;
 }

@@ -17,17 +17,6 @@ interface NinoContextValue {
 
 const NinoContext = createContext<NinoContextValue | null>(null);
 
-/*
-function obtenerNinoGuardado(): Infante | null {
-  try {
-    const item = localStorage.getItem('ninoActivo');
-    return item ? (JSON.parse(item) as Infante) : null;
-  } catch {
-    localStorage.removeItem('ninoActivo');
-    return null;
-  }
-}
-*/
 function obtenerNinoGuardado(): Infante | null {
   try {
     const item = localStorage.getItem('ninoActivo');
@@ -61,14 +50,6 @@ export function NinoProvider({ children }: { children: React.ReactNode }) {
   const activoTutor = hayCredenciales ? tutorAutenticado : false;
   const origenTutor = hayCredenciales ? tutorOrigen : null;
 
-  /*
-  const setNinoActivo = useCallback((nino: Infante | null) => {
-    if (nino) localStorage.setItem('ninoActivo', JSON.stringify(nino));
-    else localStorage.removeItem('ninoActivo');
-    setNinoActivoState(nino);
-  }, []);
-  */
-
   const setNinoActivo = useCallback((nino: Infante | null) => {
     if (nino && nino.id) {
       localStorage.setItem('ninoActivo', JSON.stringify(nino));
@@ -87,6 +68,16 @@ export function NinoProvider({ children }: { children: React.ReactNode }) {
     try {
       const lista = await getInfants(id, token);
       setNinos(lista);
+      
+      // Asegurar que si hay infantes pero no hay uno activo, se asigne el primero
+      setNinoActivoState((prevState) => {
+        if (!prevState && lista.length > 0) {
+          localStorage.setItem('ninoActivo', JSON.stringify(lista[0]));
+          return lista[0];
+        }
+        return prevState;
+      });
+
       return lista;
     } catch (error) {
       console.error('Error al cargar lista de infantes:', error);

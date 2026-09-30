@@ -25,7 +25,8 @@ const modulos: Modulo[] = [
     titulo: 'HORARIO',
     imagen: calendarioImg,
     borderColor: '#1E88E5',
-    disponible: false,
+    disponible: true,
+    ruta: '/horarioNino'
   },
   {
     id: 'pictogramas',
@@ -46,7 +47,7 @@ const modulos: Modulo[] = [
 ];
 
 const obtenerImagenAvatar = (avatarUrl: Infante['avatarUrl']) => {
-  if (avatarUrl && avatarUrl.startsWith('http')) {
+  if (avatarUrl && (avatarUrl.startsWith('http') || avatarUrl.startsWith('blob:'))) {
     return avatarUrl;
   }
   return Avatar;

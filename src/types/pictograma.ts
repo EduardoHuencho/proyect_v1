@@ -19,7 +19,7 @@ export interface CrearPictogramaInput {
   pictogramName: string;
   description?: string;
   categoryId: string;
-  // falta agregar el campo para saber si el pictograma es privado o publico
+  personal: boolean;
   userId?: string;
   infantId?: string;
 }

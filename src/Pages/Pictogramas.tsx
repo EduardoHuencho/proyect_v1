@@ -14,7 +14,6 @@ import type { Categoria, Pictograma, PictogramaEnFrase } from '../types/pictogra
 import type { Infante } from '../types/perfil';
 import {
   faVolumeHigh,
-  faGear,
   faTrashCan,
   faDeleteLeft,
 } from '@fortawesome/free-solid-svg-icons';
@@ -22,7 +21,7 @@ import {
 const COLOR_CATEGORIA_FIJO = '#E0F7FA';
 
 const obtenerImagenAvatar = (avatarUrl: Infante['avatarUrl']) => {
-  if (avatarUrl && avatarUrl.startsWith('http')) {
+  if (avatarUrl && (avatarUrl.startsWith('http') || avatarUrl.startsWith('blob:'))) {
     return avatarUrl;
   }
   return Avatar;
