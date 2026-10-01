@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faTimes, faSearch } from '@fortawesome/free-solid-svg-icons';
 import type { Categoria, Pictograma } from '../types/pictograma';
 import type { ActividadRutinaVista } from '../types/horario';
-import { getCategories, getPictograms } from '../services/pictogramsService';
+import { getCategories, getPictograms, getPictogramsByInfantId } from '../services/pictogramsService';
 import { TarjetaPictogramaHorarioForm } from './TarjetaPictogramaHorarioForm';
 
 interface FormularioActividadProps {
@@ -17,6 +17,7 @@ interface FormularioActividadProps {
     dias: string[];
   }) => Promise<void> | void;
   token: string | null;
+  infantId?: string | null;
   diaInicial?: string;
   jornadaInicial?: 'MAÑANA' | 'TARDE' | 'NOCHE';
   actividadInicial?: ActividadRutinaVista | null;
@@ -59,6 +60,7 @@ export function FormularioActividad({
   onClose,
   onGuardar,
   token,
+  infantId,
   diaInicial,
   jornadaInicial,
   actividadInicial,
@@ -98,12 +100,17 @@ export function FormularioActividad({
     async function cargarDatos() {
       setCargando(true);
       try {
-        const [listaPictos, listaCats] = await Promise.all([
+        const [publicos, privados, listaCats] = await Promise.all([
           getPictograms(token),
+          infantId ? getPictogramsByInfantId(infantId, token) : Promise.resolve([] as Pictograma[]),
           getCategories(token),
         ]);
         if (!cancelado) {
-          setPictogramas(listaPictos);
+          const mapaFinal = new Map<string, Pictograma>();
+          for (const p of publicos) mapaFinal.set(p.id, p);
+          for (const p of privados) mapaFinal.set(p.id, p);
+
+          setPictogramas(Array.from(mapaFinal.values()));
           setCategorias(listaCats);
         }
       } catch (err) {
@@ -117,7 +124,7 @@ export function FormularioActividad({
     return () => {
       cancelado = true;
     };
-  }, [isOpen, token]);
+  }, [isOpen, token, infantId]);
 
   if (!isOpen) return null;
 

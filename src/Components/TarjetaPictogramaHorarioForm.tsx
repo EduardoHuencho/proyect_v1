@@ -35,6 +35,10 @@ export function TarjetaPictogramaHorarioForm({
           alt={pictograma.pictogramName}
           loading="lazy"
           decoding="async"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = 'https://placehold.co/150x150?text=imagen';
+          }}
           className="w-full h-full object-contain group-hover:scale-105 transition-transform"
         />
       </div>

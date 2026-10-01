@@ -561,6 +561,7 @@ function HorarioTutor() {
           }}
           onGuardar={handleGuardarActividad}
           token={token}
+          infantId={ninoActivo?.id}
           diaInicial={formDiaInicial}
           jornadaInicial={formJornadaInicial}
           actividadInicial={actividadAEditar}
