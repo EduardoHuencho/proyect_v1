@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
-import { createPictogram, getPictograms } from '../services/pictogramsService';
+import { createPictogram, getPictograms, getPictogramsByInfantId } from '../services/pictogramsService';
 import type { CrearPictogramaInput, Pictograma } from '../types/pictograma';
 import { useAuth } from './AuthContext';
 import { useNino } from './NinoContext';
@@ -34,8 +34,20 @@ export function PictogramaProvider({ children }: { children: React.ReactNode }) 
     setErrorPictogramas(null);
 
     try {
-      const data = await getPictograms(token);
-      setPictogramas(data);
+      // Petición 1: pictogramas públicos
+      // Petición 2: pictogramas privados del infante activo (si hay uno seleccionado)
+      const infantId = ninoActivo?.id;
+      const [publicos, privados] = await Promise.all([
+        getPictograms(token),
+        infantId ? getPictogramsByInfantId(infantId, token) : Promise.resolve([] as Pictograma[]),
+      ]);
+
+      // Combinar y deduplicar por id (los privados prevalecen en caso de duplicado)
+      const mapaFinal = new Map<string, Pictograma>();
+      for (const p of publicos) mapaFinal.set(p.id, p);
+      for (const p of privados) mapaFinal.set(p.id, p);
+
+      setPictogramas(Array.from(mapaFinal.values()));
     } catch (error) {
       console.error('Error al cargar pictogramas:', error);
       setErrorPictogramas('No se pudieron sincronizar los pictogramas personalizados');
@@ -43,7 +55,7 @@ export function PictogramaProvider({ children }: { children: React.ReactNode }) 
     } finally {
       setLoadingPictogramas(false);
     }
-  }, [userId, token]);
+  }, [userId, token, ninoActivo?.id]);
 
   /*
   const crearPictograma = useCallback(async (input: CrearPictogramaInput) => {

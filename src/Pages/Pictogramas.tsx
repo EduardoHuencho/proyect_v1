@@ -16,6 +16,7 @@ import {
   faVolumeHigh,
   faTrashCan,
   faDeleteLeft,
+  faGear,
 } from '@fortawesome/free-solid-svg-icons';
 
 const COLOR_CATEGORIA_FIJO = '#E0F7FA';
@@ -61,11 +62,10 @@ function Pictogramas() {
   }, [tutorAutenticado, ninos.length, userId, cargarNinos]);
 
   useEffect(() => {
-    const idPadre = localStorage.getItem('userId') || userId;
-    if (idPadre) {
+    if (userId) {
       void cargarPictogramas();
     }
-  }, [userId, cargarPictogramas]);
+  }, [userId, ninoActivo?.id, cargarPictogramas]);
 
   useEffect(() => {
     const fetchCategorias = async () => {
@@ -371,21 +371,19 @@ function Pictogramas() {
                       onClick={() => pictogramaHandler(item)}
                     />
 
-                    {/*
                     {tutorAutenticado && (
                       <button
                         type="button"
-                        //onClick={(e) => {
-                        //  e.stopPropagation();
-                        //  navigate(`/editarpictograma/${item.id}`);
-                        //}}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/editarpictograma/${item.id}`);
+                        }}
                         aria-label={`Editar pictograma ${item.pictogramName}`}
                         className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-white/95 text-[#1B3A5C] border border-[#CBD5E0] shadow-md flex items-center justify-center text-xs hover:bg-[#1B3A5C] hover:text-white transition-colors z-10 cursor-pointer"
                       >
                         <FontAwesomeIcon icon={faGear} />
                       </button>
                     )}
-                    */}
                   </div>
                 ))}
               </div>

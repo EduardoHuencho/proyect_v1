@@ -10,6 +10,13 @@ export async function getPictograms(token: string | null): Promise<Pictograma[]>
   return Array.isArray(data) ? data : data.data || data.pictograms || [];
 }
 
+export async function getPictogramsByInfantId(infantId: string, token: string | null): Promise<Pictograma[]> {
+  const response = await fetch(`${API_URL}/pictogram/${infantId}`, { headers: authHeaders(token) });
+  if (!response.ok) throw new Error(`HTTP_ERROR_${response.status}`);
+  const data = await parseJson<Pictograma[] | { data?: Pictograma[]; pictograms?: Pictograma[] }>(response);
+  return Array.isArray(data) ? data : data.data || data.pictograms || [];
+}
+
 export async function createPictogram(
   input: CrearPictogramaInput,
   token: string | null
@@ -18,7 +25,7 @@ export async function createPictogram(
   formData.append('pictogramName', input.pictogramName.trim());
   formData.append('description', input.description?.trim() || '');
   formData.append('categoryId', input.categoryId);
-  formData.append('personal', String(input.personal)); // <-- AGREGADO
+  formData.append('personal', String(input.personal));
   if (input.userId) formData.append('userId', input.userId);
   if (input.infantId) formData.append('infantId', input.infantId);
   formData.append('file', input.file);
@@ -32,6 +39,41 @@ export async function createPictogram(
   if (!response.ok) {
     const data = await parseJson<{ message?: string }>(response);
     throw new Error(data.message || 'CREATION_ERROR');
+  }
+}
+
+export async function updatePictogram(
+  pictogramId: string,
+  data: { pictogramName?: string; description?: string; personal?: boolean; infantId?: string },
+  token: string | null
+): Promise<void> {
+  const response = await fetch(`${API_URL}/pictogram/${pictogramId}`, {
+    method: 'PATCH',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    const body = await parseJson<{ message?: string }>(response);
+    throw new Error(body.message || 'UPDATE_ERROR');
+  }
+}
+
+export async function updatePictogramImage(
+  pictogramId: string,
+  file: File,
+  token: string | null
+): Promise<void> {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await fetch(`${API_URL}/pictogram/${pictogramId}/image`, {
+    method: 'PATCH',
+    headers: authHeaders(token),
+    body: formData,
+  });
+  if (!response.ok) {
+    const body = await parseJson<{ message?: string }>(response);
+    throw new Error(body.message || 'UPDATE_IMAGE_ERROR');
   }
 }
 

@@ -9,6 +9,7 @@ import MenuJuegos from '../Pages/MenuJuegos';
 import Registro from '../Pages/Registro';
 import CrearNino from '../Pages/CrearNino';
 import CrearPictograma from '../Pages/CrearPictograma';
+import EditarPictograma from '../Pages/EditarPictograma';
 import HorarioTutor from '../Pages/HorarioTutor';
 import HorarioNino from '../Pages/HorarioNino';
 
@@ -27,6 +28,7 @@ function AppRoutes() {
       <Route path="/crearnino" element={<CrearNino key="crear" />} />
       <Route path="/editarnino/:id" element={<CrearNino key="editar" />} />
       <Route path="/crearpictograma" element={<CrearPictograma />} />
+      <Route path="/editarpictograma/:id" element={<EditarPictograma />} />
       <Route path="/horariotutor" element={<HorarioTutor />} />
       <Route path="/horarionino" element={<HorarioNino />} />
     </Routes>

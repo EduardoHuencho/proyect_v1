@@ -8,7 +8,7 @@ import { usePictogramas } from '../context/PictogramasContext';
 import { useNino } from '../context/NinoContext';
 import { useAuth } from '../context/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCloudArrowUp, faImage, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faCloudArrowUp, faImage } from '@fortawesome/free-solid-svg-icons';
 import { getCategories } from '../services/pictogramsService';
 import type { Categoria } from '../types/pictograma';
 
@@ -34,8 +34,8 @@ function CrearPictograma() {
   const [categoryId, setCategoryId] = useState('');
   const [loadingCategorias, setLoadingCategorias] = useState(true);
 
-  const [infantesSeleccionados, setInfantesSeleccionados] = useState<string[]>([]);
-  const [dropdownInfantesAbierto, setDropdownInfantesAbierto] = useState(false);
+  const infanteDefault = ninos.length > 0 ? ninos[0].id : '';
+  const [infanteSeleccionado, setInfanteSeleccionado] = useState(infanteDefault);
   const [esPersonal, setEsPersonal] = useState(false);
 
   const [loading, setLoading] = useState(false);
@@ -46,6 +46,13 @@ function CrearPictograma() {
       cargarNinos(userId);
     }
   }, [userId, cargarNinos]);
+
+  const ninoActivoId = ninos.length > 0 ? ninos[0].id : '';
+  useEffect(() => {
+    if (ninoActivoId && !infanteSeleccionado) {
+      Promise.resolve().then(() => setInfanteSeleccionado(ninoActivoId));
+    }
+  }, [ninoActivoId, infanteSeleccionado]);
 
   useEffect(() => {
     const fetchCategorias = async () => {
@@ -74,12 +81,6 @@ function CrearPictograma() {
     setPreviewUrl(urlNueva);
   };
 
-  const toggleInfante = (id: string) => {
-    setInfantesSeleccionados((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
-  };
-
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFeedback(null);
@@ -89,10 +90,10 @@ function CrearPictograma() {
       return;
     }
 
-    if (infantesSeleccionados.length === 0) {
+    if (!infanteSeleccionado) {
       setFeedback({
         type: 'error',
-        message: 'Debes seleccionar al menos un infante para asociar el pictograma.',
+        message: 'Debes seleccionar un infante para asociar el pictograma.',
       });
       return;
     }
@@ -124,16 +125,14 @@ function CrearPictograma() {
     setLoading(true);
 
     try {
-      for (const infantId of infantesSeleccionados) {
-        await crearPictograma({
-          pictogramName: nombre.trim(),
-          description: descripcion.trim(),
-          categoryId: categoryId,
-          personal: esPersonal,
-          file: archivo,
-          infantId: infantId,
-        });
-      }
+      await crearPictograma({
+        pictogramName: nombre.trim(),
+        description: descripcion.trim(),
+        categoryId: categoryId,
+        personal: esPersonal,
+        file: archivo,
+        infantId: infanteSeleccionado,
+      });
 
       if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
@@ -216,48 +215,28 @@ function CrearPictograma() {
                 </button>
               </div>
 
-              <div className="flex flex-col gap-1 relative">
-                <label className="text-xs font-bold text-[#005088] px-1">
-                  ASIGNAR A INFANTES
+              <div className="flex flex-col gap-1">
+                <label htmlFor="infanteId" className="text-xs font-bold text-[#005088] px-1">
+                  ASIGNAR A INFANTE
                 </label>
-                <button
-                  type="button"
-                  onClick={() => setDropdownInfantesAbierto(!dropdownInfantesAbierto)}
-                  className="input-teayudo flex items-center justify-between text-left cursor-pointer"
+                <select
+                  id="infanteId"
+                  required
+                  disabled={loading || ninos.length === 0}
+                  value={infanteSeleccionado}
+                  onChange={(e) => setInfanteSeleccionado(e.target.value)}
+                  className="input-teayudo cursor-pointer"
                 >
-                  <span className="truncate">
-                    {infantesSeleccionados.length === 0
-                      ? 'Seleccionar infantes...'
-                      : `${infantesSeleccionados.length} infante(s) seleccionado(s)`}
-                  </span>
-                  <FontAwesomeIcon icon={faChevronDown} className="text-xs ml-2 text-[#003052]/70" />
-                </button>
-
-                {dropdownInfantesAbierto && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-[#B0C8DC] border-[2.5px] border-[#7A9AB8] rounded-[14px] shadow-xl z-20 p-3 flex flex-col gap-2 max-h-48 overflow-y-auto">
-                    {ninos.length === 0 ? (
-                      <p className="text-xs text-[#003052] font-medium text-center py-2">No hay infantes registrados</p>
-                    ) : (
-                      ninos.map((nino) => {
-                        const seleccionado = infantesSeleccionados.includes(nino.id);
-                        return (
-                          <label
-                            key={nino.id}
-                            className="flex items-center gap-2.5 px-2.5 py-1.5 hover:bg-white/40 rounded-xl cursor-pointer text-xs font-bold text-[#003052]"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={seleccionado}
-                              onChange={() => toggleInfante(nino.id)}
-                              className="w-4 h-4 rounded text-[#1B3A5C] focus:ring-0 cursor-pointer"
-                            />
-                            <span>{nino.firstName} {nino.lastName || ''}</span>
-                          </label>
-                        );
-                      })
-                    )}
-                  </div>
-                )}
+                  {ninos.length === 0 ? (
+                    <option value="">No hay infantes registrados</option>
+                  ) : (
+                    ninos.map((nino) => (
+                      <option key={nino.id} value={nino.id}>
+                        {nino.firstName} {nino.lastName || ''}
+                      </option>
+                    ))
+                  )}
+                </select>
               </div>
 
               <div className="flex flex-col gap-1">
@@ -296,7 +275,7 @@ function CrearPictograma() {
                   disabled={loading}
                   value={nombre}
                   onChange={(e) => setNombre(e.target.value)}
-                  placeholder="Ej: Comer manzana"
+                  placeholder="Ej: Comer manzana (Es la frase que se reproducirá en audio)"
                   className="input-teayudo"
                 />
               </div>
@@ -344,7 +323,7 @@ function CrearPictograma() {
 
               <button
                 type="submit"
-                disabled={loading || infantesSeleccionados.length === 0 || loadingCategorias || !categoryId}
+                disabled={loading || !infanteSeleccionado || loadingCategorias || !categoryId}
                 className="btn-logear-teayudo mt-2 py-3.5 cursor-pointer"
               >
                 {loading ? 'Creando Pictograma...' : 'CREAR PICTOGRAMA'}
