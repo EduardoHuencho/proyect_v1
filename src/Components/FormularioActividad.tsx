@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faTimes, faSearch } from '@fortawesome/free-solid-svg-icons';
 import type { Categoria, Pictograma } from '../types/pictograma';
+import type { ActividadRutinaVista } from '../types/horario';
 import { getCategories, getPictograms } from '../services/pictogramsService';
 import { TarjetaPictogramaHorarioForm } from './TarjetaPictogramaHorarioForm';
 
@@ -14,8 +15,11 @@ interface FormularioActividadProps {
     titulo: string;
     jornada: 'MAÑANA' | 'TARDE' | 'NOCHE';
     dias: string[];
-  }) => void;
+  }) => Promise<void> | void;
   token: string | null;
+  diaInicial?: string;
+  jornadaInicial?: 'MAÑANA' | 'TARDE' | 'NOCHE';
+  actividadInicial?: ActividadRutinaVista | null;
 }
 
 const DIAS = [
@@ -34,20 +38,56 @@ const JORNADAS = [
   { clave: 'NOCHE' as const, etiqueta: 'Noche' },
 ];
 
+const NUM_A_DIA: Record<number, string> = {
+  1: 'LUNES',
+  2: 'MARTES',
+  3: 'MIÉRCOLES',
+  4: 'JUEVES',
+  5: 'VIERNES',
+  6: 'SÁBADO',
+  7: 'DOMINGO',
+};
+
+const STAGE_A_JORNADA: Record<string, 'MAÑANA' | 'TARDE' | 'NOCHE'> = {
+  MORNING: 'MAÑANA',
+  AFTERNOON: 'TARDE',
+  NIGHT: 'NOCHE',
+};
+
 export function FormularioActividad({
   isOpen,
   onClose,
   onGuardar,
   token,
+  diaInicial,
+  jornadaInicial,
+  actividadInicial,
 }: FormularioActividadProps) {
-  const [titulo, setTitulo] = useState('');
-  const [jornada, setJornada] = useState<'MAÑANA' | 'TARDE' | 'NOCHE'>('MAÑANA');
-  const [diasSeleccionados, setDiasSeleccionados] = useState<string[]>(['LUNES']);
-  const [pictoSeleccionado, setPictoSeleccionado] = useState<Pictograma | null>(null);
+  const esEdicion = Boolean(actividadInicial);
+
+  const [titulo, setTitulo] = useState(actividadInicial?.name || '');
+  const [jornada, setJornada] = useState<'MAÑANA' | 'TARDE' | 'NOCHE'>(() => {
+    if (actividadInicial?.stage) {
+      return STAGE_A_JORNADA[actividadInicial.stage] || 'MAÑANA';
+    }
+    return jornadaInicial || 'MAÑANA';
+  });
+  const [diasSeleccionados, setDiasSeleccionados] = useState<string[]>(() => {
+    if (actividadInicial?.dayOfWeek) {
+      return [NUM_A_DIA[actividadInicial.dayOfWeek] || 'LUNES'];
+    }
+    return diaInicial ? [diaInicial] : ['LUNES'];
+  });
+  const [pictoSeleccionado, setPictoSeleccionado] = useState<Pictograma | null>(
+    actividadInicial?.pictogram || null
+  );
+  const [guardando, setGuardando] = useState(false);
 
   const [pictogramas, setPictogramas] = useState<Pictograma[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [cargando, setCargando] = useState(false);
+
+
 
   const [modalPictoAbierto, setModalPictoAbierto] = useState(false);
   const [catFiltro, setCatFiltro] = useState<string>('TODAS');
@@ -97,18 +137,29 @@ export function FormularioActividad({
     setModalPictoAbierto(false);
   };
 
-  const handleGuardar = (e: React.FormEvent) => {
+  const handleGuardar = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!pictoSeleccionado?.id) {
+      alert('Debes seleccionar un pictograma para la actividad.');
+      return;
+    }
     if (!titulo.trim() || diasSeleccionados.length === 0) return;
 
-    onGuardar({
-      pictogramId: pictoSeleccionado?.id,
-      pictograma: pictoSeleccionado,
-      titulo: titulo.trim(),
-      jornada,
-      dias: diasSeleccionados,
-    });
-    onClose();
+    try {
+      setGuardando(true);
+      await onGuardar({
+        pictogramId: pictoSeleccionado.id,
+        pictograma: pictoSeleccionado,
+        titulo: titulo.trim(),
+        jornada,
+        dias: diasSeleccionados,
+      });
+      onClose();
+    } catch (err) {
+      console.error('Error al guardar actividad:', err);
+    } finally {
+      setGuardando(false);
+    }
   };
 
   const pictogramasFiltrados = pictogramas.filter((p) => {
@@ -129,7 +180,9 @@ export function FormularioActividad({
             <FontAwesomeIcon icon={faTimes} className="text-lg" />
           </button>
 
-          <h2 className="text-2xl sm:text-3xl font-black text-[#1B3A5C]">Nueva actividad</h2>
+          <h2 className="text-2xl sm:text-3xl font-black text-[#1B3A5C]">
+            {esEdicion ? 'Editar actividad' : 'Nueva actividad'}
+          </h2>
 
           <form onSubmit={handleGuardar} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
@@ -189,7 +242,12 @@ export function FormularioActividad({
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-[#1B3A5C]">Días</label>
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-[#1B3A5C]">Días</label>
+                {esEdicion && (
+                  <span className="text-[10px] text-gray-500 font-bold">Día fijado en edición</span>
+                )}
+              </div>
               <div className="flex items-center justify-between gap-1">
                 {DIAS.map((d) => {
                   const activo = diasSeleccionados.includes(d.clave);
@@ -197,8 +255,11 @@ export function FormularioActividad({
                     <button
                       key={d.clave}
                       type="button"
-                      onClick={() => toggleDia(d.clave)}
-                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl border-2 font-black text-xs sm:text-sm transition-all flex items-center justify-center cursor-pointer ${
+                      disabled={esEdicion}
+                      onClick={() => !esEdicion && toggleDia(d.clave)}
+                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl border-2 font-black text-xs sm:text-sm transition-all flex items-center justify-center ${
+                        esEdicion ? 'cursor-not-allowed opacity-80' : 'cursor-pointer'
+                      } ${
                         activo
                           ? 'bg-[#1B3A5C] text-white border-[#1B3A5C] shadow-xs'
                           : 'bg-[#B0C8DC]/70 text-[#003052] border-[#7A9AB8] hover:bg-[#B0C8DC]'
@@ -216,14 +277,16 @@ export function FormularioActividad({
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="submit"
-                className="py-3.5 rounded-2xl font-black text-base bg-[#FDD835] text-[#003052] border-2 border-[#C8A800] shadow-[0_4px_0_#C8A800] hover:scale-102 active:scale-95 transition-all cursor-pointer"
+                disabled={guardando}
+                className="py-3.5 rounded-2xl font-black text-base bg-[#FDD835] text-[#003052] border-2 border-[#C8A800] shadow-[0_4px_0_#C8A800] hover:scale-102 active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Guardar
+                {guardando ? 'Guardando...' : esEdicion ? 'Actualizar' : 'Guardar'}
               </button>
               <button
                 type="button"
                 onClick={onClose}
-                className="py-3.5 rounded-2xl font-black text-base bg-[#FDD835] text-[#003052] border-2 border-[#C8A800] shadow-[0_4px_0_#C8A800] hover:scale-102 active:scale-95 transition-all cursor-pointer"
+                disabled={guardando}
+                className="py-3.5 rounded-2xl font-black text-base bg-[#FDD835] text-[#003052] border-2 border-[#C8A800] shadow-[0_4px_0_#C8A800] hover:scale-102 active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancelar
               </button>

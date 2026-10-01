@@ -1,31 +1,24 @@
-import type { ActividadHorarioBD } from '../types/horario';
+import type { ActividadRutinaVista } from '../types/horario';
 
 const DIAS = [
-  { clave: 'LUNES', abrev: 'Lunes' },
-  { clave: 'MARTES', abrev: 'Martes' },
-  { clave: 'MIÉRCOLES', abrev: 'Miércoles' },
-  { clave: 'JUEVES', abrev: 'Jueves' },
-  { clave: 'VIERNES', abrev: 'Viernes' },
-  { clave: 'SÁBADO', abrev: 'Sábado' },
-  { clave: 'DOMINGO', abrev: 'Domingo' },
+  { numero: 1, abrev: 'Lunes' },
+  { numero: 2, abrev: 'Martes' },
+  { numero: 3, abrev: 'Miércoles' },
+  { numero: 4, abrev: 'Jueves' },
+  { numero: 5, abrev: 'Viernes' },
+  { numero: 6, abrev: 'Sábado' },
+  { numero: 7, abrev: 'Domingo' },
 ];
 
 const BLOQUES = [
-  { clave: 'MAÑANA', etiqueta: 'Mañana' },
-  { clave: 'TARDE', etiqueta: 'Tarde' },
-  { clave: 'NOCHE', etiqueta: 'Noche' },
+  { stage: 'MORNING', etiqueta: 'Mañana' },
+  { stage: 'AFTERNOON', etiqueta: 'Tarde' },
+  { stage: 'NIGHT', etiqueta: 'Noche' },
 ];
-
-const horaABloque = (hora: string): 'MAÑANA' | 'TARDE' | 'NOCHE' => {
-  const h = parseInt(hora.split(':')[0], 10);
-  if (h < 12) return 'MAÑANA';
-  if (h < 18) return 'TARDE';
-  return 'NOCHE';
-};
 
 interface PlantillaHorarioProps {
   nombreInfante: string;
-  actividades: ActividadHorarioBD[];
+  actividades: ActividadRutinaVista[];
 }
 
 export function PlantillaHorario({ nombreInfante, actividades }: PlantillaHorarioProps) {
@@ -52,7 +45,7 @@ export function PlantillaHorario({ nombreInfante, actividades }: PlantillaHorari
             BLOQUE
           </div>
           {DIAS.map((d) => (
-            <div key={d.clave} className="border-r border-slate-600 last:border-none">
+            <div key={d.numero} className="border-r border-slate-600 last:border-none">
               {d.abrev}
             </div>
           ))}
@@ -60,7 +53,7 @@ export function PlantillaHorario({ nombreInfante, actividades }: PlantillaHorari
 
         {BLOQUES.map((bloque) => (
           <div
-            key={bloque.clave}
+            key={bloque.stage}
             className="grid grid-cols-8 border-b border-slate-300 last:border-none min-h-40"
           >
             <div className="flex items-center justify-center font-black text-xs text-slate-800 bg-slate-100 border-r border-slate-300 uppercase tracking-wider">
@@ -69,12 +62,12 @@ export function PlantillaHorario({ nombreInfante, actividades }: PlantillaHorari
 
             {DIAS.map((dia) => {
               const actividadesCelda = actividades.filter(
-                (a) => a.dayOfWeek === dia.clave && horaABloque(a.hour) === bloque.clave
-              );
+                (a) => a.dayOfWeek === dia.numero && a.stage === bloque.stage
+              ).sort((a, b) => a.position - b.position);
 
               return (
                 <div
-                  key={dia.clave}
+                  key={dia.numero}
                   className="p-1.5 border-r border-slate-200 last:border-none flex flex-col gap-1.5 items-center justify-start bg-white"
                 >
                   {actividadesCelda.map((act) => (
@@ -85,12 +78,12 @@ export function PlantillaHorario({ nombreInfante, actividades }: PlantillaHorari
                       {act.pictogram?.pictoImageUrl && (
                         <img
                           src={act.pictogram.pictoImageUrl}
-                          alt={act.pictogram.pictogramName}
+                          alt={act.name}
                           className="w-8 h-8 object-contain mb-0.5"
                         />
                       )}
                       <span className="font-extrabold text-[10px] text-slate-900 leading-tight block truncate w-full">
-                        {act.pictogram?.pictogramName || 'Actividad'}
+                        {act.name || act.pictogram?.pictogramName || 'Actividad'}
                       </span>
                     </div>
                   ))}

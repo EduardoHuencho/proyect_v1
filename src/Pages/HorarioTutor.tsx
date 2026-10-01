@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Fondo from '../Components/Fondo';
 import Navbar from '../Components/Navbar';
 import { PlantillaHorario } from '../Components/PlantillaHorario';
@@ -18,22 +18,47 @@ import {
   faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import { Sun, Sunset, Moon } from 'lucide-react';
-import type { ActividadHorarioBD } from '../types/horario';
-import type { Pictograma } from '../types/pictograma';
+import type { ActividadRutinaVista, DiaSemana, JornadaBackend } from '../types/horario';
+import {
+  getGroupedRoutine,
+  createRoutine,
+  createRoutineActivity,
+  updateRoutineActivity,
+  deleteRoutineActivity,
+} from '../services/routineService';
 
 const DIAS = [
-  { clave: 'LUNES', abrev: 'Lun' },
-  { clave: 'MARTES', abrev: 'Mar' },
-  { clave: 'MIÉRCOLES', abrev: 'Mié' },
-  { clave: 'JUEVES', abrev: 'Jue', esHoy: true },
-  { clave: 'VIERNES', abrev: 'Vie' },
-  { clave: 'SÁBADO', abrev: 'Sáb' },
-  { clave: 'DOMINGO', abrev: 'Dom' },
+  { clave: 'LUNES', numero: 1 as DiaSemana, abrev: 'Lun' },
+  { clave: 'MARTES', numero: 2 as DiaSemana, abrev: 'Mar' },
+  { clave: 'MIÉRCOLES', numero: 3 as DiaSemana, abrev: 'Mié' },
+  { clave: 'JUEVES', numero: 4 as DiaSemana, abrev: 'Jue', esHoy: true },
+  { clave: 'VIERNES', numero: 5 as DiaSemana, abrev: 'Vie' },
+  { clave: 'SÁBADO', numero: 6 as DiaSemana, abrev: 'Sáb' },
+  { clave: 'DOMINGO', numero: 7 as DiaSemana, abrev: 'Dom' },
 ];
+
+const DIA_CLAVE_A_NUMERO: Record<string, DiaSemana> = {
+  LUNES: 1,
+  MARTES: 2,
+  'MIÉRCOLES': 3,
+  MIERCOLES: 3,
+  JUEVES: 4,
+  VIERNES: 5,
+  'SÁBADO': 6,
+  SABADO: 6,
+  DOMINGO: 7,
+};
+
+const JORNADA_A_BACKEND: Record<string, JornadaBackend> = {
+  MAÑANA: 'MORNING',
+  TARDE: 'AFTERNOON',
+  NOCHE: 'NIGHT',
+};
 
 const BLOQUES = [
   {
     clave: 'MAÑANA',
+    stage: 'MORNING' as JornadaBackend,
     etiqueta: 'Mañana',
     IconoLucide: Sun,
     colorIcono: 'text-yellow-500',
@@ -41,6 +66,7 @@ const BLOQUES = [
   },
   {
     clave: 'TARDE',
+    stage: 'AFTERNOON' as JornadaBackend,
     etiqueta: 'Tarde',
     IconoLucide: Sunset,
     colorIcono: 'text-amber-500',
@@ -48,132 +74,11 @@ const BLOQUES = [
   },
   {
     clave: 'NOCHE',
+    stage: 'NIGHT' as JornadaBackend,
     etiqueta: 'Noche',
     IconoLucide: Moon,
     colorIcono: 'text-indigo-500',
     colorFondo: 'bg-[#F0F4F8]/60',
-  },
-];
-
-const horaABloque = (hora: string): 'MAÑANA' | 'TARDE' | 'NOCHE' => {
-  const h = parseInt(hora.split(':')[0], 10);
-  if (h < 12) return 'MAÑANA';
-  if (h < 18) return 'TARDE';
-  return 'NOCHE';
-};
-
-const DATOS_INICIALES: ActividadHorarioBD[] = [
-  {
-    id: '1',
-    hour: '08:00',
-    dayOfWeek: 'LUNES',
-    infantId: 'infant-1',
-    pictogramId: 'picto-1',
-    pictogram: {
-      id: 'picto-1',
-      pictogramName: 'Levantarse',
-      personal: false,
-      description: 'Rutina',
-      pictoImageUrl: 'https://placehold.co/120x120?text=⏰',
-      category: { id: 'cat-1', categoryName: 'Rutina' },
-      pictoImageKey: 'k-1',
-    },
-  },
-  {
-    id: '2',
-    hour: '09:00',
-    dayOfWeek: 'LUNES',
-    infantId: 'infant-1',
-    pictogramId: 'picto-2',
-    pictogram: {
-      id: 'picto-2',
-      pictogramName: 'Bañarse',
-      personal: false,
-      description: 'Higiene',
-      pictoImageUrl: 'https://placehold.co/120x120?text=🛁',
-      category: { id: 'cat-2', categoryName: 'Higiene' },
-      pictoImageKey: 'k-2',
-    },
-  },
-  {
-    id: '3',
-    hour: '10:00',
-    dayOfWeek: 'LUNES',
-    infantId: 'infant-1',
-    pictogramId: 'picto-3',
-    pictogram: {
-      id: 'picto-3',
-      pictogramName: 'Vestirse',
-      personal: false,
-      description: 'Rutina',
-      pictoImageUrl: 'https://placehold.co/120x120?text=👕',
-      category: { id: 'cat-1', categoryName: 'Rutina' },
-      pictoImageKey: 'k-3',
-    },
-  },
-  {
-    id: '4',
-    hour: '08:00',
-    dayOfWeek: 'JUEVES',
-    infantId: 'infant-1',
-    pictogramId: 'picto-1',
-    pictogram: {
-      id: 'picto-1',
-      pictogramName: 'Levantarse',
-      personal: false,
-      description: 'Rutina',
-      pictoImageUrl: 'https://placehold.co/120x120?text=⏰',
-      category: { id: 'cat-1', categoryName: 'Rutina' },
-      pictoImageKey: 'k-1',
-    },
-  },
-  {
-    id: '5',
-    hour: '09:00',
-    dayOfWeek: 'JUEVES',
-    infantId: 'infant-1',
-    pictogramId: 'picto-2',
-    pictogram: {
-      id: 'picto-2',
-      pictogramName: 'Bañarse',
-      personal: false,
-      description: 'Higiene',
-      pictoImageUrl: 'https://placehold.co/120x120?text=🛁',
-      category: { id: 'cat-2', categoryName: 'Higiene' },
-      pictoImageKey: 'k-2',
-    },
-  },
-  {
-    id: '6',
-    hour: '10:00',
-    dayOfWeek: 'JUEVES',
-    infantId: 'infant-1',
-    pictogramId: 'picto-3',
-    pictogram: {
-      id: 'picto-3',
-      pictogramName: 'Vestirse',
-      personal: false,
-      description: 'Rutina',
-      pictoImageUrl: 'https://placehold.co/120x120?text=👕',
-      category: { id: 'cat-1', categoryName: 'Rutina' },
-      pictoImageKey: 'k-3',
-    },
-  },
-  {
-    id: '7',
-    hour: '11:00',
-    dayOfWeek: 'JUEVES',
-    infantId: 'infant-1',
-    pictogramId: 'picto-4',
-    pictogram: {
-      id: 'picto-4',
-      pictogramName: 'Desayuno',
-      personal: false,
-      description: 'Comida',
-      pictoImageUrl: 'https://placehold.co/120x120?text=🧃',
-      category: { id: 'cat-3', categoryName: 'Comida' },
-      pictoImageKey: 'k-4',
-    },
   },
 ];
 
@@ -187,105 +92,316 @@ function HorarioTutor() {
     }
   }, [userId, cargarNinos]);
 
-  const [actividades, setActividades] = useState<ActividadHorarioBD[]>(DATOS_INICIALES);
-  const [actividadSeleccionada, setActividadSeleccionada] = useState<ActividadHorarioBD | null>(null);
+  const [actividades, setActividades] = useState<ActividadRutinaVista[]>([]);
+  const [infanteHorarioId, setInfanteHorarioId] = useState<string | null>(null);
+  const [actividadSeleccionada, setActividadSeleccionada] = useState<ActividadRutinaVista | null>(null);
+
+  const rutinasPorDia = useRef<Map<DiaSemana, string>>(new Map());
+
+  const recargarHorario = useCallback(async (infantId: string, isCancelled?: () => boolean) => {
+    try {
+      const rutinasAgrupadas = await getGroupedRoutine(infantId, token);
+      if (isCancelled && isCancelled()) return;
+
+      const nuevoMapaRutinas = new Map<DiaSemana, string>();
+      const listaActividades: ActividadRutinaVista[] = [];
+
+      for (const rutina of rutinasAgrupadas) {
+        if (!rutina || !rutina.dayOfWeek) continue;
+
+        const dayOfWeek = rutina.dayOfWeek;
+        const routineId = rutina.id;
+        nuevoMapaRutinas.set(dayOfWeek, routineId);
+
+        if (Array.isArray(rutina.morning)) {
+          for (const act of rutina.morning) {
+            listaActividades.push({
+              id: act.id,
+              routineId,
+              infantId,
+              dayOfWeek,
+              stage: 'MORNING',
+              position: act.position,
+              name: act.name,
+              pictogram: act.pictogram,
+            });
+          }
+        }
+
+        if (Array.isArray(rutina.afternoon)) {
+          for (const act of rutina.afternoon) {
+            listaActividades.push({
+              id: act.id,
+              routineId,
+              infantId,
+              dayOfWeek,
+              stage: 'AFTERNOON',
+              position: act.position,
+              name: act.name,
+              pictogram: act.pictogram,
+            });
+          }
+        }
+
+        if (Array.isArray(rutina.night)) {
+          for (const act of rutina.night) {
+            listaActividades.push({
+              id: act.id,
+              routineId,
+              infantId,
+              dayOfWeek,
+              stage: 'NIGHT',
+              position: act.position,
+              name: act.name,
+              pictogram: act.pictogram,
+            });
+          }
+        }
+      }
+
+      rutinasPorDia.current = nuevoMapaRutinas;
+      setActividades(listaActividades);
+      setInfanteHorarioId(infantId);
+    } catch (error) {
+      console.error('Error al cargar el horario del infante:', error);
+      if (isCancelled && isCancelled()) return;
+
+      rutinasPorDia.current.clear();
+      setActividades([]);
+      setInfanteHorarioId(infantId);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    let cancelado = false;
+    const isCancelled = () => cancelado;
+
+    if (!ninoActivo?.id) {
+      rutinasPorDia.current.clear();
+      Promise.resolve().then(() => {
+        if (!cancelado) {
+          setActividades([]);
+          setInfanteHorarioId(null);
+        }
+      });
+      return;
+    }
+
+    void (async () => {
+      await recargarHorario(ninoActivo.id, isCancelled);
+    })();
+
+    return () => {
+      cancelado = true;
+    };
+  }, [ninoActivo?.id, recargarHorario]);
+
+  const actividadesActuales = infanteHorarioId === ninoActivo?.id ? actividades : [];
 
   const [modalFormularioAbierto, setModalFormularioAbierto] = useState(false);
+  const [formDiaInicial, setFormDiaInicial] = useState<string | undefined>(undefined);
+  const [formJornadaInicial, setFormJornadaInicial] = useState<'MAÑANA' | 'TARDE' | 'NOCHE' | undefined>(undefined);
+  const [actividadAEditar, setActividadAEditar] = useState<ActividadRutinaVista | null>(null);
 
-  const handleAbrirFormulario = () => {
+  const handleAbrirFormulario = (diaClave?: string, jornadaClave?: 'MAÑANA' | 'TARDE' | 'NOCHE') => {
+    setActividadAEditar(null);
+    setFormDiaInicial(diaClave);
+    setFormJornadaInicial(jornadaClave);
     setModalFormularioAbierto(true);
   };
 
-  const handleGuardarActividad = (datos: {
+  const handleGuardarActividad = async (datos: {
     pictogramId?: string;
-    pictograma?: Pictograma | null;
+    pictograma?: unknown;
     titulo: string;
     jornada: 'MAÑANA' | 'TARDE' | 'NOCHE';
     dias: string[];
   }) => {
-    const horaDefault =
-      datos.jornada === 'MAÑANA' ? '08:00' : datos.jornada === 'TARDE' ? '14:00' : '20:00';
+    if (!ninoActivo?.id) {
+      alert('Por favor selecciona un infante antes de continuar.');
+      return;
+    }
 
-    const nuevasActividades: ActividadHorarioBD[] = datos.dias.map((dia) => {
-      const pictogramaBase = datos.pictograma || {
-        id: datos.pictogramId || 'picto-nuevo',
-        pictogramName: datos.titulo, // <-- Aquí aseguramos que use el título del formulario
-        personal: true,
-        description: 'General',
-        pictoImageUrl: 'https://placehold.co/120x120?text=📌',
-        category: { id: 'cat-general', categoryName: 'General' },
-        pictoImageKey: 'key-new',
-      };
+    if (!datos.pictogramId) {
+      alert('Debes seleccionar un pictograma para la actividad.');
+      return;
+    }
 
-      return {
-        id: crypto.randomUUID(),
-        hour: horaDefault,
-        dayOfWeek: dia,
-        infantId: ninoActivo?.id || 'infant-local',
-        pictogramId: pictogramaBase.id,
-        pictogram: {
-          ...pictogramaBase,
-          pictogramName: datos.titulo, // Forzamos el nombre de la tarjeta al título ingresado
+    const stageBackend = JORNADA_A_BACKEND[datos.jornada] || 'MORNING';
+
+    if (actividadAEditar) {
+      const routineId =
+        actividadAEditar.routineId ||
+        rutinasPorDia.current.get(actividadAEditar.dayOfWeek);
+
+      if (!routineId) {
+        alert('No se encontró la rutina asociada a esta actividad.');
+        return;
+      }
+
+      await updateRoutineActivity(
+        routineId,
+        actividadAEditar.id,
+        {
+          name: datos.titulo,
+          pictogramId: datos.pictogramId,
+          stage: stageBackend,
         },
-      };
-    });
-
-    setActividades((prev) => [...prev, ...nuevasActividades]);
-  };
-
-  const handleMoverActividad = (direccion: 'SUBIR' | 'BAJAR') => {
-    if (!actividadSeleccionada) return;
-
-    setActividades((prev) => {
-      const delMismoBloqueYDia = prev.filter(
-        (a) =>
-          a.dayOfWeek === actividadSeleccionada.dayOfWeek &&
-          horaABloque(a.hour) === horaABloque(actividadSeleccionada.hour)
+        token
       );
 
-      const idx = delMismoBloqueYDia.findIndex((a) => a.id === actividadSeleccionada.id);
-      if (idx === -1) return prev;
+      setActividadAEditar(null);
+      await recargarHorario(ninoActivo.id);
+      return;
+    }
 
-      const targetIdx = direccion === 'SUBIR' ? idx - 1 : idx + 1;
-      if (targetIdx < 0 || targetIdx >= delMismoBloqueYDia.length) return prev;
+    const diasNumeros = datos.dias
+      .map((d) => DIA_CLAVE_A_NUMERO[d])
+      .filter((n): n is DiaSemana => typeof n === 'number');
 
-      const copia = [...prev];
-      const actualIdxGlobal = copia.findIndex((a) => a.id === actividadSeleccionada.id);
-      const destinoIdxGlobal = copia.findIndex((a) => a.id === delMismoBloqueYDia[targetIdx].id);
+    if (diasNumeros.length === 0) return;
 
-      const temp = copia[actualIdxGlobal];
-      copia[actualIdxGlobal] = copia[destinoIdxGlobal];
-      copia[destinoIdxGlobal] = temp;
+    for (const diaNum of diasNumeros) {
+      let routineId = rutinasPorDia.current.get(diaNum);
 
-      return copia;
-    });
+      if (!routineId) {
+        try {
+          const res = await createRoutine(
+            { infantId: ninoActivo.id, dayOfWeek: diaNum },
+            token
+          );
+          routineId = res.id;
+          rutinasPorDia.current.set(diaNum, routineId);
+        } catch {
+          // Si la rutina ya existe en el backend, se consultan las rutinas para obtener su ID
+          const rutinasExistentes = await getGroupedRoutine(ninoActivo.id, token);
+          const rutinaEncontrada = rutinasExistentes.find((r) => r.dayOfWeek === diaNum);
+          if (rutinaEncontrada?.id) {
+            routineId = rutinaEncontrada.id;
+            rutinasPorDia.current.set(diaNum, routineId);
+          } else {
+            throw new Error(`No se pudo obtener ni crear la rutina para el día ${diaNum}`);
+          }
+        }
+      }
 
-    setActividadSeleccionada(null);
+      const actividadesEnMismoBloque = actividades.filter(
+        (a) => a.dayOfWeek === diaNum && a.stage === stageBackend
+      );
+      const siguientePosicion =
+        actividadesEnMismoBloque.length > 0
+          ? Math.max(...actividadesEnMismoBloque.map((a) => a.position)) + 1
+          : 0;
+
+      await createRoutineActivity(
+        routineId,
+        {
+          name: datos.titulo,
+          pictogramId: datos.pictogramId,
+          stage: stageBackend,
+          position: siguientePosicion,
+        },
+        token
+      );
+    }
+
+    await recargarHorario(ninoActivo.id);
+  };
+
+  const handleMoverActividad = async (direccion: 'SUBIR' | 'BAJAR') => {
+    if (!actividadSeleccionada || !ninoActivo?.id) return;
+
+    const routineId =
+      actividadSeleccionada.routineId ||
+      rutinasPorDia.current.get(actividadSeleccionada.dayOfWeek);
+
+    if (!routineId) {
+      alert('No se encontró la rutina asociada a esta actividad.');
+      return;
+    }
+
+    const actividadesCelda = actividades
+      .filter(
+        (a) =>
+          a.dayOfWeek === actividadSeleccionada.dayOfWeek &&
+          a.stage === actividadSeleccionada.stage
+      )
+      .sort((a, b) => a.position - b.position);
+
+    const index = actividadesCelda.findIndex(
+      (a) => a.id === actividadSeleccionada.id
+    );
+    if (index === -1) return;
+
+    const targetIndex = direccion === 'SUBIR' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= actividadesCelda.length) {
+      setActividadSeleccionada(null);
+      return;
+    }
+
+    const otro = actividadesCelda[targetIndex];
+    const posActual = actividadSeleccionada.position;
+    let posOtro = otro.position;
+
+    if (posActual === posOtro) {
+      posOtro = direccion === 'SUBIR' ? Math.max(0, posActual - 1) : posActual + 1;
+    }
+
+    try {
+      await Promise.all([
+        updateRoutineActivity(
+          routineId,
+          actividadSeleccionada.id,
+          { position: posOtro },
+          token
+        ),
+        updateRoutineActivity(
+          routineId,
+          otro.id,
+          { position: posActual },
+          token
+        ),
+      ]);
+      setActividadSeleccionada(null);
+      await recargarHorario(ninoActivo.id);
+    } catch (err) {
+      console.error('Error al mover actividad:', err);
+      alert('Ocurrió un error al cambiar la posición de la actividad.');
+    }
   };
 
   const handleEditarActividad = () => {
     if (!actividadSeleccionada) return;
-    const nuevoNombre = prompt(
-      'Nuevo nombre para la actividad:',
-      actividadSeleccionada.pictogram?.pictogramName
-    );
-
-    if (nuevoNombre && nuevoNombre.trim()) {
-      setActividades((prev) =>
-        prev.map((a) =>
-          a.id === actividadSeleccionada.id && a.pictogram
-            ? { ...a, pictogram: { ...a.pictogram, pictogramName: nuevoNombre.trim() } }
-            : a
-        )
-      );
-    }
+    setActividadAEditar(actividadSeleccionada);
     setActividadSeleccionada(null);
+    setModalFormularioAbierto(true);
   };
 
-  const handleEliminarActividad = () => {
-    if (!actividadSeleccionada) return;
-    setActividades((prev) => prev.filter((a) => a.id !== actividadSeleccionada.id));
-    setActividadSeleccionada(null);
+  const handleEliminarActividad = async () => {
+    if (!actividadSeleccionada || !ninoActivo?.id) return;
+
+    const routineId =
+      actividadSeleccionada.routineId ||
+      rutinasPorDia.current.get(actividadSeleccionada.dayOfWeek);
+
+    if (!routineId) {
+      alert('No se encontró la rutina asociada a esta actividad.');
+      return;
+    }
+
+    const confirmacion = window.confirm(
+      `¿Deseas eliminar la actividad "${actividadSeleccionada.name}"?`
+    );
+    if (!confirmacion) return;
+
+    try {
+      await deleteRoutineActivity(routineId, actividadSeleccionada.id, token);
+      setActividadSeleccionada(null);
+      await recargarHorario(ninoActivo.id);
+    } catch (err) {
+      console.error('Error al eliminar actividad:', err);
+      alert('Ocurrió un error al eliminar la actividad.');
+    }
   };
 
   const handleImprimir = () => {
@@ -344,7 +460,7 @@ function HorarioTutor() {
 
               <button
                 type="button"
-                onClick={handleAbrirFormulario}
+                onClick={() => handleAbrirFormulario()}
                 className="flex-1 sm:flex-none px-5 py-2.5 rounded-full bg-[#1B3A5C] text-white font-bold text-sm hover:bg-[#2A4F73] transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-95"
               >
                 <FontAwesomeIcon icon={faPlus} />
@@ -394,9 +510,9 @@ function HorarioTutor() {
                     </div>
 
                     {DIAS.map((dia) => {
-                      const actividadesCelda = actividades.filter(
-                        (a) => a.dayOfWeek === dia.clave && horaABloque(a.hour) === bloque.clave
-                      );
+                      const actividadesCelda = actividadesActuales
+                        .filter((a) => a.dayOfWeek === dia.numero && a.stage === bloque.stage)
+                        .sort((a, b) => a.position - b.position);
 
                       return (
                         <div
@@ -413,7 +529,7 @@ function HorarioTutor() {
 
                           <button
                             type="button"
-                            onClick={handleAbrirFormulario}
+                            onClick={() => handleAbrirFormulario(dia.clave, bloque.clave as 'MAÑANA' | 'TARDE' | 'NOCHE')}
                             className="w-full py-2 px-3 rounded-2xl border-2 border-dashed border-[#78909C]/40 hover:border-[#1B3A5C] text-[#78909C] hover:text-[#1B3A5C] font-bold text-xs flex items-center justify-center gap-1.5 transition-all mt-auto bg-white/50 hover:bg-white cursor-pointer"
                           >
                             <FontAwesomeIcon icon={faPlus} className="text-xs" />
@@ -432,17 +548,25 @@ function HorarioTutor() {
         <div id="zona-impresion" className="hidden print:block p-4">
           <PlantillaHorario
             nombreInfante={nombreInfanteFormat}
-            actividades={actividades}
+            actividades={actividadesActuales}
           />
         </div>
       </div>
 
-      <FormularioActividad
-        isOpen={modalFormularioAbierto}
-        onClose={() => setModalFormularioAbierto(false)}
-        onGuardar={handleGuardarActividad}
-        token={token}
-      />
+      {modalFormularioAbierto && (
+        <FormularioActividad
+          isOpen={modalFormularioAbierto}
+          onClose={() => {
+            setModalFormularioAbierto(false);
+            setActividadAEditar(null);
+          }}
+          onGuardar={handleGuardarActividad}
+          token={token}
+          diaInicial={formDiaInicial}
+          jornadaInicial={formJornadaInicial}
+          actividadInicial={actividadAEditar}
+        />
+      )}
 
       {actividadSeleccionada && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fadeIn print:hidden">
@@ -487,7 +611,7 @@ function HorarioTutor() {
                 className="w-full py-2.5 px-4 rounded-xl bg-amber-50 text-amber-900 hover:bg-amber-400 font-bold text-xs transition-colors flex items-center justify-start gap-3 cursor-pointer"
               >
                 <FontAwesomeIcon icon={faPen} />
-                <span>Editar nombre</span>
+                <span>Editar actividad</span>
               </button>
 
               <button

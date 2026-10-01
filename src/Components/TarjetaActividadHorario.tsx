@@ -1,10 +1,10 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
-import type { ActividadHorarioBD } from '../types/horario';
+import type { ActividadRutinaVista } from '../types/horario';
 
 interface TarjetaActividadHorarioProps {
-  actividad: ActividadHorarioBD;
-  onOpcionesClick: (actividad: ActividadHorarioBD) => void;
+  actividad: ActividadRutinaVista;
+  onOpcionesClick: (actividad: ActividadRutinaVista) => void;
 }
 
 export function TarjetaActividadHorario({
@@ -23,16 +23,18 @@ export function TarjetaActividadHorario({
       </button>
 
       <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-amber-50/60 border border-amber-200/60 flex items-center justify-center shrink-0 overflow-hidden mt-1">
-        <img
-          src={actividad.pictogram?.pictoImageUrl}
-          alt={actividad.pictogram?.pictogramName}
-          className="w-full h-full object-contain p-1 group-hover:scale-105 transition-transform"
-        />
+        {actividad.pictogram?.pictoImageUrl && (
+          <img
+            src={actividad.pictogram.pictoImageUrl}
+            alt={actividad.name}
+            className="w-full h-full object-contain p-1 group-hover:scale-105 transition-transform"
+          />
+        )}
       </div>
 
       <div className="w-full text-center px-1 overflow-hidden">
         <span className="font-extrabold text-xs sm:text-sm text-[#1B3A5C] truncate block leading-snug">
-          {actividad.pictogram?.pictogramName}
+          {actividad.name || actividad.pictogram?.pictogramName}
         </span>
       </div>
     </div>
