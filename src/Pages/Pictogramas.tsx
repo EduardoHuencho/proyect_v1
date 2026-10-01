@@ -65,7 +65,7 @@ function Pictogramas() {
     if (userId) {
       void cargarPictogramas();
     }
-  }, [userId, ninoActivo?.id, cargarPictogramas]);
+  }, [userId, tutorAutenticado, ninoActivo?.id, cargarPictogramas]);
 
   useEffect(() => {
     const fetchCategorias = async () => {

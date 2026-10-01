@@ -273,7 +273,6 @@ function HorarioTutor() {
           routineId = res.id;
           rutinasPorDia.current.set(diaNum, routineId);
         } catch {
-          // Si la rutina ya existe en el backend, se consultan las rutinas para obtener su ID
           const rutinasExistentes = await getGroupedRoutine(ninoActivo.id, token);
           const rutinaEncontrada = rutinasExistentes.find((r) => r.dayOfWeek === diaNum);
           if (rutinaEncontrada?.id) {

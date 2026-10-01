@@ -44,7 +44,7 @@ export async function createPictogram(
 
 export async function updatePictogram(
   pictogramId: string,
-  data: { pictogramName?: string; description?: string; personal?: boolean; infantId?: string },
+  data: { pictogramName?: string; description?: string; personal?: boolean },
   token: string | null
 ): Promise<void> {
   const response = await fetch(`${API_URL}/pictogram/${pictogramId}`, {

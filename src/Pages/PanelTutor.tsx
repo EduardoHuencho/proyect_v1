@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router';
 import Navbar from '../Components/Navbar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGrip, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { faGrip, faUsers, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { useNino } from '../context/NinoContext';
 import { useAuth } from '../context/AuthContext';
 import Fondo from '../Components/Fondo';
@@ -41,6 +41,22 @@ function PanelTutor() {
               <p className="font-extrabold text-lg">Ir al Dashboard Tutor</p>
               <p className="text-sm text-white/70">
                 Ingreso al menú principal de módulos
+              </p>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate('/accesotutor')}
+            className="btn-panel-accion bg-blue-400 hover:bg-blue-500 text-white shadow-md"
+          >
+            <div className="icono-panel-accion bg-white/20">
+              <FontAwesomeIcon icon={faUsers} />
+            </div>
+            <div>
+              <p className="font-extrabold text-lg">Ir al Menú de infantes</p>
+              <p className="text-sm text-white/70">
+                Ingreso al menú de selección de infantes
               </p>
             </div>
           </button>

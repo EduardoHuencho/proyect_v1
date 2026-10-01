@@ -87,8 +87,6 @@ export function FormularioActividad({
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [cargando, setCargando] = useState(false);
 
-
-
   const [modalPictoAbierto, setModalPictoAbierto] = useState(false);
   const [catFiltro, setCatFiltro] = useState<string>('TODAS');
   const [busquedaPicto, setBusquedaPicto] = useState('');

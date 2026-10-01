@@ -19,11 +19,10 @@ interface Feedback {
 function EditarPictograma() {
   const navigate = useNavigate();
   const { id: pictogramId } = useParams<{ id: string }>();
-  const { tutorAutenticado, ninoActivo } = useNino();
+  const { tutorAutenticado } = useNino();
   const { token } = useAuth();
   const { pictogramas, cargarPictogramas } = usePictogramas();
 
-  // Buscar el pictograma en el contexto
   const pictogramaActual = pictogramas.find((p) => p.id === pictogramId);
 
   const [nombre, setNombre] = useState('');
@@ -37,13 +36,15 @@ function EditarPictograma() {
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
 
-  // Pre-cargar los datos del pictograma cuando esté disponible
   useEffect(() => {
     if (pictogramaActual) {
-      setNombre(pictogramaActual.pictogramName);
-      setDescripcion(pictogramaActual.description || '');
-      setEsPersonal(pictogramaActual.personal);
-      setPreviewUrl(pictogramaActual.pictoImageUrl);
+      const { pictogramName, description, personal, pictoImageUrl } = pictogramaActual;
+      Promise.resolve().then(() => {
+        setNombre(pictogramName);
+        setDescripcion(description || '');
+        setEsPersonal(personal);
+        setPreviewUrl(pictoImageUrl);
+      });
     }
   }, [pictogramaActual?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -72,27 +73,20 @@ function EditarPictograma() {
     setLoading(true);
 
     try {
-      // 1. Actualizar campos de texto.
-      // Cuando el pictograma es privado, incluir el infantId del infante seleccionado
-      // en la lista del navbar (ninoActivo). Requiere que el backend tenga habilitado
-      // el campo infantId en UpdatePictogramDto.
       await updatePictogram(
         pictogramId,
         {
           pictogramName: nombre.trim(),
           description: descripcion.trim(),
           personal: esPersonal,
-          ...(esPersonal && ninoActivo?.id ? { infantId: ninoActivo.id } : {}),
         },
         token
       );
 
-      // 2. Si se seleccionó una nueva imagen, actualizarla por separado
       if (archivo) {
         await updatePictogramImage(pictogramId, archivo, token);
       }
 
-      // Recargar la lista de pictogramas en el contexto
       await cargarPictogramas();
 
       setFeedback({ type: 'success', message: 'Pictograma actualizado correctamente.' });
@@ -163,7 +157,6 @@ function EditarPictograma() {
             )}
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              {/* Imagen */}
               <div className="flex flex-col items-center gap-2">
                 <button
                   type="button"
@@ -221,7 +214,6 @@ function EditarPictograma() {
                 />
               </div>
 
-              {/* Descripción */}
               <div className="flex flex-col gap-1">
                 <label htmlFor="description" className="text-xs font-bold text-[#005088] px-1">
                   DESCRIPCIÓN
@@ -237,7 +229,6 @@ function EditarPictograma() {
                 />
               </div>
 
-              {/* Visibilidad */}
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-bold text-[#005088] px-1">
                   VISIBILIDAD DEL PICTOGRAMA

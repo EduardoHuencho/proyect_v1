@@ -39,13 +39,11 @@ const ImagenPreview = forwardRef<ImagenPreviewHandle, ImagenPreviewProps>(functi
   const imgRef = useRef<HTMLImageElement | null>(null);
   const contenedorRef = useRef<HTMLDivElement | null>(null);
 
-  // reinicia la posicion y zoom cuando se cambia la imagen
   useEffect(() => {
     setPosicion({ x: 0, y: 0 });
     setZoom(1);
   }, [src]);
 
-  // Muestra la imagen de la forma en la que se ve dentro del marco
   useImperativeHandle(ref, () => ({
     obtenerImagenRecortada: () => {
       return new Promise((resolve) => {
@@ -60,7 +58,6 @@ const ImagenPreview = forwardRef<ImagenPreviewHandle, ImagenPreviewProps>(functi
         const ctx = canvas.getContext('2d');
         if (!ctx) return resolve(null);
 
-        // crea marco circular para el recorte
         ctx.beginPath();
         ctx.arc(diametro / 2, diametro / 2, diametro / 2, 0, Math.PI * 2);
         ctx.closePath();
@@ -98,7 +95,6 @@ const ImagenPreview = forwardRef<ImagenPreviewHandle, ImagenPreviewProps>(functi
     },
   }));
 
-  // manejo de mouse para arrastrar la imagen
   const iniciarArrastre = (clienteX: number, clienteY: number) => {
     if (!editable || esVideo || !src) return;
     setArrastrando(true);
@@ -174,7 +170,6 @@ const ImagenPreview = forwardRef<ImagenPreviewHandle, ImagenPreviewProps>(functi
         )}
       </div>
 
-      {/* control de Zoom en modo edicion */}
       {editable && src && !esVideo && (
         <div className="flex items-center gap-2 w-48 sm:w-56 px-2 py-1 bg-[#F0F4F8] rounded-full border border-[#CBD5E0]">
           <FontAwesomeIcon icon={faMagnifyingGlassMinus} className="text-xs text-[#1B3A5C]" />
