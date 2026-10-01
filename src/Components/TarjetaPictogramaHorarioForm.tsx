@@ -33,6 +33,8 @@ export function TarjetaPictogramaHorarioForm({
         <img
           src={pictograma.pictoImageUrl}
           alt={pictograma.pictogramName}
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-contain group-hover:scale-105 transition-transform"
         />
       </div>

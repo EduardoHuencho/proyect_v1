@@ -27,6 +27,8 @@ export function TarjetaActividadHorario({
           <img
             src={actividad.pictogram.pictoImageUrl}
             alt={actividad.name}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-contain p-1 group-hover:scale-105 transition-transform"
           />
         )}

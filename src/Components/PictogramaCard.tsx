@@ -21,6 +21,8 @@ function PictogramaCard({
         <img
           src={pictoImageUrl || AvatarDefault}
           alt={pictogramName}
+          loading="lazy"
+          decoding="async"
           className="h-full w-full object-contain p-0.5 md:p-1"
           onError={(event) => {
             event.currentTarget.onerror = null;
