@@ -22,15 +22,20 @@ export function TarjetaActividadHorario({
         <FontAwesomeIcon icon={faEllipsisVertical} className="text-xs sm:text-sm" />
       </button>
 
-      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-amber-50/60 border border-amber-200/60 flex items-center justify-center shrink-0 overflow-hidden mt-1">
+      <div
+        className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl border border-amber-200/60 flex items-center justify-center shrink-0 overflow-hidden mt-1 p-1 bg-amber-50/60"
+        style={actividad.pictogram?.category?.color ? { backgroundColor: actividad.pictogram.category.color } : undefined}
+      >
         {actividad.pictogram?.pictoImageUrl && (
-          <img
-            src={actividad.pictogram.pictoImageUrl}
-            alt={actividad.name}
-            loading="lazy"
-            decoding="async"
-            className="w-full h-full object-contain p-1 group-hover:scale-105 transition-transform"
-          />
+          <div className="w-full h-full bg-white/75 rounded-lg flex items-center justify-center p-0.5">
+            <img
+              src={actividad.pictogram.pictoImageUrl}
+              alt={actividad.name}
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-contain group-hover:scale-105 transition-transform"
+            />
+          </div>
         )}
       </div>
 

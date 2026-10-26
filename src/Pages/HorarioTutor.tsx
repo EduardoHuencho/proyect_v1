@@ -2,6 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Fondo from '../Components/Fondo';
 import Navbar from '../Components/Navbar';
 import { PlantillaHorario } from '../Components/PlantillaHorario';
+import { PlantillaJornada } from '../Components/PlantillaJornada';
+import { ModalSeleccionImpresion } from '../Components/ModalSeleccionImpresion';
 import { FormularioActividad } from '../Components/FormularioActividad';
 import { TarjetaActividadHorario } from '../Components/TarjetaActividadHorario';
 import { useNino } from '../context/NinoContext';
@@ -95,6 +97,18 @@ function HorarioTutor() {
   const [actividades, setActividades] = useState<ActividadRutinaVista[]>([]);
   const [infanteHorarioId, setInfanteHorarioId] = useState<string | null>(null);
   const [actividadSeleccionada, setActividadSeleccionada] = useState<ActividadRutinaVista | null>(null);
+  const [modalImpresionAbierto, setModalImpresionAbierto] = useState(false);
+  const [configImpresion, setConfigImpresion] = useState<{
+    modo: 'completo' | 'jornada';
+    diaNumero: number;
+    diaNombre: string;
+    jornada: JornadaBackend;
+  }>({
+    modo: 'completo',
+    diaNumero: 1,
+    diaNombre: 'Lunes',
+    jornada: 'MORNING',
+  });
 
   const rutinasPorDia = useRef<Map<DiaSemana, string>>(new Map());
 
@@ -404,7 +418,20 @@ function HorarioTutor() {
   };
 
   const handleImprimir = () => {
-    window.print();
+    setModalImpresionAbierto(true);
+  };
+
+  const handleConfirmarImpresion = (config: {
+    modo: 'completo' | 'jornada';
+    diaNumero: number;
+    diaNombre: string;
+    jornada: JornadaBackend;
+  }) => {
+    setConfigImpresion(config);
+    setModalImpresionAbierto(false);
+    setTimeout(() => {
+      window.print();
+    }, 150);
   };
 
   const nombreInfanteFormat = ninoActivo
@@ -545,12 +572,32 @@ function HorarioTutor() {
         </div>
 
         <div id="zona-impresion" className="hidden print:block p-4">
-          <PlantillaHorario
-            nombreInfante={nombreInfanteFormat}
-            actividades={actividadesActuales}
-          />
+          {configImpresion.modo === 'completo' ? (
+            <PlantillaHorario
+              nombreInfante={nombreInfanteFormat}
+              actividades={actividadesActuales}
+            />
+          ) : (
+            <PlantillaJornada
+              nombreInfante={nombreInfanteFormat}
+              diaNumero={configImpresion.diaNumero}
+              diaNombre={configImpresion.diaNombre}
+              jornada={configImpresion.jornada}
+              actividades={actividadesActuales}
+            />
+          )}
         </div>
       </div>
+
+      {modalImpresionAbierto && (
+        <ModalSeleccionImpresion
+          isOpen={modalImpresionAbierto}
+          onClose={() => setModalImpresionAbierto(false)}
+          diaDefecto={configImpresion.diaNumero}
+          jornadaDefecto={configImpresion.jornada}
+          onConfirmar={handleConfirmarImpresion}
+        />
+      )}
 
       {modalFormularioAbierto && (
         <FormularioActividad

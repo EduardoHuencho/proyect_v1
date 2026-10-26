@@ -2,6 +2,7 @@
 export interface Categoria {
   id: string;
   categoryName: string;
+  color?: string;
 }
 
 export interface Pictograma {
@@ -21,7 +22,7 @@ export interface CrearPictogramaInput {
   categoryId: string;
   personal: boolean;
   userId?: string;
-  infantId?: string;
+  infantId: string[];
 }
 
 export interface PictogramaEnFrase extends Pictograma {

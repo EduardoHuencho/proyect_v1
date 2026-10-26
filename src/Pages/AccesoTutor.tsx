@@ -59,6 +59,8 @@ function AccesoTutor() {
 
   const handleSeleccionarNino = (nino: Infante) => {
     if (modoGestion) return;
+    setTutorAutenticado(false);
+    setTutorOrigen(null);
     setNinoActivo(nino);
     navigate('/menumodulos');
   };

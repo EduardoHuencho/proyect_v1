@@ -197,7 +197,10 @@ export function FormularioActividad({
                 onClick={() => setModalPictoAbierto(true)}
                 className="w-full bg-[#B0C8DC]/70 hover:bg-[#B0C8DC] border-2 border-[#7A9AB8] rounded-2xl p-2.5 flex items-center gap-3 transition-colors cursor-pointer text-[#003052]"
               >
-                <div className="w-12 h-10 bg-white rounded-xl border-2 border-[#7A9AB8] flex items-center justify-center shrink-0 overflow-hidden">
+                <div
+                  style={pictoSeleccionado?.category?.color ? { backgroundColor: pictoSeleccionado.category.color } : undefined}
+                  className="w-12 h-10 bg-white rounded-xl border-2 border-[#7A9AB8] flex items-center justify-center shrink-0 overflow-hidden"
+                >
                   {pictoSeleccionado?.pictoImageUrl ? (
                     <img
                       src={pictoSeleccionado.pictoImageUrl}
@@ -302,62 +305,66 @@ export function FormularioActividad({
 
       {modalPictoAbierto && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-60 p-4 animate-fadeIn">
-          <div className="bg-white max-w-lg w-full rounded-[30px] p-6 shadow-2xl flex flex-col gap-4 max-h-[85vh] overflow-hidden relative">
+          <div className="bg-white max-w-2xl sm:max-w-3xl w-full rounded-[30px] p-6 shadow-2xl flex flex-col gap-4 max-h-[88vh] overflow-hidden relative">
             <button
               type="button"
               onClick={() => setModalPictoAbierto(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
             >
               <FontAwesomeIcon icon={faTimes} className="text-lg" />
             </button>
 
-            <h3 className="text-xl font-black text-[#1B3A5C]">Seleccionar Pictograma</h3>
+            <h3 className="text-xl sm:text-2xl font-black text-[#1B3A5C]">Seleccionar Pictograma</h3>
 
-            <div className="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-xl border border-gray-200">
-              <FontAwesomeIcon icon={faSearch} className="text-gray-400 text-sm" />
-              <input
-                type="text"
-                placeholder="Buscar pictograma..."
-                value={busquedaPicto}
-                onChange={(e) => setBusquedaPicto(e.target.value)}
-                className="bg-transparent text-xs font-bold text-[#1B3A5C] outline-none w-full"
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="flex items-center gap-2 bg-gray-100 px-3 py-2.5 rounded-xl border border-gray-200">
+                <FontAwesomeIcon icon={faSearch} className="text-gray-400 text-sm" />
+                <input
+                  type="text"
+                  placeholder="Buscar pictograma..."
+                  value={busquedaPicto}
+                  onChange={(e) => setBusquedaPicto(e.target.value)}
+                  className="bg-transparent text-xs sm:text-sm font-bold text-[#1B3A5C] outline-none w-full placeholder:text-gray-400"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <select
+                  value={catFiltro}
+                  onChange={(e) => setCatFiltro(e.target.value)}
+                  className="w-full bg-[#B0C8DC]/70 border-2 border-[#7A9AB8] rounded-xl px-3 py-2 text-[#003052] font-extrabold text-xs sm:text-sm outline-none cursor-pointer"
+                >
+                  <option value="TODAS">Todas las categorías</option>
+                  {categorias.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.categoryName}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
-            <div className="flex flex-col gap-1">
-              <label className="text-xs font-bold text-[#1B3A5C] px-1">Filtrar por categoría</label>
-              <select
-                value={catFiltro}
-                onChange={(e) => setCatFiltro(e.target.value)}
-                className="w-full bg-[#B0C8DC]/70 border-2 border-[#7A9AB8] rounded-2xl px-4 py-2 text-[#003052] font-extrabold text-xs outline-none cursor-pointer"
-              >
-                <option value="TODAS">Todas las categorías</option>
-                {categorias.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.categoryName}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 overflow-y-auto p-1 flex-1 min-h-55">
+            {/* Contenedor scrolleable con min-h-0 para flexbox */}
+            <div className="flex-1 min-h-0 overflow-y-auto p-1 pr-2">
               {cargando ? (
-                <div className="col-span-full text-center text-gray-400 font-bold text-xs py-10">
+                <div className="text-center text-gray-400 font-bold text-xs sm:text-sm py-16">
                   Cargando pictogramas...
                 </div>
               ) : pictogramasFiltrados.length === 0 ? (
-                <div className="col-span-full text-center text-gray-400 font-bold text-xs py-10">
+                <div className="text-center text-gray-400 font-bold text-xs sm:text-sm py-16">
                   No se encontraron pictogramas.
                 </div>
               ) : (
-                pictogramasFiltrados.map((picto) => (
-                  <TarjetaPictogramaHorarioForm
-                    key={picto.id}
-                    pictograma={picto}
-                    seleccionado={pictoSeleccionado?.id === picto.id}
-                    onClick={handleSeleccionarPicto}
-                  />
-                ))
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {pictogramasFiltrados.map((picto) => (
+                    <TarjetaPictogramaHorarioForm
+                      key={picto.id}
+                      pictograma={picto}
+                      seleccionado={pictoSeleccionado?.id === picto.id}
+                      onClick={handleSeleccionarPicto}
+                    />
+                  ))}
+                </div>
               )}
             </div>
           </div>

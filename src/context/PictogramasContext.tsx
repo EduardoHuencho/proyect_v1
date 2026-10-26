@@ -59,9 +59,11 @@ export function PictogramaProvider({ children }: { children: React.ReactNode }) 
   const crearPictograma = useCallback(async (input: CrearPictogramaInput) => {
     if (!userId || !token) throw new Error('NO_TUTOR_SESSION');
 
-    const infantId = input.infantId || ninoActivoId;
+    const infantIds = (Array.isArray(input.infantId) && input.infantId.length > 0)
+      ? input.infantId
+      : (ninoActivoId ? [ninoActivoId] : []);
 
-    if (!infantId) {
+    if (infantIds.length === 0) {
       throw new Error('NO_INFANT_SELECTED');
     }
 
@@ -71,8 +73,10 @@ export function PictogramaProvider({ children }: { children: React.ReactNode }) 
     try {
       await createPictogram({
         ...input,
+        pictogramName: input.pictogramName.trim().toUpperCase(),
+        description: input.description?.trim().toUpperCase() || '',
         userId: input.userId || userId,
-        infantId: infantId,
+        infantId: infantIds,
       }, token);
 
       await cargarPictogramas();

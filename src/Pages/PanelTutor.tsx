@@ -11,6 +11,12 @@ function PanelTutor() {
   const { setTutorAutenticado, setTutorOrigen } = useNino();
   const { logout } = useAuth();
 
+  const handleIrMenuInfantes = () => {
+    setTutorAutenticado(false);
+    setTutorOrigen(null);
+    navigate('/accesotutor');
+  };
+
   const handleCerrarSesion = () => {
     setTutorAutenticado(false);
     setTutorOrigen(null);
@@ -47,7 +53,7 @@ function PanelTutor() {
 
           <button
             type="button"
-            onClick={() => navigate('/accesotutor')}
+            onClick={handleIrMenuInfantes}
             className="btn-panel-accion bg-blue-400 hover:bg-blue-500 text-white shadow-md"
           >
             <div className="icono-panel-accion bg-white/20">

@@ -48,7 +48,6 @@ function Navbar({
   const handleSalirTutor = () => {
     setTutorAutenticado(false);
     setTutorOrigen(null);
-    logout();
     navigate('/accesotutor');
   };
 

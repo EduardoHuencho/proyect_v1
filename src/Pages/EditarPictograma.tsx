@@ -76,8 +76,8 @@ function EditarPictograma() {
       await updatePictogram(
         pictogramId,
         {
-          pictogramName: nombre.trim(),
-          description: descripcion.trim(),
+          pictogramName: nombre.trim().toUpperCase(),
+          description: descripcion.trim().toUpperCase(),
           personal: esPersonal,
         },
         token

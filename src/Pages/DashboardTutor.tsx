@@ -51,7 +51,8 @@ const modulos: Modulo[] = [
     descripcion: 'Estadísticas y progreso',
     imagen: analisisImg,
     borderColor: '#C0440A',
-    disponible: false,
+    disponible: true,
+    ruta: '/progresoinfante',
   },
 ];
 

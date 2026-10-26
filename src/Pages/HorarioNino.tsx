@@ -308,13 +308,15 @@ function HorarioNino() {
                     {actividadPrev ? (
                       <>
                         {actividadPrev.pictogram?.pictoImageUrl ? (
-                          <img
-                            src={actividadPrev.pictogram.pictoImageUrl}
-                            alt={actividadPrev.name || actividadPrev.pictogram?.pictogramName}
-                            className="w-28 h-28 object-contain mb-3"
-                          />
+                          <div className="w-28 h-28 aspect-square bg-white border border-black rounded-none flex items-center justify-center p-2 mb-3 overflow-hidden shadow-2xs">
+                            <img
+                              src={actividadPrev.pictogram.pictoImageUrl}
+                              alt={actividadPrev.name || actividadPrev.pictogram?.pictogramName}
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
                         ) : (
-                          <div className="w-24 h-24 bg-gray-200 rounded-2xl flex items-center justify-center text-2xl mb-3">
+                          <div className="w-28 h-28 aspect-square bg-white border border-black rounded-none flex items-center justify-center text-2xl mb-3 shadow-2xs">
                             ⭐
                           </div>
                         )}
@@ -337,17 +339,19 @@ function HorarioNino() {
 
                   {actividadActual && (
                     <div
-                      className={`flex-1 max-w-xs h-80 sm:h-96 ${bloqueInfo.tarjetaFondo} border-3 border-amber-300 rounded-[30px] p-6 flex flex-col items-center justify-between shadow-xl transition-all relative shrink-0`}
+                      className={`flex-1 max-w-xs min-h-80 sm:min-h-96 ${bloqueInfo.tarjetaFondo} border-3 border-amber-300 rounded-[30px] p-6 flex flex-col items-center justify-between shadow-xl transition-all relative shrink-0`}
                     >
                       <div className="w-full flex-1 flex flex-col items-center justify-center">
                         {actividadActual.pictogram?.pictoImageUrl ? (
-                          <img
-                            src={actividadActual.pictogram.pictoImageUrl}
-                            alt={actividadActual.name || actividadActual.pictogram?.pictogramName}
-                            className="max-h-44 sm:max-h-52 w-auto object-contain drop-shadow-md"
-                          />
+                          <div className="w-40 h-40 sm:w-48 sm:h-48 aspect-square bg-white border-2 border-black rounded-none flex items-center justify-center p-3 shadow-sm overflow-hidden">
+                            <img
+                              src={actividadActual.pictogram.pictoImageUrl}
+                              alt={actividadActual.name || actividadActual.pictogram?.pictogramName}
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
                         ) : (
-                          <div className="w-28 h-28 bg-white/80 rounded-2xl flex items-center justify-center text-4xl shadow-inner">
+                          <div className="w-40 h-40 sm:w-48 sm:h-48 aspect-square bg-white border-2 border-black rounded-none flex items-center justify-center text-4xl shadow-sm">
                             ⭐
                           </div>
                         )}
@@ -361,7 +365,7 @@ function HorarioNino() {
                         onClick={() =>
                           reproducirVoz(actividadActual.name || actividadActual.pictogram?.pictogramName || '')
                         }
-                        className="w-12 h-12 rounded-2xl bg-[#FDD835] text-[#1B3A5C] border-2 border-[#C8A800] shadow-md flex items-center justify-center hover:scale-110 active:scale-95 transition-all cursor-pointer"
+                        className="w-12 h-12 rounded-2xl bg-[#FDD835] text-[#1B3A5C] border-2 border-[#C8A800] shadow-md flex items-center justify-center hover:scale-110 active:scale-95 transition-all cursor-pointer mt-4"
                         title="Escuchar nombre"
                       >
                         <FontAwesomeIcon icon={faVolumeHigh} className="text-lg" />
@@ -383,13 +387,15 @@ function HorarioNino() {
                     {actividadNext ? (
                       <>
                         {actividadNext.pictogram?.pictoImageUrl ? (
-                          <img
-                            src={actividadNext.pictogram.pictoImageUrl}
-                            alt={actividadNext.name || actividadNext.pictogram?.pictogramName}
-                            className="w-28 h-28 object-contain mb-3"
-                          />
+                          <div className="w-28 h-28 aspect-square bg-white border border-black rounded-none flex items-center justify-center p-2 mb-3 overflow-hidden shadow-2xs">
+                            <img
+                              src={actividadNext.pictogram.pictoImageUrl}
+                              alt={actividadNext.name || actividadNext.pictogram?.pictogramName}
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
                         ) : (
-                          <div className="w-24 h-24 bg-gray-200 rounded-2xl flex items-center justify-center text-2xl mb-3">
+                          <div className="w-28 h-28 aspect-square bg-white border border-black rounded-none flex items-center justify-center text-2xl mb-3 shadow-2xs">
                             ⭐
                           </div>
                         )}

@@ -222,20 +222,21 @@ function Pictogramas() {
                 frase.map((pic) => (
                   <div
                     key={pic.phraseId}
-                    className="p-1.5 sm:p-2 border border-gray-200 rounded-xl bg-gray-50 flex flex-col items-center justify-between w-20 h-28 sm:w-24 sm:h-32 shrink-0 animate-fade-in overflow-hidden"
+                    style={pic.category?.color ? { backgroundColor: pic.category.color } : undefined}
+                    className="p-1.5 sm:p-2 border border-gray-200/80 rounded-xl bg-gray-50 flex flex-col items-center justify-between w-20 h-28 sm:w-24 sm:h-32 shrink-0 animate-fade-in overflow-hidden shadow-2xs"
                   >
-                    <div className="w-full flex-1 flex items-center justify-center overflow-hidden min-h-0">
+                    <div className="w-full flex-1 flex items-center justify-center overflow-hidden min-h-0 bg-white/75 rounded-lg p-0.5 shadow-2xs border-2 border-black">
                       <img
                         src={pic.pictoImageUrl}
                         alt={pic.pictogramName}
                         className="max-h-full max-w-full object-contain"
-                          onError={(event) => {
-                            event.currentTarget.onerror = null;
-                            event.currentTarget.src = 'https://placehold.co/100x100?text=imagen';
+                        onError={(event) => {
+                          event.currentTarget.onerror = null;
+                          event.currentTarget.src = 'https://placehold.co/100x100?text=imagen';
                         }}
                       />
                     </div>
-                    <p className="text-[11px] sm:text-xs font-semibold text-gray-700 w-full text-center leading-tight line-clamp-2 wrap-break-words hyphens-auto px-0.5 mt-1 shrink-0">
+                    <p className="text-[11px] sm:text-xs font-bold text-neutral-800 w-full text-center leading-tight line-clamp-2 wrap-break-words hyphens-auto px-0.5 mt-1 shrink-0">
                       {pic.pictogramName}
                     </p>
                   </div>
@@ -317,7 +318,7 @@ function Pictogramas() {
                     <CategoriaCard
                       key={cat.id}
                       label={cat.categoryName}
-                      color={COLOR_CATEGORIA_FIJO}
+                      color={cat.color || COLOR_CATEGORIA_FIJO}
                       activo={activo}
                       onClick={() => {
                         setCategoriaSeleccionada((prev) =>
@@ -368,6 +369,7 @@ function Pictogramas() {
                     <PictogramaCard
                       pictogramName={item.pictogramName}
                       pictoImageUrl={item.pictoImageUrl}
+                      backgroundColor={item.category?.color}
                       onClick={() => pictogramaHandler(item)}
                     />
 
