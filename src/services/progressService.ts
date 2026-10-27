@@ -1,30 +1,149 @@
-import type { CategoriaProgreso } from '../types/progreso';
+import type {
+  CategoriaProgreso,
+  BackendGameProgress,
+  CreateGameProgressPayload,
+} from '../types/progreso';
 import type { Categoria } from '../types/pictograma';
 import { getCategories } from './pictogramsService';
+import { API_URL, authHeaders, parseJson } from './httpClient';
 
-const STORAGE_KEY = 'historial_progreso_infantes';
+let cachedGameId: string | null = null;
 
-type HistorialInfantes = Record<string, Record<string, CategoriaProgreso>>;
-
-function leerHistorial(): HistorialInfantes {
+/**
+ * Obtiene el ID del juego "¿Qué es?" desde el backend o usa el ID por defecto.
+ */
+export async function getGameIdQueEs(token?: string | null): Promise<string> {
+  if (cachedGameId) return cachedGameId;
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as HistorialInfantes) : {};
-  } catch {
-    return {};
+    const res = await fetch(`${API_URL}/game`, {
+      headers: authHeaders(token ?? null),
+    });
+    if (res.ok) {
+      const games = await parseJson<Array<{ id: string; name: string }>>(res);
+      if (Array.isArray(games) && games.length > 0) {
+        const found = games.find((g) => g.name.toLowerCase().includes('que')) || games[0];
+        if (found?.id) {
+          cachedGameId = found.id;
+          return found.id;
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Error al obtener ID del juego:', err);
   }
+  return '8970d580-456f-4390-9f69-f157e4d10b4c';
 }
 
-function guardarHistorial(historial: HistorialInfantes): void {
+/**
+ * Guarda el progreso de una partida en la base de datos a través del endpoint POST /game-progress.
+ */
+export async function saveGameProgress(
+  payload: CreateGameProgressPayload,
+  token?: string | null
+): Promise<BackendGameProgress | null> {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(historial));
+    const response = await fetch(`${API_URL}/game-progress`, {
+      method: 'POST',
+      headers: {
+        ...authHeaders(token ?? null),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`Error ${response.status} al guardar progreso en backend:`, errorText);
+      return null;
+    }
+
+    return await parseJson<BackendGameProgress>(response);
   } catch (err) {
-    console.error('Error al guardar progreso en localStorage:', err);
+    console.error('Error de red al guardar progreso:', err);
+    return null;
   }
 }
 
 /**
- * Registra un intento de respuesta en el juego para un infante y una categoría.
+ * Obtiene el historial de partidas de un infante desde el endpoint GET /game-progress/infant/:infantId.
+ */
+export async function getInfantGameProgressFromBackend(
+  infantId: string,
+  token?: string | null
+): Promise<BackendGameProgress[]> {
+  if (!infantId) return [];
+  try {
+    const response = await fetch(`${API_URL}/game-progress/infant/${infantId}`, {
+      headers: authHeaders(token ?? null),
+    });
+
+    if (!response.ok) {
+      console.warn(`Respuesta ${response.status} al consultar progreso de infante`);
+      return [];
+    }
+
+    const data = await parseJson<BackendGameProgress[]>(response);
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    console.error('Error al obtener progreso del infante desde el backend:', err);
+    return [];
+  }
+}
+
+/**
+ * Obtiene el listado consolidado de categorías con sus aciertos y totales para la vista de progreso.
+ * Combina las partidas reales desde la base de datos con todas las categorías registradas.
+ */
+export async function getInfantProgress(
+  infantId: string,
+  token: string | null
+): Promise<CategoriaProgreso[]> {
+  if (!infantId) return [];
+
+  // Obtener en paralelo categorías del sistema y partidas del infante
+  const [categoriasSistema, partidasBackend] = await Promise.all([
+    getCategories(token).catch(() => [] as Categoria[]),
+    getInfantGameProgressFromBackend(infantId, token),
+  ]);
+
+  // Mapa de acumulación por categoría: id -> { id, nombre, correctas, totales, color }
+  const mapaCategorias: Record<string, CategoriaProgreso> = {};
+
+  // Inicializar con todas las categorías del sistema
+  categoriasSistema.forEach((cat) => {
+    mapaCategorias[cat.id] = {
+      id: cat.id,
+      nombre: cat.categoryName,
+      correctas: 0,
+      totales: 0,
+      color: cat.color,
+    };
+  });
+
+  // Acumular los aciertos e intentos de cada partida registrada en la base de datos
+  partidasBackend.forEach((partida) => {
+    const catId = partida.categoryPlayed?.id;
+    if (!catId) return;
+
+    if (!mapaCategorias[catId]) {
+      mapaCategorias[catId] = {
+        id: catId,
+        nombre: partida.categoryPlayed?.categoryName || 'General',
+        correctas: 0,
+        totales: 0,
+        color: partida.categoryPlayed?.color,
+      };
+    }
+
+    mapaCategorias[catId].correctas += Number(partida.correctAnswers) || 0;
+    mapaCategorias[catId].totales += Number(partida.totalAnswers) || 0;
+  });
+
+  return Object.values(mapaCategorias);
+}
+
+/**
+ * Función de compatibilidad para registrar intentos individuales si es necesario.
  */
 export function registrarIntentoJuego(
   infantId: string,
@@ -33,102 +152,10 @@ export function registrarIntentoJuego(
   esCorrecta: boolean,
   color?: string
 ): void {
-  if (!infantId || !categoriaId) return;
-
-  const historial = leerHistorial();
-  if (!historial[infantId]) {
-    historial[infantId] = {};
-  }
-
-  const prev = historial[infantId][categoriaId] || {
-    id: categoriaId,
-    nombre: categoriaNombre,
-    correctas: 0,
-    totales: 0,
-    color,
-  };
-
-  historial[infantId][categoriaId] = {
-    ...prev,
-    nombre: categoriaNombre || prev.nombre,
-    totales: prev.totales + 1,
-    correctas: esCorrecta ? prev.correctas + 1 : prev.correctas,
-    color: color || prev.color,
-  };
-
-  guardarHistorial(historial);
-}
-
-/**
- * Obtiene el listado de progreso de las categorías para un infante determinado.
- * Si el infante no tiene historial previo, genera una estructura inicial con las
- * categorías del sistema.
- */
-export async function getInfantProgress(
-  infantId: string,
-  token: string | null
-): Promise<CategoriaProgreso[]> {
-  if (!infantId) return [];
-
-  const historial = leerHistorial();
-  let categoriasSistema: Categoria[] = [];
-
-  try {
-    categoriasSistema = await getCategories(token);
-  } catch {
-    // Si la API de categorías falla, continuamos con el historial local
-  }
-
-  const progresoInfante = historial[infantId] || {};
-
-  // Si el infante ya tiene registros, sincronizamos con las categorías del sistema
-  if (Object.keys(progresoInfante).length > 0) {
-    const mapa = { ...progresoInfante };
-
-    // Agregar categorías del sistema que aún no tengan intentos
-    categoriasSistema.forEach((cat) => {
-      if (!mapa[cat.id]) {
-        mapa[cat.id] = {
-          id: cat.id,
-          nombre: cat.categoryName,
-          correctas: 0,
-          totales: 0,
-          color: cat.color,
-        };
-      }
-    });
-
-    return Object.values(mapa);
-  }
-
-  // Si no tiene registros previos para este infante:
-  if (categoriasSistema.length > 0) {
-    const inicial = categoriasSistema.map((cat) => ({
-      id: cat.id,
-      nombre: cat.categoryName,
-      correctas: 0,
-      totales: 0,
-      color: cat.color,
-    }));
-    return inicial;
-  }
-
-  // Categorías base por defecto si no hay conexión
-  return [
-    { id: '1', nombre: 'Alimentación', correctas: 0, totales: 0 },
-    { id: '2', nombre: 'Animales', correctas: 0, totales: 0 },
-    { id: '3', nombre: 'Higiene', correctas: 0, totales: 0 },
-    { id: '4', nombre: 'Emociones', correctas: 0, totales: 0 },
-  ];
-}
-
-/**
- * Permite reiniciar el progreso acumulado de un infante en el frontend.
- */
-export function reiniciarProgresoInfante(infantId: string): void {
-  const historial = leerHistorial();
-  if (historial[infantId]) {
-    delete historial[infantId];
-    guardarHistorial(historial);
-  }
+  // Los registros ahora se envían directamente al backend en saveGameProgress
+  void infantId;
+  void categoriaId;
+  void categoriaNombre;
+  void esCorrecta;
+  void color;
 }

@@ -209,6 +209,9 @@ export function ProgresoInfante() {
                         key={nino.id}
                         type="button"
                         onClick={() => {
+                          if (nino.id !== infanteActual?.id) {
+                            setCategoriasRaw([]);
+                          }
                           setNinoActivo(nino);
                           setDropdownAbierto(false);
                         }}
@@ -297,7 +300,9 @@ export function ProgresoInfante() {
                     PROGRESO DE {infanteActual?.firstName ? infanteActual.firstName.toUpperCase() : 'EL INFANTE'}
                   </h2>
                   <p className="text-xs font-extrabold text-gray-500 uppercase tracking-tight">
-                    {totalCorrectas} RESPUESTAS CORRECTAS DE {totalIntentos} INTENTOS TOTALES.
+                    {totalIntentos > 0
+                      ? `${totalCorrectas} RESPUESTAS CORRECTAS DE ${totalIntentos} INTENTOS TOTALES.`
+                      : 'AÚN NO SE REGISTRAN PARTIDAS JUGADAS POR ESTE INFANTE.'}
                   </p>
 
                   {categoriasAtencion.length > 0 && (

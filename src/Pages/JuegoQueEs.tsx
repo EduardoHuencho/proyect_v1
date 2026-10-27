@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVolumeHigh } from '@fortawesome/free-solid-svg-icons';
 import { getGameWhatItIsByCategory } from '../services/gameService';
-import { registrarIntentoJuego } from '../services/progressService';
+import { registrarIntentoJuego, saveGameProgress, getGameIdQueEs } from '../services/progressService';
 import type { RondaJuego, PictogramaJuego } from '../types/game';
 
 const CLAVE_STORAGE = 'juego_que_es_estado';
@@ -18,6 +18,7 @@ interface EstadoJuegoGuardado {
   categoriaNombre: string;
   rondas: RondaJuego[];
   indiceRondaActual: number;
+  aciertosAcumulados?: number;
 }
 
 function JuegoQueEs() {
@@ -46,6 +47,7 @@ function JuegoQueEs() {
 
   const [rondas, setRondas] = useState<RondaJuego[]>(() => estadoGuardado?.rondas || []);
   const [indiceRondaActual, setIndiceRondaActual] = useState<number>(() => estadoGuardado?.indiceRondaActual || 0);
+  const [aciertos, setAciertos] = useState<number>(() => estadoGuardado?.aciertosAcumulados || 0);
   const [cargando, setCargando] = useState<boolean>(() => {
     if (estadoGuardado && estadoGuardado.rondas && estadoGuardado.rondas.length > 0) {
       return false;
@@ -126,6 +128,7 @@ function JuegoQueEs() {
                 categoriaNombre: categoriaNombreInicial || '',
                 rondas: data,
                 indiceRondaActual: 0,
+                aciertosAcumulados: 0,
               })
             );
           } catch (e) {
@@ -159,8 +162,9 @@ function JuegoQueEs() {
     rondaActual?.pictograms?.[0]?.category?.categoryName ||
     'CATEGORÍA';
 
-  const avanzarSiguienteRonda = (siguienteIndice: number) => {
+  const avanzarSiguienteRonda = (siguienteIndice: number, nuevosAciertos: number) => {
     setIndiceRondaActual(siguienteIndice);
+    setAciertos(nuevosAciertos);
     setRespuestaSeleccionada(null);
     setEstadoRespuesta(null);
     setIdOpcionIncorrecta(null);
@@ -171,6 +175,7 @@ function JuegoQueEs() {
       if (data) {
         const parsed = JSON.parse(data) as EstadoJuegoGuardado;
         parsed.indiceRondaActual = siguienteIndice;
+        parsed.aciertosAcumulados = nuevosAciertos;
         sessionStorage.setItem(CLAVE_STORAGE, JSON.stringify(parsed));
       }
     } catch (e) {
@@ -183,8 +188,9 @@ function JuegoQueEs() {
     setRespuestaSeleccionada(opcion);
 
     const esCorrecta = opcion.id === rondaActual.correctPictogramId;
+    const aciertosTotales = aciertos + (esCorrecta ? 1 : 0);
 
-    // Registrar intento en el frontend para el infante activo
+    // Registrar intento en el frontend para compatibilidad
     if (ninoActivo?.id) {
       const cat = rondaActual.pictograms?.[0]?.category;
       const catId = categoriaId || cat?.id || 'general';
@@ -194,6 +200,24 @@ function JuegoQueEs() {
 
     const esUltima = indiceRondaActual + 1 >= rondas.length;
 
+    const guardarFinPartida = () => {
+      if (ninoActivo?.id && categoriaId) {
+        const catId = categoriaId;
+        void getGameIdQueEs(token).then((gameId) => {
+          void saveGameProgress(
+            {
+              infantId: ninoActivo.id,
+              game: gameId,
+              categoryPlayedId: catId,
+              correctAnswers: aciertosTotales,
+              totalAnswers: rondas.length,
+            },
+            token
+          );
+        });
+      }
+    };
+
     if (esCorrecta) {
       setBloquearOpciones(true);
       setEstadoRespuesta('acierto');
@@ -201,6 +225,7 @@ function JuegoQueEs() {
       reproducirVoz(opcion.pictogramName);
 
       if (esUltima) {
+        guardarFinPartida();
         try {
           sessionStorage.removeItem(CLAVE_STORAGE);
         } catch (e) {
@@ -222,7 +247,7 @@ function JuegoQueEs() {
           showConfirmButton: false,
           timer: 1500,
         }).then(() => {
-          avanzarSiguienteRonda(indiceRondaActual + 1);
+          avanzarSiguienteRonda(indiceRondaActual + 1, aciertosTotales);
         });
       }
     } else {
@@ -242,6 +267,7 @@ function JuegoQueEs() {
         timer: 2000,
       }).then(() => {
         if (esUltima) {
+          guardarFinPartida();
           try {
             sessionStorage.removeItem(CLAVE_STORAGE);
           } catch (e) {
@@ -256,7 +282,7 @@ function JuegoQueEs() {
             navigate('/menujuegos');
           });
         } else {
-          avanzarSiguienteRonda(indiceRondaActual + 1);
+          avanzarSiguienteRonda(indiceRondaActual + 1, aciertosTotales);
         }
       });
     }

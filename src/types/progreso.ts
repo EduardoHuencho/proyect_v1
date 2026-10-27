@@ -6,6 +6,26 @@ export interface CategoriaProgreso {
   color?: string;
 }
 
+export interface BackendGameProgress {
+  id: string;
+  gameDate: string;
+  correctAnswers: number;
+  totalAnswers: number;
+  categoryPlayed?: {
+    id: string;
+    categoryName: string;
+    color?: string;
+  };
+}
+
+export interface CreateGameProgressPayload {
+  infantId: string;
+  game: string;
+  categoryPlayedId: string;
+  correctAnswers: number;
+  totalAnswers: number;
+}
+
 export interface ProgresoInfanteData {
   nombreInfante: string;
   avatarUrl?: string;
@@ -14,4 +34,3 @@ export interface ProgresoInfanteData {
   porcentajeExito: number;
   categorias: CategoriaProgreso[];
 }
-
