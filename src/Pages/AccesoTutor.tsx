@@ -118,7 +118,8 @@ function AccesoTutor() {
           </h1>
           <p className="text-[#4A7A96] mb-10 text-center text-base">
             {modoGestion
-              ? 'Edita o elimina los perfiles asociados a tu cuenta'
+              //? 'Edita o elimina los perfiles asociados a tu cuenta'
+              ? 'Edita los perfiles asociados a tu cuenta'
               : 'Selecciona para entrar al perfil del niño o accede como tutor'}
           </p>
 
@@ -170,6 +171,7 @@ function AccesoTutor() {
                             <FontAwesomeIcon icon={faPen} />
                           </button>
 
+                          {/*
                           <button
                             type="button"
                             onClick={(e) => void handleEliminarNino(e, nino)}
@@ -178,6 +180,7 @@ function AccesoTutor() {
                           >
                             <FontAwesomeIcon icon={faTrashCan} />
                           </button>
+                          */}
                         </div>
                       ) : (
                         <p className="text-sm text-[#78909C] font-semibold">

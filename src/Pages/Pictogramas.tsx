@@ -19,7 +19,7 @@ import {
   faGear,
 } from '@fortawesome/free-solid-svg-icons';
 
-const COLOR_CATEGORIA_FIJO = '#E0F7FA';
+const COLOR_CATEGORIA_FIJO = '#F5F9FA';
 
 const obtenerImagenAvatar = (avatarUrl: Infante['avatarUrl']) => {
   if (avatarUrl && (avatarUrl.startsWith('http') || avatarUrl.startsWith('blob:'))) {
