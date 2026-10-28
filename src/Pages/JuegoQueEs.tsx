@@ -7,7 +7,7 @@ import { useNino } from '../context/NinoContext';
 import { useAuth } from '../context/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVolumeHigh } from '@fortawesome/free-solid-svg-icons';
-import { getGameWhatItIsByCategory, getPictogramsByCategory } from '../services/gameService';
+import { getGameWhatItIsByCategory } from '../services/gameService';
 import { registrarIntentoJuego, saveGameProgress, getGameIdQueEs } from '../services/progressService';
 import type { RondaJuego, PictogramaJuego } from '../types/game';
 
@@ -22,48 +22,38 @@ function shuffleArray<T>(items: T[]): T[] {
   return result;
 }
 
-function aleatorizarRondas(
-  rondasOriginales: RondaJuego[],
-  pictogramasExtra: PictogramaJuego[] = []
-): RondaJuego[] {
-  if (!rondasOriginales || rondasOriginales.length === 0) return [];
+function aleatorizarRondas(rondasOriginales: RondaJuego[]): RondaJuego[] {
+  if (!Array.isArray(rondasOriginales) || rondasOriginales.length === 0) return [];
 
-  // Crear pool con todos los pictogramas únicos encontrados en las rondas y en la categoría
+  // Recopilar todos los pictogramas únicos encontrados en las rondas recibidas
   const mapaPictos = new Map<string, PictogramaJuego>();
 
-  pictogramasExtra.forEach((p) => {
-    if (p && p.id) mapaPictos.set(p.id, p);
-  });
-
   rondasOriginales.forEach((r) => {
-    r.pictograms.forEach((p) => {
+    (r.pictograms || []).forEach((p) => {
       if (p && p.id) mapaPictos.set(p.id, p);
     });
   });
 
   const poolPictogramas = Array.from(mapaPictos.values());
 
-  // Aleatorizar el orden de las preguntas
-  const rondasMezcladas = shuffleArray(rondasOriginales);
-
-  return rondasMezcladas.map((ronda, index) => {
+  return rondasOriginales.map((ronda, index) => {
     const pictoCorrecto =
-      ronda.pictograms.find((p) => p.id === ronda.correctPictogramId) ||
+      ronda.pictograms?.find((p) => p.id === ronda.correctPictogramId) ||
       poolPictogramas.find((p) => p.id === ronda.correctPictogramId) ||
-      ronda.pictograms[0];
+      ronda.pictograms?.[0];
 
     const distractoresDisponibles = poolPictogramas.filter((p) => p.id !== pictoCorrecto?.id);
 
     let opcionesRonda: PictogramaJuego[];
 
     if (distractoresDisponibles.length >= 3 && pictoCorrecto) {
-      // Elegir 3 distractores aleatorios del pool general para que no se repitan siempre las mismas opciones
+      // Elegir 3 distractores aleatorios del pool para variar las opciones mostradas
       const distractoresSeleccionados = shuffleArray(distractoresDisponibles).slice(0, 3);
       // Mezclar la respuesta correcta con los distractores para que su posición en la cuadrícula sea aleatoria
       opcionesRonda = shuffleArray([pictoCorrecto, ...distractoresSeleccionados]);
     } else {
-      // Si hay menos de 3 distractores en total, mezclar las opciones existentes de la ronda
-      opcionesRonda = shuffleArray(ronda.pictograms);
+      // Si el pool es pequeño, mezclar las opciones existentes de la ronda
+      opcionesRonda = shuffleArray(ronda.pictograms || []);
     }
 
     return {
@@ -178,32 +168,32 @@ function JuegoQueEs() {
 
     const cargarJuego = async () => {
       try {
-        const [dataRondas, dataPictosExtra] = await Promise.all([
-          getGameWhatItIsByCategory(categoriaId, token),
-          getPictogramsByCategory(categoriaId, token),
-        ]);
-
-        const rondasAleatorias = aleatorizarRondas(dataRondas, dataPictosExtra);
+        const dataRondas = await getGameWhatItIsByCategory(categoriaId, token);
+        const rondasAleatorias = aleatorizarRondas(dataRondas);
 
         if (montado) {
-          setRondas(rondasAleatorias);
-          setIndiceRondaActual(0);
-          setRespuestaSeleccionada(null);
-          setError(null);
+          if (rondasAleatorias.length === 0) {
+            setError('No hay preguntas disponibles para esta categoría.');
+          } else {
+            setRondas(rondasAleatorias);
+            setIndiceRondaActual(0);
+            setRespuestaSeleccionada(null);
+            setError(null);
 
-          try {
-            sessionStorage.setItem(
-              CLAVE_STORAGE,
-              JSON.stringify({
-                categoriaId,
-                categoriaNombre: categoriaNombreInicial || '',
-                rondas: rondasAleatorias,
-                indiceRondaActual: 0,
-                aciertosAcumulados: 0,
-              })
-            );
-          } catch (e) {
-            console.error('Error al guardar progreso en sessionStorage:', e);
+            try {
+              sessionStorage.setItem(
+                CLAVE_STORAGE,
+                JSON.stringify({
+                  categoriaId,
+                  categoriaNombre: categoriaNombreInicial || '',
+                  rondas: rondasAleatorias,
+                  indiceRondaActual: 0,
+                  aciertosAcumulados: 0,
+                })
+              );
+            } catch (e) {
+              console.error('Error al guardar progreso en sessionStorage:', e);
+            }
           }
         }
       } catch (err) {
