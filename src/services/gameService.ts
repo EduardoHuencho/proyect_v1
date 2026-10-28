@@ -14,8 +14,6 @@ export async function getGameWhatItIsByCategory(
     {
       headers: {
         ...authHeaders(token),
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        Pragma: 'no-cache',
       },
       cache: 'no-store',
     }
@@ -43,8 +41,6 @@ export async function getPictogramsByCategory(
       {
         headers: {
           ...authHeaders(token),
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          Pragma: 'no-cache',
         },
         cache: 'no-store',
       }
