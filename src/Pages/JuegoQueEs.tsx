@@ -7,9 +7,74 @@ import { useNino } from '../context/NinoContext';
 import { useAuth } from '../context/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVolumeHigh } from '@fortawesome/free-solid-svg-icons';
-import { getGameWhatItIsByCategory } from '../services/gameService';
+import { getGameWhatItIsByCategory, getPictogramsByCategory } from '../services/gameService';
 import { registrarIntentoJuego, saveGameProgress, getGameIdQueEs } from '../services/progressService';
 import type { RondaJuego, PictogramaJuego } from '../types/game';
+
+function shuffleArray<T>(items: T[]): T[] {
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = result[i];
+    result[i] = result[j];
+    result[j] = temp;
+  }
+  return result;
+}
+
+function aleatorizarRondas(
+  rondasOriginales: RondaJuego[],
+  pictogramasExtra: PictogramaJuego[] = []
+): RondaJuego[] {
+  if (!rondasOriginales || rondasOriginales.length === 0) return [];
+
+  // Crear pool con todos los pictogramas únicos encontrados en las rondas y en la categoría
+  const mapaPictos = new Map<string, PictogramaJuego>();
+
+  pictogramasExtra.forEach((p) => {
+    if (p && p.id) mapaPictos.set(p.id, p);
+  });
+
+  rondasOriginales.forEach((r) => {
+    r.pictograms.forEach((p) => {
+      if (p && p.id) mapaPictos.set(p.id, p);
+    });
+  });
+
+  const poolPictogramas = Array.from(mapaPictos.values());
+
+  // Aleatorizar el orden de las preguntas
+  const rondasMezcladas = shuffleArray(rondasOriginales);
+
+  return rondasMezcladas.map((ronda, index) => {
+    const pictoCorrecto =
+      ronda.pictograms.find((p) => p.id === ronda.correctPictogramId) ||
+      poolPictogramas.find((p) => p.id === ronda.correctPictogramId) ||
+      ronda.pictograms[0];
+
+    const distractoresDisponibles = poolPictogramas.filter((p) => p.id !== pictoCorrecto?.id);
+
+    let opcionesRonda: PictogramaJuego[];
+
+    if (distractoresDisponibles.length >= 3 && pictoCorrecto) {
+      // Elegir 3 distractores aleatorios del pool general para que no se repitan siempre las mismas opciones
+      const distractoresSeleccionados = shuffleArray(distractoresDisponibles).slice(0, 3);
+      // Mezclar la respuesta correcta con los distractores para que su posición en la cuadrícula sea aleatoria
+      opcionesRonda = shuffleArray([pictoCorrecto, ...distractoresSeleccionados]);
+    } else {
+      // Si hay menos de 3 distractores en total, mezclar las opciones existentes de la ronda
+      opcionesRonda = shuffleArray(ronda.pictograms);
+    }
+
+    return {
+      ...ronda,
+      round: index + 1,
+      prompt: pictoCorrecto?.pictogramName || ronda.prompt,
+      correctPictogramId: pictoCorrecto?.id || ronda.correctPictogramId,
+      pictograms: opcionesRonda,
+    };
+  });
+}
 
 const CLAVE_STORAGE = 'juego_que_es_estado';
 
@@ -113,9 +178,15 @@ function JuegoQueEs() {
 
     const cargarJuego = async () => {
       try {
-        const data = await getGameWhatItIsByCategory(categoriaId, token);
+        const [dataRondas, dataPictosExtra] = await Promise.all([
+          getGameWhatItIsByCategory(categoriaId, token),
+          getPictogramsByCategory(categoriaId, token),
+        ]);
+
+        const rondasAleatorias = aleatorizarRondas(dataRondas, dataPictosExtra);
+
         if (montado) {
-          setRondas(data);
+          setRondas(rondasAleatorias);
           setIndiceRondaActual(0);
           setRespuestaSeleccionada(null);
           setError(null);
@@ -126,7 +197,7 @@ function JuegoQueEs() {
               JSON.stringify({
                 categoriaId,
                 categoriaNombre: categoriaNombreInicial || '',
-                rondas: data,
+                rondas: rondasAleatorias,
                 indiceRondaActual: 0,
                 aciertosAcumulados: 0,
               })
@@ -320,7 +391,14 @@ function JuegoQueEs() {
               </p>
               <button
                 type="button"
-                onClick={() => navigate('/menujuegos')}
+                onClick={() => {
+                  try {
+                    sessionStorage.removeItem(CLAVE_STORAGE);
+                  } catch (e) {
+                    console.error('Error al limpiar sesión:', e);
+                  }
+                  navigate('/menujuegos');
+                }}
                 className="bg-[#FFD57E] border-2 border-[#1B3A5C] text-[#1B3A5C] font-black py-3 px-6 rounded-2xl shadow-[0_4px_0_#1B3A5C] hover:scale-105 active:scale-95 transition-all cursor-pointer"
               >
                 Elegir categoría
@@ -340,7 +418,14 @@ function JuegoQueEs() {
               </p>
               <button
                 type="button"
-                onClick={() => navigate('/menujuegos')}
+                onClick={() => {
+                  try {
+                    sessionStorage.removeItem(CLAVE_STORAGE);
+                  } catch (e) {
+                    console.error('Error al limpiar sesión:', e);
+                  }
+                  navigate('/menujuegos');
+                }}
                 className="bg-[#FFD57E] border-2 border-[#1B3A5C] text-[#1B3A5C] font-black py-3 px-6 rounded-2xl shadow-[0_4px_0_#1B3A5C] hover:scale-105 active:scale-95 transition-all cursor-pointer"
               >
                 Volver al menú de juegos
