@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { MouseEvent } from 'react';
 import { useNavigate } from 'react-router';
+import Swal from 'sweetalert2';
 import { useNino } from '../context/NinoContext';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../Components/Navbar';
@@ -17,6 +18,7 @@ import {
 import Fondo from '../Components/Fondo';
 import Avatar from '../assets/panda.png';
 import type { Infante } from '../types/perfil';
+import { deleteInfant } from '../services/infantsService';
 
 const calcularEdad = (fecha: string) => {
   if (!fecha) return '';
@@ -38,6 +40,7 @@ function AccesoTutor() {
     ninos,
     loadingNinos,
     cargarNinos,
+    ninoActivo,
     setNinoActivo,
     setTutorAutenticado,
     setTutorOrigen,
@@ -88,16 +91,47 @@ function AccesoTutor() {
     navigate(`/editarnino/${nino.id}`);
   };
 
-  const handleEliminarNino = async (e: MouseEvent<HTMLButtonElement>, nino: Infante) => {
+  const handleEliminarNino = (e: MouseEvent<HTMLButtonElement>, nino: Infante) => {
     e.stopPropagation();
-    if (window.confirm(`¿Estás seguro de eliminar el perfil de ${nino.firstName}?`)) {
-      try {
-        console.log('Eliminando niño ID:', nino.id);
-        if (userId) await cargarNinos(userId);
-      } catch (err) {
-        console.error('Error al eliminar perfil:', err);
+
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "No podrás revertir esta acción!",
+      icon: "warning",
+      showCancelButton: true,
+      cancelButtonText: "Cancelar",
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, eliminar",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await deleteInfant(nino.id, token);
+
+          if (ninoActivo?.id === nino.id) {
+            setNinoActivo(null);
+          }
+
+          if (userId) {
+            await cargarNinos(userId);
+          }
+
+          Swal.fire({
+            title: "¡Eliminado!",
+            text: "El infante ha sido eliminado.",
+            confirmButtonText: "Continuar",
+            icon: "success"
+          });
+        } catch (err) {
+          console.error('Error al eliminar infante:', err);
+          Swal.fire({
+            title: "Error",
+            text: err instanceof Error ? err.message : "Error al eliminar el perfil",
+            icon: "error"
+          });
+        }
       }
-    }
+    });
   };
 
   const obtenerImagenAvatar = (avatarUrl: Infante['avatarUrl']) => {
@@ -118,8 +152,7 @@ function AccesoTutor() {
           </h1>
           <p className="text-[#4A7A96] mb-10 text-center text-base">
             {modoGestion
-              //? 'Edita o elimina los perfiles asociados a tu cuenta'
-              ? 'Edita los perfiles asociados a tu cuenta'
+              ? 'Edita o elimina los perfiles asociados a tu cuenta'
               : 'Selecciona para entrar al perfil del niño o accede como tutor'}
           </p>
 
@@ -166,21 +199,19 @@ function AccesoTutor() {
                             type="button"
                             onClick={(e) => handleEditarNino(e, nino)}
                             aria-label={`Editar ${nino.firstName}`}
-                            className="w-9 h-9 rounded-xl bg-[#E0F7FA] text-[#1B3A5C] hover:bg-[#1B3A5C] hover:text-white transition-colors flex items-center justify-center text-sm shadow-sm active:scale-95"
+                            className="w-9 h-9 rounded-xl bg-[#E0F7FA] text-[#1B3A5C] hover:bg-[#1B3A5C] hover:text-white transition-colors flex items-center justify-center text-sm shadow-sm active:scale-95 cursor-pointer"
                           >
                             <FontAwesomeIcon icon={faPen} />
                           </button>
 
-                          {/*
                           <button
                             type="button"
-                            onClick={(e) => void handleEliminarNino(e, nino)}
+                            onClick={(e) => handleEliminarNino(e, nino)}
                             aria-label={`Eliminar ${nino.firstName}`}
-                            className="w-9 h-9 rounded-xl bg-red-100 text-red-600 hover:bg-red-600 hover:text-white transition-colors flex items-center justify-center text-sm shadow-sm active:scale-95"
+                            className="w-9 h-9 rounded-xl bg-red-100 text-red-600 hover:bg-red-600 hover:text-white transition-colors flex items-center justify-center text-sm shadow-sm active:scale-95 cursor-pointer"
                           >
                             <FontAwesomeIcon icon={faTrashCan} />
                           </button>
-                          */}
                         </div>
                       ) : (
                         <p className="text-sm text-[#78909C] font-semibold">
@@ -222,7 +253,7 @@ function AccesoTutor() {
                   type="button"
                   onClick={() => solicitarPin('panel')}
                   aria-label="Acceso de tutor"
-                  className="bg-blue-300 flex items-center gap-2 hover:bg-[#2A4F73] hover:text-white px-6 py-3 rounded-full transition-colors shadow-md text-[#1B3A5C] font-bold"
+                  className="bg-blue-300 flex items-center gap-2 hover:bg-[#2A4F73] hover:text-white px-6 py-3 rounded-full transition-colors shadow-md text-[#1B3A5C] font-bold cursor-pointer"
                 >
                   <FontAwesomeIcon icon={faGear} />
                   <span>Acceso de tutor</span>
@@ -232,7 +263,7 @@ function AccesoTutor() {
                   type="button"
                   onClick={() => solicitarPin('gestion')}
                   aria-label="Editar perfiles"
-                  className="bg-blue-300 flex items-center gap-2 hover:bg-[#2A4F73] hover:text-white px-6 py-3 rounded-full transition-colors shadow-md text-[#1B3A5C] font-bold"
+                  className="bg-blue-300 flex items-center gap-2 hover:bg-[#2A4F73] hover:text-white px-6 py-3 rounded-full transition-colors shadow-md text-[#1B3A5C] font-bold cursor-pointer"
                 >
                   <FontAwesomeIcon icon={faUserGroup} />
                   <span>Gestionar perfiles</span>
@@ -243,7 +274,7 @@ function AccesoTutor() {
                 type="button"
                 onClick={() => setModoGestion(false)}
                 aria-label="Volver a la selección normal"
-                className="bg-[#1B3A5C] text-white flex items-center gap-2 hover:bg-[#2A4F73] px-6 py-3 rounded-full transition-colors shadow-md font-bold"
+                className="bg-[#1B3A5C] text-white flex items-center gap-2 hover:bg-[#2A4F73] px-6 py-3 rounded-full transition-colors shadow-md font-bold cursor-pointer"
               >
                 <FontAwesomeIcon icon={faArrowLeft} />
                 <span>Listo</span>

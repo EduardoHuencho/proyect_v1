@@ -180,3 +180,28 @@ export async function updateInfant(
 
   return infanteActualizado;
 }
+
+/**
+ * Elimina un infante según su ID.
+ * Endpoint: DELETE /infant/:infantId
+ */
+export async function deleteInfant(
+  infantId: string,
+  token: string | null
+): Promise<void> {
+  const response = await fetch(`${API_URL}/infant/${infantId}`, {
+    method: 'DELETE',
+    headers: authHeaders(token),
+  });
+
+  if (!response.ok) {
+    let errorMsg: string | undefined;
+    try {
+      const data = await parseJson<{ message?: string | string[] }>(response);
+      errorMsg = Array.isArray(data.message) ? data.message.join(', ') : data.message;
+    } catch {
+      // Ignorar fallo de parseo
+    }
+    throw new Error(errorMsg || `DELETE_ERROR_${response.status}`);
+  }
+}
