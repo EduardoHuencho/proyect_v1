@@ -28,9 +28,30 @@ const ORDEN_BLOQUES = ['MAÑANA', 'TARDE', 'NOCHE'] as const;
 type TipoBloque = (typeof ORDEN_BLOQUES)[number];
 
 const BLOQUES = [
-  { clave: 'MAÑANA' as TipoBloque, etiqueta: 'Mañana', Icono: Sun, fondo: 'bg-[#E0F7FA]/40', tarjetaFondo: 'bg-[#FFFBEB]' },
-  { clave: 'TARDE' as TipoBloque, etiqueta: 'Tarde', Icono: Sunset, fondo: 'bg-[#FFFBEB]/40', tarjetaFondo: 'bg-[#FFF7ED]' },
-  { clave: 'NOCHE' as TipoBloque, etiqueta: 'Noche', Icono: Moon, fondo: 'bg-[#F0F4F8]/40', tarjetaFondo: 'bg-[#F1F5F9]' },
+  {
+    clave: 'MAÑANA' as TipoBloque,
+    etiqueta: 'Mañana',
+    Icono: Sun,
+    fondo: 'bg-[#E0F7FA]/40',
+    tarjetaFondo: 'bg-[#FFFBEB]',
+    tarjetaBorde: 'border-amber-400',
+  },
+  {
+    clave: 'TARDE' as TipoBloque,
+    etiqueta: 'Tarde',
+    Icono: Sunset,
+    fondo: 'bg-[#FFFBEB]/40',
+    tarjetaFondo: 'bg-[#FFF7ED]',
+    tarjetaBorde: 'border-orange-400',
+  },
+  {
+    clave: 'NOCHE' as TipoBloque,
+    etiqueta: 'Noche',
+    Icono: Moon,
+    fondo: 'bg-[#F0F4F8]/40',
+    tarjetaFondo: 'bg-[#F1F5F9]',
+    tarjetaBorde: 'border-slate-400',
+  },
 ];
 
 function getDiaHoy(): DiaSemana {
@@ -304,27 +325,39 @@ function HorarioNino() {
             ) : (
               <>
                 <div className="flex items-center justify-center gap-4 sm:gap-8 w-full max-w-3xl my-auto">
-                  <div className="hidden sm:flex flex-col items-center justify-center w-44 h-64 bg-gray-50/70 border-2 border-gray-200 rounded-3xl p-4 opacity-40 shrink-0 select-none">
-                    {actividadPrev ? (
-                      <>
-                        {actividadPrev.pictogram?.pictoImageUrl ? (
-                          <div className="w-28 h-28 aspect-square bg-white border border-black rounded-none flex items-center justify-center p-2 mb-3 overflow-hidden shadow-2xs">
-                            <img
-                              src={actividadPrev.pictogram.pictoImageUrl}
-                              alt={actividadPrev.name || actividadPrev.pictogram?.pictogramName}
-                              className="w-full h-full object-contain"
-                            />
-                          </div>
-                        ) : (
-                          <div className="w-28 h-28 aspect-square bg-white border border-black rounded-none flex items-center justify-center text-2xl mb-3 shadow-2xs">
-                            ⭐
-                          </div>
-                        )}
-                        <span className="font-extrabold text-xs text-gray-600 text-center truncate w-full">
-                          {actividadPrev.name || actividadPrev.pictogram?.pictogramName}
-                        </span>
-                      </>
-                    ) : null}
+                  {/* Tarjeta ANTES */}
+                  <div className="hidden sm:flex flex-col items-center gap-2.5 shrink-0">
+                    <span
+                      className={`px-4 py-1 rounded-full font-black text-xs sm:text-sm uppercase tracking-wider transition-opacity ${
+                        actividadPrev
+                          ? 'bg-sky-100 text-sky-800 border-2 border-sky-200 shadow-xs'
+                          : 'bg-gray-100 text-gray-400 border border-gray-200 opacity-40'
+                      }`}
+                    >
+                      Antes
+                    </span>
+                    <div className="flex flex-col items-center justify-center w-44 h-64 bg-gray-50/70 border-2 border-gray-200 rounded-3xl p-4 opacity-40 select-none">
+                      {actividadPrev ? (
+                        <>
+                          {actividadPrev.pictogram?.pictoImageUrl ? (
+                            <div className="w-28 h-28 aspect-square bg-white border border-black rounded-2xl flex items-center justify-center p-2 mb-3 overflow-hidden shadow-2xs">
+                              <img
+                                src={actividadPrev.pictogram.pictoImageUrl}
+                                alt={actividadPrev.name || actividadPrev.pictogram?.pictogramName}
+                                className="w-full h-full object-contain"
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-28 h-28 aspect-square bg-white border border-black rounded-none flex items-center justify-center text-2xl mb-3 shadow-2xs">
+                              ⭐
+                            </div>
+                          )}
+                          <span className="font-extrabold text-xs text-gray-600 text-center truncate w-full">
+                            {actividadPrev.name || actividadPrev.pictogram?.pictogramName}
+                          </span>
+                        </>
+                      ) : null}
+                    </div>
                   </div>
 
                   <button
@@ -337,39 +370,45 @@ function HorarioNino() {
                     <FontAwesomeIcon icon={faArrowLeft} className="text-lg" />
                   </button>
 
+                  {/* Tarjeta AHORA */}
                   {actividadActual && (
-                    <div
-                      className={`flex-1 max-w-xs min-h-80 sm:min-h-96 ${bloqueInfo.tarjetaFondo} border-3 border-amber-300 rounded-[30px] p-6 flex flex-col items-center justify-between shadow-xl transition-all relative shrink-0`}
-                    >
-                      <div className="w-full flex-1 flex flex-col items-center justify-center">
-                        {actividadActual.pictogram?.pictoImageUrl ? (
-                          <div className="w-40 h-40 sm:w-48 sm:h-48 aspect-square bg-white border-2 border-black rounded-none flex items-center justify-center p-3 shadow-sm overflow-hidden">
-                            <img
-                              src={actividadActual.pictogram.pictoImageUrl}
-                              alt={actividadActual.name || actividadActual.pictogram?.pictogramName}
-                              className="w-full h-full object-contain"
-                            />
-                          </div>
-                        ) : (
-                          <div className="w-40 h-40 sm:w-48 sm:h-48 aspect-square bg-white border-2 border-black rounded-none flex items-center justify-center text-4xl shadow-sm">
-                            ⭐
-                          </div>
-                        )}
-                        <span className="font-black text-xl sm:text-2xl text-[#1B3A5C] text-center mt-4 tracking-wide">
-                          {actividadActual.name || actividadActual.pictogram?.pictogramName}
-                        </span>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          reproducirVoz(actividadActual.name || actividadActual.pictogram?.pictogramName || '')
-                        }
-                        className="w-12 h-12 rounded-2xl bg-[#FDD835] text-[#1B3A5C] border-2 border-[#C8A800] shadow-md flex items-center justify-center hover:scale-110 active:scale-95 transition-all cursor-pointer mt-4"
-                        title="Escuchar nombre"
+                    <div className="flex flex-col items-center gap-2.5 flex-1 max-w-xs shrink-0">
+                      <span className="px-6 py-1.5 rounded-full font-black text-sm sm:text-base uppercase tracking-widest bg-[#1B3A5C] text-white border-2 border-[#1B3A5C] shadow-md">
+                        Ahora
+                      </span>
+                      <div
+                        className={`w-full min-h-80 sm:min-h-96 ${bloqueInfo.tarjetaFondo} border-3 ${bloqueInfo.tarjetaBorde} rounded-[30px] p-6 flex flex-col items-center justify-between shadow-xl transition-all relative shrink-0`}
                       >
-                        <FontAwesomeIcon icon={faVolumeHigh} className="text-lg" />
-                      </button>
+                        <div className="w-full flex-1 flex flex-col items-center justify-center">
+                          {actividadActual.pictogram?.pictoImageUrl ? (
+                            <div className="w-40 h-40 sm:w-48 sm:h-48 aspect-square bg-white border-2 border-black rounded-2xl flex items-center justify-center p-3 shadow-sm overflow-hidden">
+                              <img
+                                src={actividadActual.pictogram.pictoImageUrl}
+                                alt={actividadActual.name || actividadActual.pictogram?.pictogramName}
+                                className="w-full h-full object-contain"
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-40 h-40 sm:w-48 sm:h-48 aspect-square bg-white border-2 border-black rounded-none flex items-center justify-center text-4xl shadow-sm">
+                              ⭐
+                            </div>
+                          )}
+                          <span className="font-black text-xl sm:text-2xl text-[#1B3A5C] text-center mt-4 tracking-wide">
+                            {actividadActual.name || actividadActual.pictogram?.pictogramName}
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            reproducirVoz(actividadActual.name || actividadActual.pictogram?.pictogramName || '')
+                          }
+                          className="w-12 h-12 rounded-2xl bg-[#FDD835] text-[#1B3A5C] border-2 border-[#C8A800] shadow-md flex items-center justify-center hover:scale-110 active:scale-95 transition-all cursor-pointer mt-4"
+                          title="Escuchar nombre"
+                        >
+                          <FontAwesomeIcon icon={faVolumeHigh} className="text-lg" />
+                        </button>
+                      </div>
                     </div>
                   )}
 
@@ -383,27 +422,39 @@ function HorarioNino() {
                     <FontAwesomeIcon icon={faArrowRight} className="text-lg" />
                   </button>
 
-                  <div className="hidden sm:flex flex-col items-center justify-center w-44 h-64 bg-gray-50/70 border-2 border-gray-200 rounded-3xl p-4 opacity-40 shrink-0 select-none">
-                    {actividadNext ? (
-                      <>
-                        {actividadNext.pictogram?.pictoImageUrl ? (
-                          <div className="w-28 h-28 aspect-square bg-white border border-black rounded-none flex items-center justify-center p-2 mb-3 overflow-hidden shadow-2xs">
-                            <img
-                              src={actividadNext.pictogram.pictoImageUrl}
-                              alt={actividadNext.name || actividadNext.pictogram?.pictogramName}
-                              className="w-full h-full object-contain"
-                            />
-                          </div>
-                        ) : (
-                          <div className="w-28 h-28 aspect-square bg-white border border-black rounded-none flex items-center justify-center text-2xl mb-3 shadow-2xs">
-                            ⭐
-                          </div>
-                        )}
-                        <span className="font-extrabold text-xs text-gray-600 text-center truncate w-full">
-                          {actividadNext.name || actividadNext.pictogram?.pictogramName}
-                        </span>
-                      </>
-                    ) : null}
+                  {/* Tarjeta DESPUÉS */}
+                  <div className="hidden sm:flex flex-col items-center gap-2.5 shrink-0">
+                    <span
+                      className={`px-4 py-1 rounded-full font-black text-xs sm:text-sm uppercase tracking-wider transition-opacity ${
+                        actividadNext
+                          ? 'bg-amber-100 text-amber-800 border-2 border-amber-200 shadow-xs'
+                          : 'bg-gray-100 text-gray-400 border border-gray-200 opacity-40'
+                      }`}
+                    >
+                      Después
+                    </span>
+                    <div className="flex flex-col items-center justify-center w-44 h-64 bg-gray-50/70 border-2 border-gray-200 rounded-3xl p-4 opacity-40 select-none">
+                      {actividadNext ? (
+                        <>
+                          {actividadNext.pictogram?.pictoImageUrl ? (
+                            <div className="w-28 h-28 aspect-square bg-white border border-black rounded-2xl flex items-center justify-center p-2 mb-3 overflow-hidden shadow-2xs">
+                              <img
+                                src={actividadNext.pictogram.pictoImageUrl}
+                                alt={actividadNext.name || actividadNext.pictogram?.pictogramName}
+                                className="w-full h-full object-contain"
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-28 h-28 aspect-square bg-white border border-black rounded-none flex items-center justify-center text-2xl mb-3 shadow-2xs">
+                              ⭐
+                            </div>
+                          )}
+                          <span className="font-extrabold text-xs text-gray-600 text-center truncate w-full">
+                            {actividadNext.name || actividadNext.pictogram?.pictogramName}
+                          </span>
+                        </>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
 
