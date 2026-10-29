@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVolumeHigh } from '@fortawesome/free-solid-svg-icons';
 import { getGameWhatItIsByCategory, getPictogramsByCategory } from '../services/gameService';
 import { registrarIntentoJuego, saveGameProgress, getGameIdQueEs } from '../services/progressService';
+import { speakText } from '../services/speechService';
 import type { RondaJuego, PictogramaJuego } from '../types/game';
 
 function shuffleArray<T>(items: T[]): T[] {
@@ -125,47 +126,8 @@ function JuegoQueEs() {
   const [estadoRespuesta, setEstadoRespuesta] = useState<'acierto' | 'error' | null>(null);
   const [bloquearOpciones, setBloquearOpciones] = useState(false);
 
-  const vozAmigableRef = useRef<SpeechSynthesisVoice | null>(null);
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || !window.speechSynthesis) return;
-
-    const configurarVoz = () => {
-      const voces = window.speechSynthesis.getVoices();
-      const vocesEs = voces.filter((v) => v.lang.startsWith('es'));
-      vozAmigableRef.current =
-        vocesEs.find(
-          (v) =>
-            v.name.includes('Google') ||
-            v.name.includes('Sabina') ||
-            v.name.includes('Paulina')
-        ) || vocesEs[0] || null;
-    };
-
-    configurarVoz();
-    window.speechSynthesis.onvoiceschanged = configurarVoz;
-
-    return () => {
-      window.speechSynthesis.onvoiceschanged = null;
-      if (typeof window !== 'undefined' && window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-      }
-    };
-  }, []);
-
   const reproducirVoz = (texto: string) => {
-    if (!texto || typeof window === 'undefined' || !window.speechSynthesis) return;
-    const mensaje = new SpeechSynthesisUtterance(texto);
-    if (vozAmigableRef.current) {
-      mensaje.voice = vozAmigableRef.current;
-      mensaje.lang = vozAmigableRef.current.lang;
-    } else {
-      mensaje.lang = 'es-ES';
-    }
-    mensaje.rate = 0.8;
-    mensaje.pitch = 1.1;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(mensaje);
+    speakText(texto, { rate: 0.8, pitch: 1.1 });
   };
 
   useEffect(() => {

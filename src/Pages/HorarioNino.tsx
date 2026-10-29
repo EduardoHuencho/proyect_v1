@@ -13,6 +13,7 @@ import {
 import { Sun, Sunset, Moon } from 'lucide-react';
 import type { ActividadResumen, DiaSemana, RutinaAgrupadaDia } from '../types/horario';
 import { getGroupedRoutine } from '../services/routineService';
+import { speakText } from '../services/speechService';
 
 const DIAS = [
   { numero: 1 as DiaSemana, abrev: 'Lun', nombre: 'Lunes' },
@@ -78,8 +79,6 @@ function HorarioNino() {
   const [bloqueActual, setBloqueActual] = useState<TipoBloque>(getBloquePorHora);
   const [indiceActividad, setIndiceActividad] = useState(0);
 
-  const vozAmigableRef = useRef<SpeechSynthesisVoice | null>(null);
-
   useEffect(() => {
     if (!ninoActivo) {
       navigate('/accesotutor');
@@ -116,42 +115,8 @@ function HorarioNino() {
     };
   }, [ninoActivo?.id, token]);
 
-  useEffect(() => {
-    if (typeof window === 'undefined' || !window.speechSynthesis) return;
-
-    const configurarVoz = () => {
-      const voces = window.speechSynthesis.getVoices();
-      const vocesEs = voces.filter((v) => v.lang.startsWith('es'));
-      vozAmigableRef.current =
-        vocesEs.find(
-          (v) =>
-            v.name.includes('Google') ||
-            v.name.includes('Sabina') ||
-            v.name.includes('Paulina')
-        ) || vocesEs[0] || null;
-    };
-
-    configurarVoz();
-    window.speechSynthesis.onvoiceschanged = configurarVoz;
-
-    return () => {
-      window.speechSynthesis.onvoiceschanged = null;
-    };
-  }, []);
-
   const reproducirVoz = (texto: string) => {
-    if (!texto || typeof window === 'undefined' || !window.speechSynthesis) return;
-    const mensaje = new SpeechSynthesisUtterance(texto);
-    if (vozAmigableRef.current) {
-      mensaje.voice = vozAmigableRef.current;
-      mensaje.lang = vozAmigableRef.current.lang;
-    } else {
-      mensaje.lang = 'es-ES';
-    }
-    mensaje.rate = 0.7;
-    mensaje.pitch = 1.2;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(mensaje);
+    speakText(texto, { rate: 0.7, pitch: 1.2 });
   };
 
   const rutinaDelDia = rutinas.find((r) => r.dayOfWeek === diaSeleccionado);

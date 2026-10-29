@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Fondo from '../Components/Fondo';
 import Avatar from '../assets/panda.png';
 import { getCategories } from '../services/pictogramsService';
+import { speakText } from '../services/speechService';
 import type { Categoria, Pictograma, PictogramaEnFrase } from '../types/pictograma';
 import type { Infante } from '../types/perfil';
 import {
@@ -49,7 +50,6 @@ function Pictogramas() {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string | null>(null);
 
   const [frase, setFrase] = useState<PictogramaEnFrase[]>([]);
-  const vozAmigableRef = useRef<SpeechSynthesisVoice | null>(null);
   const contenedorFraseRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -82,26 +82,6 @@ function Pictogramas() {
     fetchCategorias();
   }, [token]);
 
-  useEffect(() => {
-    const configurarVoz = () => {
-      const vocesDisponibles = window.speechSynthesis.getVoices();
-      const vocesEspanol = vocesDisponibles.filter((voz) =>
-        voz.lang.startsWith('es')
-      );
-      const mejorVoz =
-        vocesEspanol.find(
-          (voz) =>
-            voz.name.includes('Google') ||
-            voz.name.includes('Sabina') ||
-            voz.name.includes('Monica') ||
-            voz.name.includes('Paulina')
-        ) || vocesEspanol[0];
-      vozAmigableRef.current = mejorVoz;
-    };
-    configurarVoz();
-    window.speechSynthesis.onvoiceschanged = configurarVoz;
-  }, []);
-
   const pictogramaHandler = (pictograma: Pictograma) => {
     setFrase((prevFrase) => [
       ...prevFrase,
@@ -124,17 +104,7 @@ function Pictogramas() {
   const reproducirFrase = () => {
     if (frase.length === 0) return;
     const textoAVoz = frase.map((pic) => pic.pictogramName).join(' ');
-    const mensaje = new SpeechSynthesisUtterance(textoAVoz);
-    if (vozAmigableRef.current) {
-      mensaje.voice = vozAmigableRef.current;
-      mensaje.lang = vozAmigableRef.current.lang;
-    } else {
-      mensaje.lang = 'es-ES';
-    }
-    mensaje.rate = 0.6;
-    mensaje.pitch = 1.3;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(mensaje);
+    speakText(textoAVoz, { rate: 0.6, pitch: 1.3 });
   };
 
   useEffect(() => {
