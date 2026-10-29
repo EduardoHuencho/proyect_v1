@@ -145,7 +145,8 @@ export const speakText = async (text: string, options?: SpeakOptions): Promise<v
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      throw new Error(`Servidor TTS respondió con status: ${response.status}`);
+      const errorData = await response.json().catch(() => null);
+      throw new Error(`Servidor TTS (${response.status}): ${errorData?.message || response.statusText}`);
     }
 
     const data: { audioBase64: string; mimeType: string } = await response.json();
