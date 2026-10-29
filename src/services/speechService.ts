@@ -110,7 +110,7 @@ export const speakText = async (text: string, options?: SpeakOptions): Promise<v
 
   stopSpeech();
 
-  const voiceId = options?.voiceId || 'Mia';
+  const voiceId = options?.voiceId || 'Lucia';
   const cacheKey = `${voiceId}:${cleanText}`;
 
   // 1. Revisar si ya está en caché local
@@ -137,7 +137,7 @@ export const speakText = async (text: string, options?: SpeakOptions): Promise<v
       body: JSON.stringify({
         text: cleanText,
         voiceId,
-        engine: 'neural',
+        engine: 'standard',
       }),
       signal: controller.signal,
     });
