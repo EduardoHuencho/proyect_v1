@@ -115,7 +115,7 @@ function Pictogramas() {
       });
 
       if (index < frase.length - 1) {
-        await new Promise((resolve) => setTimeout(resolve, 700));
+        await new Promise((resolve) => setTimeout(resolve, 3000));
       }
     }
   };
