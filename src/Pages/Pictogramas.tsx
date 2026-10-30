@@ -108,7 +108,7 @@ function Pictogramas() {
       await speakText(pic.pictogramName, { rate: 0.6, pitch: 1.3 });
 
       if (index < frase.length - 1) {
-        await new Promise((resolve) => setTimeout(resolve, 300));
+        await new Promise((resolve) => setTimeout(resolve, 150));
       }
     }
   };
