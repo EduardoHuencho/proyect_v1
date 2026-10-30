@@ -105,17 +105,10 @@ function Pictogramas() {
     if (frase.length === 0) return;
 
     for (const [index, pic] of frase.entries()) {
-      await new Promise<void>((resolve) => {
-        speakText(pic.pictogramName, {
-          rate: 0.6,
-          pitch: 1.3,
-          onEnd: resolve,
-          onError: () => resolve(),
-        });
-      });
+      await speakText(pic.pictogramName, { rate: 0.6, pitch: 1.3 });
 
       if (index < frase.length - 1) {
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+        await new Promise((resolve) => setTimeout(resolve, 300));
       }
     }
   };

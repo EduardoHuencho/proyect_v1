@@ -73,30 +73,42 @@ export const stopSpeech = (): void => {
 /**
  * Sintetizador local del navegador (Web Speech API) usado como fallback seguro y offline.
  */
-export const speakWithBrowser = (text: string, options?: SpeakOptions): void => {
+export const speakWithBrowser = (text: string, options?: SpeakOptions): Promise<void> => {
   if (typeof window === 'undefined' || !window.speechSynthesis) {
     options?.onError?.(new Error('Web Speech API no disponible en este navegador'));
-    return;
+    return Promise.resolve();
   }
 
   stopSpeech();
 
-  const utterance = new SpeechSynthesisUtterance(text);
-  if (preferredBrowserVoice) {
-    utterance.voice = preferredBrowserVoice;
-    utterance.lang = preferredBrowserVoice.lang;
-  } else {
-    utterance.lang = 'es-ES';
-  }
+  return new Promise((resolve) => {
+    const utterance = new SpeechSynthesisUtterance(text);
+    if (preferredBrowserVoice) {
+      utterance.voice = preferredBrowserVoice;
+      utterance.lang = preferredBrowserVoice.lang;
+    } else {
+      utterance.lang = 'es-ES';
+    }
 
-  utterance.rate = options?.rate ?? 0.7;
-  utterance.pitch = options?.pitch ?? 1.1;
+    utterance.rate = options?.rate ?? 0.7;
+    utterance.pitch = options?.pitch ?? 1.1;
+    utterance.onstart = () => options?.onStart?.();
+    utterance.onend = () => {
+      options?.onEnd?.();
+      resolve();
+    };
+    utterance.onerror = (event) => {
+      options?.onError?.(event);
+      resolve();
+    };
 
-  if (options?.onStart) utterance.onstart = () => options.onStart?.();
-  if (options?.onEnd) utterance.onend = () => options.onEnd?.();
-  if (options?.onError) utterance.onerror = (e) => options.onError?.(e);
-
-  window.speechSynthesis.speak(utterance);
+    try {
+      window.speechSynthesis.speak(utterance);
+    } catch (error) {
+      options?.onError?.(error);
+      resolve();
+    }
+  });
 };
 
 /**
@@ -161,7 +173,7 @@ export const speakText = async (text: string, options?: SpeakOptions): Promise<v
   } catch (error) {
     // 3. Fallback automático a la Web Speech API del navegador (Google / Nativa)
     console.warn('Amazon Polly no disponible, usando síntesis del navegador como fallback:', error);
-    speakWithBrowser(cleanText, options);
+    await speakWithBrowser(cleanText, options);
   }
 };
 
