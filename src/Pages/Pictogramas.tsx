@@ -101,10 +101,23 @@ function Pictogramas() {
     }
   };
 
-  const reproducirFrase = () => {
+  const reproducirFrase = async () => {
     if (frase.length === 0) return;
-    const textoAVoz = frase.map((pic) => pic.pictogramName).join(' ');
-    speakText(textoAVoz, { rate: 0.6, pitch: 1.3 });
+
+    for (const [index, pic] of frase.entries()) {
+      await new Promise<void>((resolve) => {
+        speakText(pic.pictogramName, {
+          rate: 0.6,
+          pitch: 1.3,
+          onEnd: resolve,
+          onError: () => resolve(),
+        });
+      });
+
+      if (index < frase.length - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 300));
+      }
+    }
   };
 
   useEffect(() => {
