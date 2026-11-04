@@ -1,6 +1,7 @@
 export interface LoginResponse {
   id: string;
   token: string;
+  accessToken?: string;
 }
 
 export interface RegisterTutorInput {

@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faTimes, faSearch } from '@fortawesome/free-solid-svg-icons';
 import type { Categoria, Pictograma } from '../types/pictograma';
 import type { ActividadRutinaVista } from '../types/horario';
-import { getCategories, getPictograms, getPictogramsByInfantId } from '../services/pictogramsService';
+import { getCategories, getPictogramsByInfantId } from '../services/pictogramsService';
 import { TarjetaPictogramaHorarioForm } from './TarjetaPictogramaHorarioForm';
 
 interface FormularioActividadProps {
@@ -100,17 +100,12 @@ export function FormularioActividad({
     async function cargarDatos() {
       setCargando(true);
       try {
-        const [publicos, privados, listaCats] = await Promise.all([
-          getPictograms(token),
+        const [listaPictos, listaCats] = await Promise.all([
           infantId ? getPictogramsByInfantId(infantId, token) : Promise.resolve([] as Pictograma[]),
           getCategories(token),
         ]);
         if (!cancelado) {
-          const mapaFinal = new Map<string, Pictograma>();
-          for (const p of publicos) mapaFinal.set(p.id, p);
-          for (const p of privados) mapaFinal.set(p.id, p);
-
-          setPictogramas(Array.from(mapaFinal.values()));
+          setPictogramas(listaPictos);
           setCategorias(listaCats);
         }
       } catch (err) {

@@ -346,6 +346,8 @@ function Pictogramas() {
                       pictogramName={item.pictogramName}
                       pictoImageUrl={item.pictoImageUrl}
                       backgroundColor={item.category?.color}
+                      personal={item.personal}
+                      mostrarBadgeVisibilidad={tutorAutenticado}
                       onClick={() => pictogramaHandler(item)}
                     />
 
