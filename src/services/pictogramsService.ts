@@ -26,19 +26,20 @@ export async function getPictograms(token: string | null): Promise<Pictograma[]>
 }
 
 export async function getPictogramsByInfantId(infantId: string, token: string | null): Promise<Pictograma[]> {
-  const response = await fetch(`${API_URL}/pictogram/${infantId}`, { headers: authHeaders(token) });
+  const response = await fetch(`${API_URL}/pictogram/all/${infantId}`, { headers: authHeaders(token) });
   if (!response.ok) throw new Error(`HTTP_ERROR_${response.status}`);
   const data = await parseJson<Pictograma[] | { data?: Pictograma[]; pictograms?: Pictograma[] }>(response);
   const lista = Array.isArray(data) ? data : data.data || data.pictograms || [];
   return lista.map(normalizarPictogramaMayusculas);
 }
 
-//export async function getPictogramsByTutorId(tutorId: string, token: string | null): Promise<Pictograma[]> {
-//  const response = await fetch(`${API_URL}/pictogram/tutor/${tutorId}`, { headers: authHeaders(token) });
-//  if (!response.ok) throw new Error(`HTTP_ERROR_${response.status}`);
-//  const data = await parseJson<Pictograma[] | { data?: Pictograma[]; pictograms?: Pictograma[] }>(response);
-//  return Array.isArray(data) ? data : data.data || data.pictograms || [];
-//}
+export async function getPictogramsByTutorId(tutorId: string, token: string | null): Promise<Pictograma[]> {
+  const response = await fetch(`${API_URL}/pictogram/tutor/${tutorId}`, { headers: authHeaders(token) });
+  if (!response.ok) throw new Error(`HTTP_ERROR_${response.status}`);
+  const data = await parseJson<Pictograma[] | { data?: Pictograma[]; pictograms?: Pictograma[] }>(response);
+  const lista = Array.isArray(data) ? data : data.data || data.pictograms || [];
+  return lista.map(normalizarPictogramaMayusculas);
+}
 
 export async function createPictogram(
   input: CrearPictogramaInput,
@@ -118,12 +119,17 @@ export async function updatePictogramImage(
 export async function getCategories(token: string | null): Promise<Categoria[]> {
   const response = await fetch(`${API_URL}/category`, { headers: authHeaders(token) });
   if (!response.ok) throw new Error('CATEGORY_ERROR');
-  const data = await parseJson<Categoria[] | { data?: Categoria[] }>(response);
-  return Array.isArray(data) ? data : data.data || [];
+
+  const data = await parseJson<Categoria[] | { data?: Categoria[]; categories?: Categoria[] }>(response);
+  const lista = Array.isArray(data) ? data : data.data || data.categories || [];
+  return lista.map((cat) => ({
+    ...cat,
+    categoryName: cat.categoryName ? cat.categoryName.toUpperCase() : '',
+  }));
 }
 
 export async function getCategoryById(categoryId: string, token: string | null): Promise<Categoria> {
   const response = await fetch(`${API_URL}/category/${categoryId}`, { headers: authHeaders(token) });
-  if (!response.ok) throw new Error('CATEGORY_ERROR');
+  if (!response.ok) throw new Error('CATEGORY_NOT_FOUND');
   return parseJson<Categoria>(response);
 }

@@ -19,12 +19,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(async (email: string, password: string): Promise<LoginResponse> => {
     const data = await authService.login(email, password);
+    const jwtToken = data.token || data.accessToken || '';
 
     localStorage.setItem('userId', data.id);
-    localStorage.setItem('token', data.token);
+    localStorage.setItem('token', jwtToken);
 
     setUserId(data.id);
-    setToken(data.token);
+    setToken(jwtToken);
 
     return data;
   }, []);

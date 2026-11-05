@@ -1,4 +1,4 @@
-import { API_URL } from './httpClient';
+import { API_URL, authHeaders } from './httpClient';
 
 interface SpeakOptions {
   voiceId?: string; // Por ejemplo: 'Mia', 'Lupe', 'Andres', 'Lucia'
@@ -145,6 +145,7 @@ export const speakText = async (text: string, options?: SpeakOptions): Promise<v
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...authHeaders(),
       },
       body: JSON.stringify({
         text: cleanText,
