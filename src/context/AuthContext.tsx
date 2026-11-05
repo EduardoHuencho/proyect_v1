@@ -13,9 +13,42 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+function esTokenValido(token: string | null): boolean {
+  if (!token) return false;
+  try {
+    const payloadBase64 = token.split('.')[1];
+    if (!payloadBase64) return false;
+
+    const payloadJson = JSON.parse(atob(payloadBase64));
+
+    if (payloadJson.exp && payloadJson.exp * 1000 < Date.now()) {
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [userId, setUserId] = useState<string | null>(() => localStorage.getItem('userId'));
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
+  const [token, setToken] = useState<string | null>(() => {
+    const tokenGuardado = localStorage.getItem('token');
+    if (tokenGuardado && esTokenValido(tokenGuardado)) {
+      return tokenGuardado;
+    }
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('ninoActivo');
+    return null;
+  });
+
+  const [userId, setUserId] = useState<string | null>(() => {
+    const tokenGuardado = localStorage.getItem('token');
+    if (tokenGuardado && esTokenValido(tokenGuardado)) {
+      return localStorage.getItem('userId');
+    }
+    return null;
+  });
 
   const login = useCallback(async (email: string, password: string): Promise<LoginResponse> => {
     const data = await authService.login(email, password);
