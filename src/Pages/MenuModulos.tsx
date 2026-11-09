@@ -4,7 +4,7 @@ import { useNino } from '../context/NinoContext';
 import Navbar from '../Components/Navbar';
 import ModuloCard from '../Components/ModuloCard';
 import calendarioImg from '../assets/calendario.png';
-import pictogramaImg from '../assets/pictograma.png';
+import pictogramaImg from '../assets/menu-pictograma.png';
 import juegosImg from '../assets/juegos.png';
 import Avatar from '../assets/panda.png';
 import Fondo from '../Components/Fondo';

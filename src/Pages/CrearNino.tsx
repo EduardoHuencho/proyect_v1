@@ -106,7 +106,7 @@ function CrearNino() {
           lastName: apellido.trim(),
           birthDate: fechaNacimiento,
           userId: userId,
-          avatarUrl: previewUrl && !previewUrl.startsWith('blob:') ? previewUrl : undefined,
+          avatarUrl: previewUrl && !previewUrl.startsWith('blob:') ? previewUrl : '/src/assets/panda.png',
           file: archivo || undefined,
         };
         await createInfant(datosCrear, token);

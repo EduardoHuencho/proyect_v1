@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import Swal from 'sweetalert2';
 import Fondo from '../Components/Fondo';
 import Navbar from '../Components/Navbar';
 import { PlantillaHorario } from '../Components/PlantillaHorario';
@@ -390,7 +391,7 @@ function HorarioTutor() {
     setModalFormularioAbierto(true);
   };
 
-  const handleEliminarActividad = async () => {
+  const handleEliminarActividad = () => {
     if (!actividadSeleccionada || !ninoActivo?.id) return;
 
     const routineId =
@@ -398,23 +399,46 @@ function HorarioTutor() {
       rutinasPorDia.current.get(actividadSeleccionada.dayOfWeek);
 
     if (!routineId) {
-      alert('No se encontró la rutina asociada a esta actividad.');
+      Swal.fire({
+        title: "Error",
+        text: "No se encontró la rutina asociada a esta actividad.",
+        icon: "error"
+      });
       return;
     }
 
-    const confirmacion = window.confirm(
-      `¿Deseas eliminar la actividad "${actividadSeleccionada.name}"?`
-    );
-    if (!confirmacion) return;
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "No podrás revertir esta acción!",
+      icon: "warning",
+      showCancelButton: true,
+      cancelButtonText: "Cancelar",
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, eliminar",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await deleteRoutineActivity(routineId, actividadSeleccionada.id, token);
+          setActividadSeleccionada(null);
+          await recargarHorario(ninoActivo.id);
 
-    try {
-      await deleteRoutineActivity(routineId, actividadSeleccionada.id, token);
-      setActividadSeleccionada(null);
-      await recargarHorario(ninoActivo.id);
-    } catch (err) {
-      console.error('Error al eliminar actividad:', err);
-      alert('Ocurrió un error al eliminar la actividad.');
-    }
+          Swal.fire({
+            title: "¡Eliminado!",
+            text: "La actividad ha sido eliminada.",
+            confirmButtonText: "Continuar",
+            icon: "success"
+          });
+        } catch (err) {
+          console.error('Error al eliminar actividad:', err);
+          Swal.fire({
+            title: "Error",
+            text: err instanceof Error ? err.message : "Ocurrió un error al eliminar la actividad.",
+            icon: "error"
+          });
+        }
+      }
+    });
   };
 
   const handleImprimir = () => {

@@ -101,24 +101,19 @@ export async function createInfant(
   input: CrearInfanteInput,
   token: string | null
 ): Promise<Infante> {
-  const bodyPayload: Record<string, unknown> = {
-    firstName: input.firstName.trim(),
-    lastName: input.lastName.trim(),
-    birthDate: input.birthDate,
-    userId: input.userId,
-  };
-
-  if (input.avatarUrl) {
-    bodyPayload.avatarUrl = input.avatarUrl;
-  }
-
   const response = await fetch(`${API_URL}/infant`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       ...authHeaders(token),
     },
-    body: JSON.stringify(bodyPayload),
+    body: JSON.stringify({
+      firstName: input.firstName.trim(),
+      lastName: input.lastName.trim(),
+      birthDate: input.birthDate,
+      userId: input.userId,
+      avatarUrl: input.avatarUrl || '/src/assets/panda.png',
+    }),
   });
 
   if (!response.ok) {

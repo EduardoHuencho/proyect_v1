@@ -6,8 +6,7 @@ import Navbar from '../Components/Navbar';
 import { ModalResumenJuego, type ItemResumenJuego } from '../Components/ModalResumenJuego';
 import { useNino } from '../context/NinoContext';
 import { useAuth } from '../context/AuthContext';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faVolumeHigh } from '@fortawesome/free-solid-svg-icons';
+import vozImg from '../assets/voz.png';
 import { getGameWhatItIsByCategory } from '../services/gameService';
 import { registrarIntentoJuego, saveGameProgress, getGameIdQueEs } from '../services/progressService';
 import { speakText } from '../services/speechService';
@@ -466,23 +465,13 @@ function JuegoQueEs() {
                     type="button"
                     onClick={reproducirAudio}
                     aria-label="Escuchar audio"
-                    className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-[#FFD57E] border-[3px] border-[#1B3A5C] flex items-center justify-center shadow-[0_5px_0_#1B3A5C] hover:scale-105 active:scale-95 transition-all cursor-pointer group"
+                    className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-[#FFD57E] border-[3px] border-[#1B3A5C] flex items-center justify-center shadow-[0_5px_0_#1B3A5C] hover:scale-105 active:scale-95 transition-all cursor-pointer group p-3"
                   >
-                    <div className="relative flex items-center justify-center">
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[#FFC107] rounded-full border-2 border-[#1B3A5C] flex flex-col items-center justify-center relative overflow-hidden shadow-inner">
-                        <div className="flex gap-2 mb-1">
-                          <div className="w-2 h-2 bg-[#1B3A5C] rounded-full" />
-                          <div className="w-2 h-2 bg-[#1B3A5C] rounded-full" />
-                        </div>
-                        <div className="w-8 h-4 bg-[#D32F2F] rounded-b-full border border-[#1B3A5C] flex items-center justify-center">
-                          <div className="w-4 h-2 bg-rose-300 rounded-t-full" />
-                        </div>
-                      </div>
-                      <FontAwesomeIcon
-                        icon={faVolumeHigh}
-                        className="absolute -bottom-1 -right-2 text-[#1B3A5C] text-lg bg-white p-1.5 rounded-full border border-[#1B3A5C]"
-                      />
-                    </div>
+                    <img
+                      src={vozImg}
+                      alt="Reproducir voz"
+                      className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-sm select-none pointer-events-none"
+                    />
                   </button>
 
                   <div className="w-full bg-[#FFD57E] border-[3px] border-[#1B3A5C] rounded-[22px] py-3.5 px-6 shadow-[0_4px_0_#1B3A5C] text-center min-h-14.5 flex items-center justify-center">

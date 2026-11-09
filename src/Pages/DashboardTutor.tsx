@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router';
 import Navbar from '../Components/Navbar';
 import ModuloCard from '../Components/ModuloCard';
 import calendarioImg from '../assets/calendario.png';
-import pictogramaImg from '../assets/pictograma.png';
+import pictogramaImg from '../assets/menu-pictograma.png';
 import analisisImg from '../assets/analisis.png';
 import Fondo from '../Components/Fondo';
 
