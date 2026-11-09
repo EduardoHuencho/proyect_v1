@@ -36,7 +36,7 @@ function CrearPictograma() {
 
   const [infantesSeleccionados, setInfantesSeleccionados] = useState<string[]>([]);
   const [dropdownInfantesAbierto, setDropdownInfantesAbierto] = useState(false);
-  const [esPersonal, setEsPersonal] = useState(false);
+  const [esPersonal, setEsPersonal] = useState(true);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [loading, setLoading] = useState(false);
@@ -346,8 +346,8 @@ function CrearPictograma() {
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={esPersonal}
-                      onChange={(e) => setEsPersonal(e.target.checked)}
+                      checked={!esPersonal}
+                      onChange={(e) => setEsPersonal(!e.target.checked)}
                       className="sr-only peer"
                     />
                     <div className="w-11 h-6 bg-[#7A9AB8]/50 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1B3A5C]"></div>

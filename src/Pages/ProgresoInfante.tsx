@@ -147,7 +147,6 @@ export function ProgresoInfante() {
       <div className="min-h-[calc(100vh-80px)] bg-[#BDE3E0]/30 p-4 sm:p-6 lg:p-8 font-sans text-[#1B3A5C]">
         <div className="max-w-6xl mx-auto flex flex-col gap-6">
 
-          {/* 1. HEADER SECTION */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-white rounded-2xl shadow-xs border border-teal-100 flex items-center justify-center text-[#1B3A5C]">
@@ -166,7 +165,6 @@ export function ProgresoInfante() {
               </div>
             </div>
 
-            {/* Child Selector Dropdown */}
             <div className="relative w-full sm:w-auto">
               <span className="text-[10px] font-black text-gray-500 tracking-wider block mb-1 uppercase">
                 SELECCIÓN DEL NIÑO
@@ -243,7 +241,6 @@ export function ProgresoInfante() {
             </div>
           </div>
 
-          {/* ESTADOS DE CARGA, VACÍOS O ERROR */}
           {loadingNinos || cargandoProgreso ? (
             <div className="bg-white/80 backdrop-blur-xs rounded-3xl p-12 text-center flex flex-col items-center justify-center gap-3 shadow-xs border border-teal-100/60">
               <div className="w-10 h-10 border-4 border-[#2A7261] border-t-transparent rounded-full animate-spin" />
@@ -292,17 +289,27 @@ export function ProgresoInfante() {
             </div>
           ) : (
             <>
-              {/* 2. TOP BANNER / SUMMARY CARD */}
               <div className="bg-[#E4F2EB] rounded-3xl p-6 sm:p-7 shadow-xs border border-teal-100/60 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                {/* Left info */}
                 <div className="md:col-span-5 flex flex-col gap-2">
                   <h2 className="text-lg font-black text-[#1B3A5C] tracking-wide uppercase">
                     PROGRESO DE {infanteActual?.firstName ? infanteActual.firstName.toUpperCase() : 'EL INFANTE'}
                   </h2>
+
+                  {/*
                   <p className="text-xs font-extrabold text-gray-500 uppercase tracking-tight">
                     {totalIntentos > 0
                       ? `${totalCorrectas} RESPUESTAS CORRECTAS DE ${totalIntentos} INTENTOS TOTALES.`
                       : 'AÚN NO SE REGISTRAN PARTIDAS JUGADAS POR ESTE INFANTE.'}
+                  </p>
+                  */}
+                  <p className="text-xs font-extrabold text-gray-500 uppercase tracking-tight">
+                    Si es mayor o igual a 80% de aciertos "logrado".
+                  </p>
+                  <p className="text-xs font-extrabold text-gray-500 uppercase tracking-tight">
+                    Si esta entre 60% y 79% de aciertos "falta dominar la categoría".
+                  </p>
+                  <p className="text-xs font-extrabold text-gray-500 uppercase tracking-tight">
+                    Si es menor a 60% de aciertos "falta refuerzo".
                   </p>
 
                   {categoriasAtencion.length > 0 && (
@@ -318,7 +325,6 @@ export function ProgresoInfante() {
                   )}
                 </div>
 
-                {/* Percentage Indicator */}
                 <div className="md:col-span-3 flex flex-col justify-center border-y md:border-y-0 md:border-x border-teal-200/60 py-4 md:py-0 md:px-6">
                   <div className="flex items-baseline justify-between">
                     <span className="text-4xl sm:text-5xl font-black text-[#1B3A5C]">
@@ -329,7 +335,6 @@ export function ProgresoInfante() {
                     </span>
                   </div>
 
-                  {/* Custom Progress Bar */}
                   <div className="w-full bg-gray-200/80 h-3 rounded-full overflow-hidden mt-3">
                     <div
                       className="bg-[#2A7261] h-full rounded-full transition-all duration-500"
@@ -341,7 +346,6 @@ export function ProgresoInfante() {
                   </span>
                 </div>
 
-                {/* Stat Cards Right */}
                 <div className="md:col-span-4 grid grid-cols-2 gap-3">
                   <div className="bg-white rounded-2xl p-4 shadow-2xs border border-gray-100 flex flex-col items-start justify-center">
                     <span className="text-3xl font-black text-[#2A7261]">{totalCorrectas}</span>
@@ -358,10 +362,8 @@ export function ProgresoInfante() {
                 </div>
               </div>
 
-              {/* 3. MAIN CONTENT GRID (2 COLUMNS) */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-                {/* LEFT COLUMN: Main Table Card */}
                 <div className="lg:col-span-8 bg-white rounded-3xl p-6 sm:p-7 shadow-xs border border-gray-100 flex flex-col gap-6">
                   <div>
                     <h3 className="text-lg font-black text-[#1B3A5C]">RESULTADOS POR CATEGORÍA</h3>
@@ -370,7 +372,6 @@ export function ProgresoInfante() {
                     </p>
                   </div>
 
-                  {/* Table Header */}
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse min-w-125">
                       <thead>
@@ -391,7 +392,6 @@ export function ProgresoInfante() {
                         ) : (
                           categorias.map((cat) => (
                             <tr key={cat.id} className="hover:bg-gray-50/50 transition-colors">
-                              {/* Category in rounded frame with database color */}
                               <td className="py-4">
                                 <div
                                   className="inline-flex items-center px-4 py-2 rounded-2xl text-xs sm:text-sm font-black text-[#1B3A5C] border border-black/10 shadow-xs"
@@ -401,12 +401,10 @@ export function ProgresoInfante() {
                                 </div>
                               </td>
 
-                              {/* Score Ratio */}
                               <td className="py-4 text-center font-black text-xs sm:text-sm text-[#1B3A5C]">
                                 {cat.correctas} / {cat.intentos}
                               </td>
 
-                              {/* Progress Bar & Percentage */}
                               <td className="py-4 pl-4 min-w-35">
                                 <div className="flex items-center gap-3">
                                   <div className="flex-1 bg-gray-100 h-2.5 rounded-full overflow-hidden">
@@ -421,7 +419,6 @@ export function ProgresoInfante() {
                                 </div>
                               </td>
 
-                              {/* Status Badge */}
                               <td className="py-4 text-right">
                                 <span
                                   className={`inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${getBadgeStyle(
@@ -439,7 +436,6 @@ export function ProgresoInfante() {
                   </div>
                 </div>
 
-                {/* RIGHT COLUMN: What to Reinforce Sidebar Card */}
                 <div className="lg:col-span-4 bg-[#FFFDE8] rounded-3xl p-6 sm:p-7 shadow-xs border border-amber-200/70 flex flex-col gap-6">
                   <div className="flex flex-col gap-4">
                     <div>
@@ -449,7 +445,6 @@ export function ProgresoInfante() {
                       </p>
                     </div>
 
-                    {/* Items requiring attention */}
                     {categoriasAtencion.length === 0 ? (
                       <div className="p-4 rounded-2xl bg-white border border-amber-100 text-center text-xs font-bold text-gray-500">
                         ¡Excelente! No hay categorías que requieran refuerzo urgente por ahora.

@@ -26,7 +26,7 @@ interface FormularioActividadProps {
 const DIAS = [
   { clave: 'LUNES', abrev: 'L' },
   { clave: 'MARTES', abrev: 'M' },
-  { clave: 'MIÉRCOLES', abrev: 'M' },
+  { clave: 'MIÉRCOLES', abrev: 'X' },
   { clave: 'JUEVES', abrev: 'J' },
   { clave: 'VIERNES', abrev: 'V' },
   { clave: 'SÁBADO', abrev: 'S' },

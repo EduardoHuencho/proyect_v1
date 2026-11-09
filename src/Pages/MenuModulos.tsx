@@ -38,7 +38,7 @@ const modulos: Modulo[] = [
   },
   {
     id: 'juegos',
-    titulo: 'JUEGOS',
+    titulo: 'JUEGO',
     imagen: juegosImg,
     borderColor: '#E91E8C',
     disponible: true,
@@ -88,7 +88,7 @@ function MenuModulos() {
         </div>
 
         <h1 className="titulo-pagina mb-8 text-center">
-          ¡Hola, {ninoActivo.firstName}!
+          ¡HOLA, {ninoActivo.firstName.toUpperCase()}!
         </h1>
 
         <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6">

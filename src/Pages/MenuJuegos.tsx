@@ -1,26 +1,41 @@
-import { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router';
 import Navbar from '../Components/Navbar';
 import TarjetaPinTutor from '../Components/TarjetaPinTutor';
 import { useNino } from '../context/NinoContext';
 import { useAuth } from '../context/AuthContext';
 import Fondo from '../Components/Fondo';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowDown, faStar, faExclamation, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faExclamation, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { getCategories } from '../services/pictogramsService';
 import type { Categoria } from '../types/pictograma';
-import lupa from '../assets/lupa.png';
+import TarjetaInfoJuego from '../Components/TarjetaInfoJuego';
+import seleccionar from '../assets/seleccionar.png';
+import correcto from '../assets/correcto.png';
+import menupictograma from '../assets/menu-pictograma.png';
+//import juegosImg from '../assets/juegos.png';
 
 function MenuJuegos() {
   const { tutorAutenticado } = useNino();
   const { token } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const flujoIniciadoRef = useRef(false);
   const [modalAdvertenciaAbierto, setModalAdvertenciaAbierto] = useState(false);
   const [modalPinAbierto, setModalPinAbierto] = useState(false);
   const [modalCategoriaAbierto, setModalCategoriaAbierto] = useState(false);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [cargandoCategorias, setCargandoCategorias] = useState(false);
   const [errorCategorias, setErrorCategorias] = useState<string | null>(null);
+
+  useEffect(() => {
+    const state = location.state as { volverAJugar?: boolean } | null;
+    if (state?.volverAJugar && !flujoIniciadoRef.current) {
+      flujoIniciadoRef.current = true;
+      navigate(location.pathname, { replace: true, state: {} });
+      setModalAdvertenciaAbierto(true);
+    }
+  }, [location, navigate]);
 
   const cargarCategorias = useCallback(async () => {
     try {
@@ -74,39 +89,34 @@ function MenuJuegos() {
       />
 
       <div className="w-full max-w-5xl mx-auto px-4 py-6 sm:py-10 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] select-none">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1B3A5C] mb-4 sm:mb-8 text-center">
-          ¡A JUGAR!
-        </h1>
+        <div className="w-full max-w-4xl bg-[#FFFBEB] border-[3px] border-[#1B3A5C] rounded-[35px] p-6 sm:p-10 shadow-[0_8px_0_#1B3A5C] flex flex-col items-center">
+          <h1 className="text-2xl sm:text-4xl font-black text-[#1B3A5C] mb-6 sm:mb-8 text-center uppercase tracking-wide">
+            ¿QUÉ ES?
+          </h1>
 
-        <div className="w-full max-w-sm flex justify-center items-stretch">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6 w-full">
+            <TarjetaInfoJuego
+              imagen={seleccionar}
+              titulo="SELECCIONAR"
+            />
+            <TarjetaInfoJuego
+              imagen={menupictograma}
+              titulo="PICTOGRAMA"
+            />
+            <TarjetaInfoJuego
+              imagen={correcto}
+              titulo="CORRECTO"
+            />
+          </div>
+        </div>
+
+        <div className="w-full max-w-xs sm:max-w-sm flex justify-center mt-6 sm:mt-8">
           <button
             type="button"
             onClick={() => setModalAdvertenciaAbierto(true)}
-            className="tarjeta-juego w-full"
-            style={{ borderColor: '#1E88E5' }}
+            className="btn-logear-teayudo cursor-pointer"
           >
-            <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mb-3 sm:mb-6 bg-blue-50 border-3 sm:border-4 border-[#FDD835] shadow-sm sm:shadow-md overflow-hidden shrink-0">
-              <img
-                src={lupa}
-                alt="Juego ¿Qué es?"
-                className="w-full h-full object-cover p-1.5 sm:p-2"
-              />
-            </div>
-
-            <div className="flex flex-col items-center gap-1 sm:gap-1.5 w-full flex-1 justify-center">
-              <div className="paso-juego">VER IMAGEN</div>
-              <FontAwesomeIcon icon={faArrowDown} className="text-gray-400 text-[10px] sm:text-xs my-0 sm:my-0.5" />
-              <div className="paso-juego">ELEGIR RESPUESTA</div>
-              <FontAwesomeIcon icon={faArrowDown} className="text-gray-400 text-[10px] sm:text-xs my-0 sm:my-0.5" />
-              <div className="paso-juego flex items-center justify-center gap-1.5">
-                <span>RESPONDER</span>
-                <FontAwesomeIcon icon={faStar} className="text-amber-500" />
-              </div>
-            </div>
-
-            <h2 className="text-lg sm:text-2xl font-extrabold text-[#1B3A5C] mt-3 sm:mt-6 tracking-wide w-full text-center uppercase">
-              ¿QUÉ ES?
-            </h2>
+            JUGAR
           </button>
         </div>
       </div>
@@ -177,10 +187,10 @@ function MenuJuegos() {
 
             <div>
               <h2 className="text-2xl font-black text-[#1B3A5C]">
-                Selecciona una Categoría
+                SELECCIONA UNA CATEGORÍA
               </h2>
               <p className="text-xs text-gray-500 font-bold mt-1">
-                Elige la categoría con la que deseas jugar
+                ELIGE LA CATEGORÍA CON LA QUE DESEAS JUGAR
               </p>
             </div>
 

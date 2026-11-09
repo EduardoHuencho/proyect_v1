@@ -6,7 +6,6 @@ import Navbar from '../Components/Navbar';
 import TarjetaImagenAvatar from '../Components/TarjetaImagenAvatar';
 import { useNino } from '../context/NinoContext';
 import { useAuth } from '../context/AuthContext';
-import AvatarDefault from '../assets/panda.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCamera } from '@fortawesome/free-solid-svg-icons';
 import { createInfant, updateInfant, getInfants } from '../services/infantsService';
@@ -85,6 +84,11 @@ function CrearNino() {
       return;
     }
 
+    if (!archivo && !previewUrl) {
+      setError('Debes seleccionar una imagen desde tus archivos o tomar una foto con la cámara.');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -102,7 +106,7 @@ function CrearNino() {
           lastName: apellido.trim(),
           birthDate: fechaNacimiento,
           userId: userId,
-          avatarUrl: previewUrl && !previewUrl.startsWith('blob:') ? previewUrl : '/src/assets/panda.png',
+          avatarUrl: previewUrl && !previewUrl.startsWith('blob:') ? previewUrl : undefined,
           file: archivo || undefined,
         };
         await createInfant(datosCrear, token);
@@ -155,22 +159,20 @@ function CrearNino() {
             )}
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <div className="flex justify-center mb-2">
+              <div className="flex flex-col items-center justify-center mb-2">
                 <button
                   type="button"
                   disabled={loading}
                   onClick={() => setMostrarTarjetaAvatar(true)}
                   aria-label="Seleccionar avatar"
-                  className="w-20 h-20 rounded-full bg-[#E0F7FA] border-4 border-dashed border-[#1B3A5C] flex items-center justify-center text-2xl text-[#1B3A5C] hover:bg-[#B2EBF2] transition-colors shadow-md group disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden cursor-pointer"
+                  className={`w-20 h-20 rounded-full bg-[#E0F7FA] border-4 ${
+                    previewUrl ? 'border-solid border-[#1B3A5C]' : 'border-dashed border-[#1B3A5C]'
+                  } flex items-center justify-center text-2xl text-[#1B3A5C] hover:bg-[#B2EBF2] transition-colors shadow-md group disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden cursor-pointer`}
                 >
                   {previewUrl ? (
                     <img
                       src={previewUrl}
                       alt="Previsualización de avatar"
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src = AvatarDefault;
-                      }}
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -180,6 +182,9 @@ function CrearNino() {
                     />
                   )}
                 </button>
+                <span className="text-xs font-bold text-[#005088] mt-1.5">
+                  {previewUrl ? 'Cambiar foto de perfil' : 'Subir foto o usar cámara *'}
+                </span>
               </div>
 
               <div className="grid grid-cols-2 gap-3">

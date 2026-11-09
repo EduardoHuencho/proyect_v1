@@ -63,10 +63,10 @@ export function PlantillaJornada({
               key={act.id}
               className="border-2 border-slate-300 rounded-2xl p-3.5 flex flex-col items-center text-center bg-white shadow-xs relative justify-between"
             >
-              {/* Indicador de paso */}
+              {/* Indicador de paso enmarcado en un círculo */}
               <div className="w-full flex justify-start mb-2">
-                <span className="bg-slate-800 text-white font-extrabold text-[11px] px-2.5 py-0.5 rounded-full tracking-wide">
-                  Paso {idx + 1}
+                <span className="w-6.5 h-6.5 sm:w-7 sm:h-7 rounded-full bg-slate-800 text-white border border-slate-800 font-black text-xs flex items-center justify-center shrink-0">
+                  {idx + 1}
                 </span>
               </div>
 

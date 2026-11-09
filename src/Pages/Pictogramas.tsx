@@ -192,7 +192,7 @@ function Pictogramas() {
             >
               {frase.length === 0 ? (
                 <p className="text-gray-400 font-medium text-xs sm:text-base pl-2 whitespace-nowrap">
-                  Toca los pictogramas para crear tu frase...
+                  TOCA LOS PICTOGRAMAS PARA CREAR TU FRASE...
                 </p>
               ) : (
                 frase.map((pic) => (

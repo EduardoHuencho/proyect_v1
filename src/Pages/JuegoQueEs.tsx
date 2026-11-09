@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router';
 import Swal from 'sweetalert2';
 import Fondo from '../Components/Fondo';
 import Navbar from '../Components/Navbar';
+import { ModalResumenJuego, type ItemResumenJuego } from '../Components/ModalResumenJuego';
 import { useNino } from '../context/NinoContext';
 import { useAuth } from '../context/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -75,6 +76,7 @@ interface EstadoJuegoGuardado {
   rondas: RondaJuego[];
   indiceRondaActual: number;
   aciertosAcumulados?: number;
+  historialResultados?: ItemResumenJuego[];
 }
 
 function JuegoQueEs() {
@@ -104,6 +106,9 @@ function JuegoQueEs() {
   const [rondas, setRondas] = useState<RondaJuego[]>(() => estadoGuardado?.rondas || []);
   const [indiceRondaActual, setIndiceRondaActual] = useState<number>(() => estadoGuardado?.indiceRondaActual || 0);
   const [aciertos, setAciertos] = useState<number>(() => estadoGuardado?.aciertosAcumulados || 0);
+  const [historialResultados, setHistorialResultados] = useState<ItemResumenJuego[]>(
+    () => estadoGuardado?.historialResultados || []
+  );
   const [cargando, setCargando] = useState<boolean>(() => {
     if (estadoGuardado && estadoGuardado.rondas && estadoGuardado.rondas.length > 0) {
       return false;
@@ -115,6 +120,7 @@ function JuegoQueEs() {
   const [idOpcionIncorrecta, setIdOpcionIncorrecta] = useState<string | null>(null);
   const [estadoRespuesta, setEstadoRespuesta] = useState<'acierto' | 'error' | null>(null);
   const [bloquearOpciones, setBloquearOpciones] = useState(false);
+  const [mostrarModalResumen, setMostrarModalResumen] = useState(false);
 
   const reproducirVoz = (texto: string) => {
     speakText(texto, { rate: 0.8, pitch: 1.1 });
@@ -151,6 +157,7 @@ function JuegoQueEs() {
                   rondas: rondasAleatorias,
                   indiceRondaActual: 0,
                   aciertosAcumulados: 0,
+                  historialResultados: [],
                 })
               );
             } catch (e) {
@@ -185,9 +192,14 @@ function JuegoQueEs() {
     rondaActual?.pictograms?.[0]?.category?.categoryName ||
     'CATEGORÍA';
 
-  const avanzarSiguienteRonda = (siguienteIndice: number, nuevosAciertos: number) => {
+  const avanzarSiguienteRonda = (
+    siguienteIndice: number,
+    nuevosAciertos: number,
+    resultadosActualizados: ItemResumenJuego[]
+  ) => {
     setIndiceRondaActual(siguienteIndice);
     setAciertos(nuevosAciertos);
+    setHistorialResultados(resultadosActualizados);
     setRespuestaSeleccionada(null);
     setEstadoRespuesta(null);
     setIdOpcionIncorrecta(null);
@@ -199,6 +211,7 @@ function JuegoQueEs() {
         const parsed = JSON.parse(data) as EstadoJuegoGuardado;
         parsed.indiceRondaActual = siguienteIndice;
         parsed.aciertosAcumulados = nuevosAciertos;
+        parsed.historialResultados = resultadosActualizados;
         sessionStorage.setItem(CLAVE_STORAGE, JSON.stringify(parsed));
       }
     } catch (e) {
@@ -212,6 +225,19 @@ function JuegoQueEs() {
 
     const esCorrecta = opcion.id === rondaActual.correctPictogramId;
     const aciertosTotales = aciertos + (esCorrecta ? 1 : 0);
+
+    const pictoPreguntado =
+      rondaActual.pictograms.find((p) => p.id === rondaActual.correctPictogramId) ||
+      opcion;
+
+    const nuevoItemResumen: ItemResumenJuego = {
+      id: pictoPreguntado.id || String(indiceRondaActual),
+      nombre: pictoPreguntado.pictogramName || rondaActual.prompt || 'Pictograma',
+      imagenUrl: pictoPreguntado.pictoImageUrl || '',
+      esCorrecta,
+    };
+    const nuevosResultados = [...historialResultados, nuevoItemResumen];
+    setHistorialResultados(nuevosResultados);
 
     // Registrar intento en el frontend para compatibilidad
     if (ninoActivo?.id) {
@@ -255,13 +281,10 @@ function JuegoQueEs() {
           console.error('Error al limpiar progreso en sessionStorage:', e);
         }
 
-        Swal.fire({
-          title: 'Buen Trabajo',
-          text: 'Juego Finalizado',
-          icon: 'success',
-        }).then(() => {
-          navigate('/menujuegos');
-        });
+        setAciertos(aciertosTotales);
+        setTimeout(() => {
+          setMostrarModalResumen(true);
+        }, 1000);
       } else {
         Swal.fire({
           position: 'top-start',
@@ -270,7 +293,7 @@ function JuegoQueEs() {
           showConfirmButton: false,
           timer: 1500,
         }).then(() => {
-          avanzarSiguienteRonda(indiceRondaActual + 1, aciertosTotales);
+          avanzarSiguienteRonda(indiceRondaActual + 1, aciertosTotales, nuevosResultados);
         });
       }
     } else {
@@ -297,18 +320,30 @@ function JuegoQueEs() {
             console.error('Error al limpiar progreso en sessionStorage:', e);
           }
 
-          Swal.fire({
-            title: 'Buen Trabajo',
-            text: 'Juego Finalizado',
-            icon: 'success',
-          }).then(() => {
-            navigate('/menujuegos');
-          });
+          setMostrarModalResumen(true);
         } else {
-          avanzarSiguienteRonda(indiceRondaActual + 1, aciertosTotales);
+          avanzarSiguienteRonda(indiceRondaActual + 1, aciertosTotales, nuevosResultados);
         }
       });
     }
+  };
+
+  const handleVolverMenu = () => {
+    try {
+      sessionStorage.removeItem(CLAVE_STORAGE);
+    } catch (e) {
+      console.error('Error al limpiar progreso en sessionStorage:', e);
+    }
+    navigate('/menujuegos');
+  };
+
+  const handleVolverAJugar = () => {
+    try {
+      sessionStorage.removeItem(CLAVE_STORAGE);
+    } catch (e) {
+      console.error('Error al limpiar progreso en sessionStorage:', e);
+    }
+    navigate('/menujuegos', { state: { volverAJugar: true } });
   };
 
   const reproducirAudio = () => {
@@ -389,7 +424,7 @@ function JuegoQueEs() {
             
             <div className="w-full max-w-md mb-6">
               <span className="text-xs sm:text-sm font-extrabold text-[#1B3A5C] tracking-wide">
-                Pregunta {preguntaActual} de {totalPreguntas}
+                PREGUNTA {preguntaActual} DE {totalPreguntas}
               </span>
               <div
                 className="grid gap-2 mt-2"
@@ -525,6 +560,14 @@ function JuegoQueEs() {
 
           </div>
         ) : null}
+
+        {/* Modal con el resumen del juego */}
+        <ModalResumenJuego
+          isOpen={mostrarModalResumen}
+          resultados={historialResultados}
+          onReiniciar={handleVolverAJugar}
+          onVolverMenu={handleVolverMenu}
+        />
       </div>
     </Fondo>
   );

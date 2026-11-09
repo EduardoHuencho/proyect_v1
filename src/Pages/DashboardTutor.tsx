@@ -3,7 +3,6 @@ import Navbar from '../Components/Navbar';
 import ModuloCard from '../Components/ModuloCard';
 import calendarioImg from '../assets/calendario.png';
 import pictogramaImg from '../assets/pictograma.png';
-import juegosImg from '../assets/juegos.png';
 import analisisImg from '../assets/analisis.png';
 import Fondo from '../Components/Fondo';
 
@@ -37,15 +36,6 @@ const modulos: Modulo[] = [
     ruta: '/pictogramas',
   },
   {
-    id: 'juegos',
-    titulo: 'Juegos',
-    descripcion: '¿Qué Es? y Cuentitos',
-    imagen: juegosImg,
-    borderColor: '#6B3FA0',
-    disponible: true,
-    ruta: '/menuJuegos',
-  },
-  {
     id: 'analisis',
     titulo: 'Análisis de Progreso',
     descripcion: 'Estadísticas y progreso',
@@ -73,8 +63,8 @@ function DashboardTutor() {
         <p className="text-[#4A7A96] mt-1">¿Qué quieres gestionar hoy?</p>
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 pb-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div className="max-w-xl mx-auto px-6 pb-8">
+        <div className="flex flex-col gap-5">
           {modulos.map((modulo) => (
             <ModuloCard
               key={modulo.id}

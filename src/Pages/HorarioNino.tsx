@@ -16,13 +16,13 @@ import { getGroupedRoutine } from '../services/routineService';
 import { speakText } from '../services/speechService';
 
 const DIAS = [
-  { numero: 1 as DiaSemana, abrev: 'Lun', nombre: 'Lunes' },
-  { numero: 2 as DiaSemana, abrev: 'Mar', nombre: 'Martes' },
-  { numero: 3 as DiaSemana, abrev: 'Mié', nombre: 'Miércoles' },
-  { numero: 4 as DiaSemana, abrev: 'Jue', nombre: 'Jueves' },
-  { numero: 5 as DiaSemana, abrev: 'Vie', nombre: 'Viernes' },
-  { numero: 6 as DiaSemana, abrev: 'Sáb', nombre: 'Sábado' },
-  { numero: 7 as DiaSemana, abrev: 'Dom', nombre: 'Domingo' },
+  { numero: 1 as DiaSemana, abrev: 'Lun', nombre: 'LUNES' },
+  { numero: 2 as DiaSemana, abrev: 'Mar', nombre: 'MARTES' },
+  { numero: 3 as DiaSemana, abrev: 'Mié', nombre: 'MIÉRCOLES' },
+  { numero: 4 as DiaSemana, abrev: 'Jue', nombre: 'JUEVES' },
+  { numero: 5 as DiaSemana, abrev: 'Vie', nombre: 'VIERNES' },
+  { numero: 6 as DiaSemana, abrev: 'Sáb', nombre: 'SÁBADO' },
+  { numero: 7 as DiaSemana, abrev: 'Dom', nombre: 'DOMINGO' },
 ];
 
 const ORDEN_BLOQUES = ['MAÑANA', 'TARDE', 'NOCHE'] as const;
@@ -31,7 +31,7 @@ type TipoBloque = (typeof ORDEN_BLOQUES)[number];
 const BLOQUES = [
   {
     clave: 'MAÑANA' as TipoBloque,
-    etiqueta: 'Mañana',
+    etiqueta: 'MAÑANA',
     Icono: Sun,
     fondo: 'bg-[#E0F7FA]/40',
     tarjetaFondo: 'bg-[#FFFBEB]',
@@ -39,7 +39,7 @@ const BLOQUES = [
   },
   {
     clave: 'TARDE' as TipoBloque,
-    etiqueta: 'Tarde',
+    etiqueta: 'TARDE',
     Icono: Sunset,
     fondo: 'bg-[#FFFBEB]/40',
     tarjetaFondo: 'bg-[#FFF7ED]',
@@ -47,7 +47,7 @@ const BLOQUES = [
   },
   {
     clave: 'NOCHE' as TipoBloque,
-    etiqueta: 'Noche',
+    etiqueta: 'NOCHE',
     Icono: Moon,
     fondo: 'bg-[#F0F4F8]/40',
     tarjetaFondo: 'bg-[#F1F5F9]',
@@ -262,7 +262,7 @@ function HorarioNino() {
             ) : actividadesBloque.length === 0 ? (
               <div className="my-auto py-12 flex flex-col items-center gap-4 text-center">
                 <div className="text-gray-400 font-extrabold text-lg">
-                  No hay actividades programadas para la {bloqueInfo.etiqueta.toLowerCase()}.
+                  NO HAY ACTIVIDADES PROGRAMADAS PARA LA {bloqueInfo.etiqueta.toUpperCase()}.
                 </div>
                 <div className="flex items-center gap-3">
                   {bloqueIdx > 0 && (
@@ -272,7 +272,7 @@ function HorarioNino() {
                       className="px-4 py-2 rounded-2xl bg-white border-2 border-gray-200 text-[#1B3A5C] font-bold text-sm shadow-sm hover:bg-[#1B3A5C] hover:text-white transition-all flex items-center gap-2 cursor-pointer"
                     >
                       <FontAwesomeIcon icon={faArrowLeft} />
-                      <span>Ver {ORDEN_BLOQUES[bloqueIdx - 1].toLowerCase()}</span>
+                      <span>Ver {ORDEN_BLOQUES[bloqueIdx - 1].toUpperCase()}</span>
                     </button>
                   )}
                   {bloqueIdx < ORDEN_BLOQUES.length - 1 && (
@@ -281,7 +281,7 @@ function HorarioNino() {
                       onClick={siguienteActividad}
                       className="px-4 py-2 rounded-2xl bg-white border-2 border-gray-200 text-[#1B3A5C] font-bold text-sm shadow-sm hover:bg-[#1B3A5C] hover:text-white transition-all flex items-center gap-2 cursor-pointer"
                     >
-                      <span>Ver {ORDEN_BLOQUES[bloqueIdx + 1].toLowerCase()}</span>
+                      <span>Ver {ORDEN_BLOQUES[bloqueIdx + 1].toUpperCase()}</span>
                       <FontAwesomeIcon icon={faArrowRight} />
                     </button>
                   )}
@@ -317,8 +317,8 @@ function HorarioNino() {
                               ⭐
                             </div>
                           )}
-                          <span className="font-extrabold text-xs text-gray-600 text-center truncate w-full">
-                            {actividadPrev.name || actividadPrev.pictogram?.pictogramName}
+                          <span className="font-extrabold text-xs text-gray-600 text-center truncate w-full uppercase">
+                            {(actividadPrev.name || actividadPrev.pictogram?.pictogramName || '').toUpperCase()}
                           </span>
                         </>
                       ) : null}
@@ -358,8 +358,8 @@ function HorarioNino() {
                               ⭐
                             </div>
                           )}
-                          <span className="font-black text-xl sm:text-2xl text-[#1B3A5C] text-center mt-4 tracking-wide">
-                            {actividadActual.name || actividadActual.pictogram?.pictogramName}
+                          <span className="font-black text-xl sm:text-2xl text-[#1B3A5C] text-center mt-4 tracking-wide uppercase">
+                            {(actividadActual.name || actividadActual.pictogram?.pictogramName || '').toUpperCase()}
                           </span>
                         </div>
 
@@ -414,8 +414,8 @@ function HorarioNino() {
                               ⭐
                             </div>
                           )}
-                          <span className="font-extrabold text-xs text-gray-600 text-center truncate w-full">
-                            {actividadNext.name || actividadNext.pictogram?.pictogramName}
+                          <span className="font-extrabold text-xs text-gray-600 text-center truncate w-full uppercase">
+                            {(actividadNext.name || actividadNext.pictogram?.pictogramName || '').toUpperCase()}
                           </span>
                         </>
                       ) : null}
