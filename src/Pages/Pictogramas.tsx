@@ -122,9 +122,16 @@ function Pictogramas() {
     }
   }, [frase]);
 
-  const pictogramasFiltrados = categoriaSeleccionada
-    ? pictogramas.filter((item) => item.category.id === categoriaSeleccionada)
+  const pictogramasDelTutor = tutorAutenticado && userId
+    ? pictogramas.filter((item) => {
+        const itemUserId = item.userId || (item as unknown as { user?: { id?: string } }).user?.id || item.tutorId;
+        return itemUserId ? itemUserId === userId : true;
+      })
     : pictogramas;
+
+  const pictogramasFiltrados = categoriaSeleccionada
+    ? pictogramasDelTutor.filter((item) => item.category?.id === categoriaSeleccionada)
+    : pictogramasDelTutor;
 
   return (
     <Fondo>

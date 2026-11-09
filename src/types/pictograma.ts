@@ -13,6 +13,9 @@ export interface Pictograma {
   pictoImageUrl: string;
   category: Categoria;
   pictoImageKey: string;
+  userId?: string;
+  user?: { id: string };
+  tutorId?: string;
 }
 
 export interface CrearPictogramaInput {

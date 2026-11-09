@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
-import { createPictogram, getPictogramsByInfantId } from '../services/pictogramsService';
+import { createPictogram, getPictogramsByInfantId, getPictogramsByTutorId } from '../services/pictogramsService';
 import type { CrearPictogramaInput, Pictograma } from '../types/pictograma';
 import { useAuth } from './AuthContext';
 import { useNino } from './NinoContext';
@@ -16,7 +16,7 @@ const PictogramaContext = createContext<PictogramasContextValue | null>(null);
 
 export function PictogramaProvider({ children }: { children: React.ReactNode }) {
   const { userId, token } = useAuth();
-  const { ninoActivo } = useNino();
+  const { ninoActivo, tutorAutenticado } = useNino();
   
   const hayCredenciales = Boolean(userId && token);
 
@@ -33,7 +33,12 @@ export function PictogramaProvider({ children }: { children: React.ReactNode }) 
     setErrorPictogramas(null);
 
     try {
-      if (ninoActivoId) {
+      if (tutorAutenticado) {
+        // Al gestionar/editar como tutor, solo cargar los pictogramas asociados a este tutor
+        const datos = await getPictogramsByTutorId(userId, token);
+        setPictogramas(datos);
+      } else if (ninoActivoId) {
+        // Modo infante: cargar los pictogramas disponibles para el infante activo
         const datos = await getPictogramsByInfantId(ninoActivoId, token);
         setPictogramas(datos);
       } else {
@@ -46,7 +51,7 @@ export function PictogramaProvider({ children }: { children: React.ReactNode }) 
     } finally {
       setLoadingPictogramas(false);
     }
-  }, [userId, token, ninoActivoId]);
+  }, [userId, token, tutorAutenticado, ninoActivoId]);
 
   const crearPictograma = useCallback(async (input: CrearPictogramaInput) => {
     if (!userId || !token) throw new Error('NO_TUTOR_SESSION');

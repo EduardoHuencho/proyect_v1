@@ -20,10 +20,25 @@ function EditarPictograma() {
   const navigate = useNavigate();
   const { id: pictogramId } = useParams<{ id: string }>();
   const { tutorAutenticado } = useNino();
-  const { token } = useAuth();
-  const { pictogramas, cargarPictogramas } = usePictogramas();
+  const { token, userId } = useAuth();
+  const { pictogramas, cargarPictogramas, loadingPictogramas } = usePictogramas();
+
+  useEffect(() => {
+    if (userId && token && pictogramas.length === 0) {
+      void cargarPictogramas();
+    }
+  }, [userId, token, pictogramas.length, cargarPictogramas]);
 
   const pictogramaActual = pictogramas.find((p) => p.id === pictogramId);
+  const pictogramaPerteneceAlTutor = pictogramaActual
+    ? (() => {
+        const itemUserId =
+          pictogramaActual.userId ||
+          (pictogramaActual as unknown as { user?: { id?: string } }).user?.id ||
+          pictogramaActual.tutorId;
+        return itemUserId ? itemUserId === userId : true;
+      })()
+    : false;
 
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
@@ -103,7 +118,7 @@ function EditarPictograma() {
     }
   };
 
-  if (!pictogramaActual) {
+  if (loadingPictogramas && !pictogramaActual) {
     return (
       <Fondo>
         <div className="flex flex-col min-h-screen">
@@ -116,7 +131,28 @@ function EditarPictograma() {
           />
           <div className="flex-1 flex items-center justify-center">
             <p className="text-[#005088] font-semibold text-sm">
-              Pictograma no encontrado.
+              Cargando pictograma...
+            </p>
+          </div>
+        </div>
+      </Fondo>
+    );
+  }
+
+  if (!pictogramaActual || !pictogramaPerteneceAlTutor) {
+    return (
+      <Fondo>
+        <div className="flex flex-col min-h-screen">
+          <Navbar
+            rol={tutorAutenticado ? 'tutor' : 'nino'}
+            esPictogramas={false}
+            rutaVolver="/pictogramas"
+            labelVolver="Volver"
+            pinSoloDesbloquea={true}
+          />
+          <div className="flex-1 flex items-center justify-center">
+            <p className="text-[#005088] font-semibold text-sm">
+              Pictograma no encontrado o no pertenece a tu cuenta.
             </p>
           </div>
         </div>
