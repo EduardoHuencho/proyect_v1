@@ -299,6 +299,7 @@ function JuegoQueEs() {
       setBloquearOpciones(true);
       setEstadoRespuesta('error');
       setIdOpcionIncorrecta(opcion.id);
+      reproducirVoz('Siga intentando');
 
       const pictoCorrecto = rondaActual.pictograms.find(
         (p) => p.id === rondaActual.correctPictogramId
