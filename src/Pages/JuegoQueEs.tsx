@@ -449,7 +449,7 @@ function JuegoQueEs() {
               <div className="lg:col-span-5 flex flex-col items-center lg:items-start gap-6">
                 
                 <div className="w-full max-w-sm bg-[#FFD57E] border-[3px] border-[#1B3A5C] rounded-[28px] py-5 px-6 shadow-[0_6px_0_#1B3A5C] text-center">
-                  <h2 className="text-2xl sm:text-3xl font-black text-[#1B3A5C] tracking-wide">
+                  <h2 className="text-2xl sm:text-3xl font-black text-[#1B3A5C] tracking-wide uppercase">
                     {rondaActual.prompt || '¿QUÉ ES?'}
                   </h2>
                 </div>
@@ -483,7 +483,6 @@ function JuegoQueEs() {
 
               </div>
 
-              {/* Columna Derecha: Opciones de Pictogramas */}
               <div className="lg:col-span-7 grid grid-cols-2 gap-4 sm:gap-6 max-w-xl mx-auto w-full">
                 {rondaActual.pictograms.map((opcion) => {
                   const esEstaCorrecta = opcion.id === rondaActual.correctPictogramId;

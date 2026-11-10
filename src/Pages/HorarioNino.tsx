@@ -269,7 +269,7 @@ function HorarioNino() {
                     <button
                       type="button"
                       onClick={anteriorActividad}
-                      className="px-4 py-2 rounded-2xl bg-white border-2 border-gray-200 text-[#1B3A5C] font-bold text-sm shadow-sm hover:bg-[#1B3A5C] hover:text-white transition-all flex items-center gap-2 cursor-pointer"
+                      className="px-4 py-2 rounded-2xl bg-[#FDD835] border-2 border-[#C8A800] text-[#1B3A5C] font-bold text-sm shadow-sm hover:scale-110 transition-all flex items-center gap-2 cursor-pointer"
                     >
                       <FontAwesomeIcon icon={faArrowLeft} />
                       <span>Ver {ORDEN_BLOQUES[bloqueIdx - 1].toUpperCase()}</span>
@@ -279,7 +279,7 @@ function HorarioNino() {
                     <button
                       type="button"
                       onClick={siguienteActividad}
-                      className="px-4 py-2 rounded-2xl bg-white border-2 border-gray-200 text-[#1B3A5C] font-bold text-sm shadow-sm hover:bg-[#1B3A5C] hover:text-white transition-all flex items-center gap-2 cursor-pointer"
+                      className="px-4 py-2 rounded-2xl bg-[#FDD835] border-2 border-[#C8A800] text-[#1B3A5C] font-bold text-sm shadow-sm hover:scale-110 transition-all flex items-center gap-2 cursor-pointer"
                     >
                       <span>Ver {ORDEN_BLOQUES[bloqueIdx + 1].toUpperCase()}</span>
                       <FontAwesomeIcon icon={faArrowRight} />
@@ -329,7 +329,7 @@ function HorarioNino() {
                     type="button"
                     onClick={anteriorActividad}
                     disabled={!puedeRetroceder}
-                    className="w-12 h-12 rounded-full bg-white text-[#1B3A5C] border-2 border-gray-200 shadow-lg flex items-center justify-center hover:bg-[#1B3A5C] hover:text-white transition-all disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed shrink-0 active:scale-90"
+                    className="w-12 h-12 rounded-full bg-[#FDD835] text-[#1B3A5C] border-2 border-[#C8A800] shadow-lg flex items-center justify-center hover:scale-110 transition-all disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed shrink-0 active:scale-90"
                     aria-label="Actividad anterior"
                   >
                     <FontAwesomeIcon icon={faArrowLeft} className="text-lg" />
@@ -381,7 +381,7 @@ function HorarioNino() {
                     type="button"
                     onClick={siguienteActividad}
                     disabled={!puedeAvanzar}
-                    className="w-12 h-12 rounded-full bg-white text-[#1B3A5C] border-2 border-gray-200 shadow-lg flex items-center justify-center hover:bg-[#1B3A5C] hover:text-white transition-all disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed shrink-0 active:scale-90"
+                    className="w-12 h-12 rounded-full bg-[#FDD835] text-[#1B3A5C] border-2 border-[#C8A800] shadow-lg flex items-center justify-center hover:scale-110 transition-all disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed shrink-0 active:scale-90"
                     aria-label="Siguiente actividad"
                   >
                     <FontAwesomeIcon icon={faArrowRight} className="text-lg" />

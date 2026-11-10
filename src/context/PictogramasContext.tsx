@@ -32,9 +32,9 @@ export function PictogramaProvider({ children }: { children: React.ReactNode }) 
     setLoadingPictogramas(true);
     setErrorPictogramas(null);
 
+    /*
     try {
       if (tutorAutenticado) {
-        // Al gestionar/editar como tutor, solo cargar los pictogramas asociados a este tutor
         const datos = await getPictogramsByTutorId(userId, token);
         setPictogramas(datos);
       } else if (ninoActivoId) {
@@ -45,6 +45,31 @@ export function PictogramaProvider({ children }: { children: React.ReactNode }) 
         setPictogramas([]);
       }
     } catch (error) {
+    */
+    try {
+      if (tutorAutenticado) {
+        if (ninoActivoId) {
+          const [pictogramasTutor, pictogramasInfante] = await Promise.all([
+            getPictogramsByTutorId(userId, token),
+            getPictogramsByInfantId(ninoActivoId, token),
+          ]);
+          const idsTutor = new Set(pictogramasTutor.map((p) => p.id));
+
+          const pictogramasFiltrados = pictogramasInfante.filter((p) => idsTutor.has(p.id));
+
+          setPictogramas(pictogramasFiltrados);
+        } else {
+          const datos = await getPictogramsByTutorId(userId, token);
+          setPictogramas(datos);
+        }
+      } else if (ninoActivoId) {
+        const datos = await getPictogramsByInfantId(ninoActivoId, token);
+        setPictogramas(datos);
+      } else {
+        setPictogramas([]);
+      }
+    } catch (error) {
+      //
       console.error('Error al cargar pictogramas:', error);
       setErrorPictogramas('No se pudieron sincronizar los pictogramas');
       setPictogramas([]);
