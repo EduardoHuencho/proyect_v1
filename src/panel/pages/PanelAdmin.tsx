@@ -1,216 +1,213 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Swal from 'sweetalert2';
-import { Search, RotateCcw, Calendar, Filter, Image as ImageIcon } from 'lucide-react';
+import {
+  Search,
+  RotateCcw,
+  Filter,
+  Image as ImageIcon,
+  ArrowDownAZ,
+  Loader2,
+  AlertCircle,
+  RefreshCw,
+} from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import AdminHeader from '../components/AdminHeader';
 import PictogramaModeracionCard from '../components/PictogramaModeracionCard';
+import { getAllPictogramsAdmin } from '../services/adminPictogramsService';
 import type {
   AdminPictogram,
   VisibilityFilter,
-  DateSortOrder,
+  NameSortOrder,
 } from '../types/adminPictogram';
+import { deletePictogramAdmin } from '../services/adminPictogramsService';
+//import { eliminarActividadesDePictograma } from '../../services/routineService';
+import { deleteRoutineActivity } from '../../services/routineService';
 
-// Mocks realistas con fecha ISO y visibilidad pública/privada
-const MOCK_PICTOGRAMAS_ADMIN: AdminPictogram[] = [
-  {
-    id: 'pic-1',
-    name: 'Comer Manzana',
-    category: 'Alimentación',
-    imageUrl: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=300&auto=format&fit=crop&q=60',
-    isPublic: true,
-    authorFirstName: 'María',
-    authorLastName: 'González',
-    authorEmail: 'maria.gonzalez@example.com',
-    createdAt: '2026-11-10T09:30:00Z',
-    isDeleted: false,
-  },
-  {
-    id: 'pic-2',
-    name: 'Gesto Inapropiado',
-    category: 'Emociones',
-    imageUrl: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=300&auto=format&fit=crop&q=60',
-    isPublic: true,
-    authorFirstName: 'Juan',
-    authorLastName: 'Valenzuela',
-    authorEmail: 'juan.valenzuela@test.com',
-    createdAt: '2026-11-09T18:15:00Z',
-    isDeleted: false,
-  },
-  {
-    id: 'pic-3',
-    name: 'Ir al Baño',
-    category: 'Rutinas',
-    imageUrl: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=300&auto=format&fit=crop&q=60',
-    isPublic: true,
-    authorFirstName: 'Carlos',
-    authorLastName: 'Pérez',
-    authorEmail: 'carlos.terapia@educa.org',
-    createdAt: '2026-11-08T11:00:00Z',
-    isDeleted: false,
-  },
-  {
-    id: 'pic-4',
-    name: 'Mi Mascota Toby',
-    category: 'Personal',
-    imageUrl: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=300&auto=format&fit=crop&q=60',
-    isPublic: false,
-    authorFirstName: 'Camila',
-    authorLastName: 'Fernández',
-    authorEmail: 'camila.f@familia.cl',
-    createdAt: '2026-11-07T16:45:00Z',
-    isDeleted: false,
-  },
-  {
-    id: 'pic-5',
-    name: 'Cepillarse Dientes',
-    category: 'Higiene',
-    imageUrl: 'https://images.unsplash.com/photo-1559591937-e1032b4b455c?w=300&auto=format&fit=crop&q=60',
-    isPublic: true,
-    authorFirstName: 'Ana',
-    authorLastName: 'Ruiz',
-    authorEmail: 'ana.ruiz@clinica.cl',
-    createdAt: '2026-11-05T08:20:00Z',
-    isDeleted: false,
-  },
-  {
-    id: 'pic-6',
-    name: 'Foto Familiar',
-    category: 'Personal',
-    imageUrl: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=300&auto=format&fit=crop&q=60',
-    isPublic: false,
-    authorFirstName: 'Pedro',
-    authorLastName: 'Morales',
-    authorEmail: 'pedro.m@gmail.com',
-    createdAt: '2026-11-04T12:00:00Z',
-    isDeleted: false,
-  },
-  {
-    id: 'pic-7',
-    name: 'Jugar con Pelota',
-    category: 'Juegos',
-    imageUrl: 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?w=300&auto=format&fit=crop&q=60',
-    isPublic: true,
-    authorFirstName: 'Sofía',
-    authorLastName: 'López',
-    authorEmail: 'sofia.lopez@escuela.edu',
-    createdAt: '2026-11-03T15:10:00Z',
-    isDeleted: false,
-  },
-  {
-    id: 'pic-8',
-    name: 'Beber Agua',
-    category: 'Alimentación',
-    imageUrl: 'https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=300&auto=format&fit=crop&q=60',
-    isPublic: true,
-    authorFirstName: 'Martín',
-    authorLastName: 'Silva',
-    authorEmail: 'martin.silva@terapia.com',
-    createdAt: '2026-11-01T17:30:00Z',
-    isDeleted: false,
-  },
-];
+const POLLING_INTERVAL_MS = 15_000;
+
+function obtenerMensajeError(err: unknown): string {
+  if (err instanceof Error && err.message === 'HTTP_ERROR_403') {
+    return 'No tienes permisos de administrador para acceder a estos datos.';
+  }
+  return 'No se pudieron cargar los pictogramas desde el servidor.';
+}
 
 export function PanelAdmin() {
-  const [pictogramas, setPictogramas] = useState<AdminPictogram[]>(MOCK_PICTOGRAMAS_ADMIN);
+  const { token } = useAuth();
+
+  const [pictogramas, setPictogramas] = useState<AdminPictogram[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [visibilityFilter, setVisibilityFilter] = useState<VisibilityFilter>('all');
-  const [sortOrder, setSortOrder] = useState<DateSortOrder>('newest');
+  const [sortOrder, setSortOrder] = useState<NameSortOrder>('asc');
 
-  // Total de pictogramas en la plataforma
+  const cargarPictogramas = useCallback(async () => {
+    setIsRefreshing(true);
+    setError(null);
+
+    try {
+      const data = await getAllPictogramsAdmin(token);
+      setPictogramas(data);
+    } catch (err) {
+      console.error('Error al cargar pictogramas en el panel:', err);
+      setError(obtenerMensajeError(err));
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    let cancelado = false;
+
+    const sincronizar = (esCargaInicial: boolean) => {
+      getAllPictogramsAdmin(token)
+        .then((data) => {
+          if (!cancelado) {
+            setPictogramas(data);
+            setError(null);
+          }
+        })
+        .catch((err) => {
+          if (!cancelado) {
+            console.error('Error al cargar pictogramas en el panel:', err);
+            if (esCargaInicial) {
+              setError(obtenerMensajeError(err));
+            }
+          }
+        })
+        .finally(() => {
+          if (!cancelado && esCargaInicial) {
+            setLoading(false);
+          }
+        });
+    };
+
+    sincronizar(true);
+
+    // Polling silencioso cada 15 segundos mientras la pestaña esté visible
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        sincronizar(false);
+      }
+    }, POLLING_INTERVAL_MS);
+
+    const handleFocusOrVisible = () => {
+      if (document.visibilityState === 'visible') {
+        sincronizar(false);
+      }
+    };
+
+    window.addEventListener('focus', handleFocusOrVisible);
+    document.addEventListener('visibilitychange', handleFocusOrVisible);
+
+    return () => {
+      cancelado = true;
+      window.clearInterval(intervalId);
+      window.removeEventListener('focus', handleFocusOrVisible);
+      document.removeEventListener('visibilitychange', handleFocusOrVisible);
+    };
+  }, [token]);
+
   const totalPictogramas = pictogramas.length;
 
-  // Filtrado y ordenamiento reactivo
   const filteredAndSorted = useMemo(() => {
     const searchLower = searchTerm.toLowerCase();
 
-    // 1. Filtrar por término de búsqueda y visibilidad
     const filtered = pictogramas.filter((p) => {
-      const fullName = `${p.authorFirstName} ${p.authorLastName}`.toLowerCase();
       const matchesSearch =
         p.name.toLowerCase().includes(searchLower) ||
         p.category.toLowerCase().includes(searchLower) ||
-        fullName.includes(searchLower) ||
-        p.authorEmail.toLowerCase().includes(searchLower);
+        p.description.toLowerCase().includes(searchLower);
 
       if (!matchesSearch) return false;
 
       if (visibilityFilter === 'public') return p.isPublic;
       if (visibilityFilter === 'private') return !p.isPublic;
-      return true; // 'all'
+      return true;
     });
 
-    // 2. Ordenar por fecha de creación
     return filtered.sort((a, b) => {
-      const dateA = new Date(a.createdAt).getTime();
-      const dateB = new Date(b.createdAt).getTime();
-      return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+      const comparison = a.name.localeCompare(b.name, 'es', { sensitivity: 'base' });
+      return sortOrder === 'asc' ? comparison : -comparison;
     });
   }, [pictogramas, searchTerm, visibilityFilter, sortOrder]);
 
-  // Manejo de borrado
-  const handleDelete = (id: string) => {
+  const handleDelete = (pic: AdminPictogram) => {
     Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
+      title: `¿Eliminar "${pic.name}"?`,
+      text: pic.isPublic
+        ? 'Este es un pictograma público. Si algún niño lo está usando en su rutina, se desvinculará antes de borrar.'
+        : 'Este pictograma se eliminará y se desvinculará de las rutinas de todos los niños asociados.',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setPictogramas((prev) =>
-          prev.map((pic) => (pic.id === id ? { ...pic, isDeleted: true } : pic))
-        );
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#4f46e5',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then(async (result) => {
+      if (!result.isConfirmed) return;
+
+      try {
+        
+        if (pic.infantId && pic.infantId.length > 0) {
+          for (const infantId of pic.infantId) {
+            try {
+              // await eliminarActividadesDePictograma(pic.id, infantId, token);
+              await deleteRoutineActivity(pic.id, infantId, token);
+            } catch (e) {
+              console.warn(`No se pudieron limpiar rutinas del infante ${infantId}:`, e);
+            }
+          }
+        }
+
+        await deletePictogramAdmin(pic.id, token);
+
+        setPictogramas((prev) => prev.filter((item) => item.id !== pic.id));
 
         Swal.fire({
-          title: 'Deleted!',
-          text: 'Your file has been deleted.',
+          title: '¡Eliminado!',
+          text: 'El pictograma y sus actividades asociadas han sido eliminados.',
           icon: 'success',
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      } catch (err) {
+        console.error('Error al eliminar en panel admin:', err);
+        Swal.fire({
+          title: 'Error al eliminar',
+          text: 'No se pudo eliminar el pictograma. Comprueba si está siendo usado por otros usuarios.',
+          icon: 'error',
         });
       }
     });
   };
 
-  // Manejo de restauración
-  const handleRestore = (id: string) => {
-    setPictogramas((prev) =>
-      prev.map((pic) => (pic.id === id ? { ...pic, isDeleted: false } : pic))
-    );
-
-    Swal.fire({
-      icon: 'success',
-      title: 'Restaurado',
-      text: 'El pictograma ha sido reactivado.',
-      timer: 1500,
-      showConfirmButton: false,
-    });
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Barra superior de administración */}
       <AdminHeader />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5">
-        {/* Barra superior con contador total y controles de filtro */}
+        
         <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-xs flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
-          {/* Contador total y Búsqueda */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
-            {/* Contador de pictogramas totales */}
+
             <div className="flex items-center gap-2 px-3 py-2 bg-indigo-50 border border-indigo-100 rounded-lg text-indigo-900 shrink-0">
               <ImageIcon className="w-4 h-4 text-indigo-600" />
               <span className="text-xs font-semibold">Total:</span>
               <span className="text-sm font-bold text-indigo-700">{totalPictogramas}</span>
             </div>
 
-            {/* Input de Búsqueda */}
             <div className="relative flex-1 min-w-55">
               <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Buscar por nombre, categoría, creador o correo..."
+                placeholder="Buscar por nombre, categoría o descripción..."
                 className="w-full pl-9 pr-8 py-2 border border-gray-300 rounded-lg text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
               {searchTerm && (
@@ -224,9 +221,7 @@ export function PanelAdmin() {
             </div>
           </div>
 
-          {/* Filtros: Visibilidad y Orden por fecha */}
           <div className="flex flex-wrap items-center gap-2.5">
-            {/* Filtro: Públicos / Privados / Todos */}
             <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-lg p-1">
               <Filter className="w-3.5 h-3.5 text-gray-500 ml-1.5" />
               <select
@@ -240,23 +235,48 @@ export function PanelAdmin() {
               </select>
             </div>
 
-            {/* Orden: Fecha de creación */}
             <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-lg p-1">
-              <Calendar className="w-3.5 h-3.5 text-gray-500 ml-1.5" />
+              <ArrowDownAZ className="w-3.5 h-3.5 text-gray-500 ml-1.5" />
               <select
                 value={sortOrder}
-                onChange={(e) => setSortOrder(e.target.value as DateSortOrder)}
+                onChange={(e) => setSortOrder(e.target.value as NameSortOrder)}
                 className="bg-transparent text-xs font-medium text-gray-700 py-1 pr-2 pl-1 rounded focus:outline-hidden cursor-pointer"
               >
-                <option value="newest">Más recientes primero</option>
-                <option value="oldest">Más antiguos primero</option>
+                <option value="asc">Nombre (A - Z)</option>
+                <option value="desc">Nombre (Z - A)</option>
               </select>
             </div>
+
+            <button
+              onClick={cargarPictogramas}
+              disabled={isRefreshing}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition-colors cursor-pointer disabled:opacity-60"
+              title="Actualizar lista de pictogramas"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <span>Actualizar</span>
+            </button>
           </div>
         </div>
 
-        {/* Grilla más compacta para mostrar mayor cantidad de pictogramas */}
-        {filteredAndSorted.length === 0 ? (
+        {loading ? (
+          <div className="bg-white rounded-xl border border-gray-200 p-12 flex flex-col items-center justify-center text-gray-500">
+            <Loader2 className="w-8 h-8 animate-spin text-indigo-600 mb-3" />
+            <p className="text-sm font-medium">Cargando pictogramas...</p>
+          </div>
+        ) : error ? (
+          <div className="bg-white rounded-xl border border-red-200 p-10 flex flex-col items-center justify-center text-center">
+            <AlertCircle className="w-10 h-10 text-red-500 mb-3" />
+            <h3 className="text-sm font-semibold text-gray-900">Error al obtener datos</h3>
+            <p className="text-xs text-gray-600 mt-1 max-w-md">{error}</p>
+            <button
+              onClick={cargarPictogramas}
+              className="mt-4 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors cursor-pointer"
+            >
+              Reintentar
+            </button>
+          </div>
+        ) : filteredAndSorted.length === 0 ? (
           <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
             <RotateCcw className="w-10 h-10 text-gray-300 mx-auto mb-3" />
             <h3 className="text-sm font-semibold text-gray-800">No se encontraron pictogramas</h3>
@@ -271,7 +291,6 @@ export function PanelAdmin() {
                 key={pic.id}
                 pictogram={pic}
                 onDelete={handleDelete}
-                onRestore={handleRestore}
               />
             ))}
           </div>

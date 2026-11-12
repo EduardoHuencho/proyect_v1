@@ -3,6 +3,8 @@ import { createPictogram, getPictogramsByInfantId, getPictogramsByTutorId } from
 import type { CrearPictogramaInput, Pictograma } from '../types/pictograma';
 import { useAuth } from './AuthContext';
 import { useNino } from './NinoContext';
+import { deletePictogram } from '../services/pictogramsService';
+import { eliminarActividadesDePictograma } from '../services/routineService';
 
 interface PictogramasContextValue {
   pictogramas: Pictograma[];
@@ -10,6 +12,7 @@ interface PictogramasContextValue {
   errorPictogramas: string | null;
   cargarPictogramas: () => Promise<void>;
   crearPictograma: (input: CrearPictogramaInput) => Promise<void>;
+  eliminarPictograma: (pictograma: Pictograma) => Promise<void>;
 }
 
 const PictogramaContext = createContext<PictogramasContextValue | null>(null);
@@ -111,13 +114,45 @@ export function PictogramaProvider({ children }: { children: React.ReactNode }) 
     }
   }, [userId, token, ninoActivoId, cargarPictogramas]);
 
+  const eliminarPictograma = useCallback(async (pictograma: Pictograma) => {
+    if (!token) throw new Error('NO_TOKEN');
+    setLoadingPictogramas(true);
+    setErrorPictogramas(null);
+
+  try {
+    
+    const ninosIds = (Array.isArray(pictograma.infantId) && pictograma.infantId.length > 0)
+      ? pictograma.infantId
+      : (ninoActivoId ? [ninoActivoId] : []);
+
+    for (const infantId of ninosIds) {
+      try {
+        await eliminarActividadesDePictograma(pictograma.id, infantId, token);
+      } catch (e) {
+        console.warn(`No se pudieron limpiar las actividades del niño ${infantId}:`, e);
+      }
+    }
+
+    await deletePictogram(pictograma.id, token);
+    setPictogramas((prev) => prev.filter((p) => p.id !== pictograma.id));
+  
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : 'Error al eliminar el pictograma';
+    setErrorPictogramas(msg);
+    throw error;
+  } finally {
+    setLoadingPictogramas(false);
+  }
+}, [token, ninoActivoId]);
+
   const value = useMemo<PictogramasContextValue>(() => ({
     pictogramas: hayCredenciales ? pictogramas : [],
     loadingPictogramas,
     errorPictogramas: hayCredenciales ? errorPictogramas : null,
     cargarPictogramas,
     crearPictograma,
-  }), [hayCredenciales, pictogramas, loadingPictogramas, errorPictogramas, cargarPictogramas, crearPictograma]);
+    eliminarPictograma,
+  }), [hayCredenciales, pictogramas, loadingPictogramas, errorPictogramas, cargarPictogramas, crearPictograma, eliminarPictograma]);
 
   return <PictogramaContext.Provider value={value}>{children}</PictogramaContext.Provider>;
 }

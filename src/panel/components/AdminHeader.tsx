@@ -9,7 +9,6 @@ export function AdminHeader() {
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Logo y título del panel */}
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-100">
             <ShieldCheck className="w-6 h-6" />
@@ -25,7 +24,6 @@ export function AdminHeader() {
           </div>
         </div>
 
-        {/* Navegación y salir */}
         <div className="flex items-center space-x-3">
           <button
             onClick={() => navigate('/accesotutor')}

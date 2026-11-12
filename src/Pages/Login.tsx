@@ -25,8 +25,13 @@ function Login() {
 
     try {
       const data = await login(email, password);
-      console.log('Sesión iniciada con usuario ID:', data.id);
-      navigate('/accesotutor');
+      console.log('Sesión iniciada con usuario ID:', data.id, 'Rol:', data.rol);
+
+      if (data.rol === 'admin') {
+        navigate('/panel', { replace: true });
+      } else {
+        navigate('/accesotutor');
+      }
     } catch (err) {
       console.error('Error en login:', err);
 

@@ -133,3 +133,14 @@ export async function getCategoryById(categoryId: string, token: string | null):
   if (!response.ok) throw new Error('CATEGORY_NOT_FOUND');
   return parseJson<Categoria>(response);
 }
+
+export async function deletePictogram(pictogramId: string, token: string | null): Promise<void> {
+  const response = await fetch(`${API_URL}/pictogram/delete/${pictogramId}`, {
+    method: 'DELETE',
+    headers: authHeaders(token),
+  });
+  if (!response.ok) {
+    const errorData = await parseJson<{ message?: string }>(response).catch(() => null);
+  throw new Error(errorData?.message || `ERROR_${response.status}_AL_ELIMINAR_PICTOGRAMA`);
+  }
+}

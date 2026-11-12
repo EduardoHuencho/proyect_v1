@@ -16,6 +16,7 @@ export interface Pictograma {
   userId?: string;
   user?: { id: string };
   tutorId?: string;
+  infantId?: string[];
 }
 
 export interface CrearPictogramaInput {

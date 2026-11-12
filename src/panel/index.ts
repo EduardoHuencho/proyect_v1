@@ -1,2 +1,8 @@
 export { PanelAdmin } from './pages/PanelAdmin';
-export type { AdminPictogram, VisibilityFilter, DateSortOrder } from './types/adminPictogram';
+export { RutaAdmin } from './routes/RutaAdmin';
+export type {
+  AdminPictogram,
+  BackendAdminPictogram,
+  VisibilityFilter,
+  NameSortOrder,
+} from './types/adminPictogram';

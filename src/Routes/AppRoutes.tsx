@@ -15,16 +15,17 @@ import HorarioNino from '../Pages/HorarioNino';
 import RutaProtegida from './RutaProtegida';
 import JuegoQueEs from '../Pages/JuegoQueEs';
 import ProgresoInfante from '../Pages/ProgresoInfante';
-//import { PanelAdmin } from '../panel';
+import { PanelAdmin, RutaAdmin } from '../panel';
 
 function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/registro" element={<Registro />} />
-      {/*
-      <Route path="/panel" element={<PanelAdmin />} />
-      */}
+
+      <Route element={<RutaAdmin />}>
+        <Route path="/panel" element={<PanelAdmin />} />
+      </Route>
 
       <Route element={<RutaProtegida />}>
         <Route path="/accesotutor" element={<AccesoTutor />} />

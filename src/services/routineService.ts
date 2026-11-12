@@ -94,3 +94,27 @@ export async function deleteRoutineActivity(
     throw new Error(errorData.message || 'ERROR_AL_ELIMINAR_ACTIVIDAD');
   }
 }
+
+export async function eliminarActividadesDePictograma(
+  pictogramId: string,
+  infantId: string,
+  token: string | null
+): Promise<void> {
+  const rutinas = await getGroupedRoutine(infantId, token);
+
+  const promesasEliminacion: Promise<void>[] = [];
+  for (const rutina of rutinas) {
+    const todasLasActividades = [...rutina.morning, ...rutina.afternoon, ...rutina.night];
+
+    for (const actividad of todasLasActividades) {
+      if (actividad.pictogram?.id === pictogramId) {
+        promesasEliminacion.push(
+          deleteRoutineActivity(rutina.id, actividad.id, token)
+        );
+      }
+    }
+  }
+  if (promesasEliminacion.length >  0) {
+    await Promise.all(promesasEliminacion);
+  }
+}
